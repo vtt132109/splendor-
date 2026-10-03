@@ -1,0 +1,29 @@
+{
+  "name": "splendor-boardgame",
+  "version": "1.0.0",
+  "description": "Splendor Board Game tiếng Việt hoàn chỉnh chơi Online & Offline trên Web và Mobile",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "server": "node server/index.js"
+  },
+  "keywords": [
+    "splendor",
+    "boardgame",
+    "vietnamese",
+    "socketio",
+    "multiplayer",
+    "online-game"
+  ],
+  "author": "Tris",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

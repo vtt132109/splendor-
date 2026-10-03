@@ -42,10 +42,7 @@
 
 ### 2. Khởi chạy Server
 ```bash
-# Di chuyển vào thư mục server
-cd server
-
-# Cài đặt thư viện phụ thuộc
+# Cài đặt thư viện phụ thuộc ở thư mục gốc
 npm install
 
 # Khởi chạy server
@@ -55,6 +52,26 @@ npm start
 Mở trình duyệt truy cập: **`http://localhost:3000`**
 
 ---
+
+## 🌐 Triển Khai Lên Cloud (Deploy Online)
+
+### Cách 1: Triển khai miễn phí lên Render.com (Khuyên dùng)
+1. Đăng nhập [Render.com](https://render.com) (bằng tài khoản GitHub).
+2. Chọn **New +** ➔ **Web Service**.
+3. Kết nối với repository GitHub: `https://github.com/vtt132109/splendor-`.
+4. Cấu hình tự động nhận diện từ file `render.yaml` hoặc điền:
+   - **Name**: `splendor-boardgame`
+   - **Environment**: `Node`
+   - **Region**: `Singapore` (để độ trễ thấp nhất cho Việt Nam)
+   - **Build Command**: `npm install`
+   - **Start Command**: `npm start`
+5. Nhấn **Create Web Service**. Sau 1-2 phút bạn sẽ có link công khai dạng `https://splendor-boardgame.onrender.com` để gửi cho bạn bè chơi online từ mọi nơi!
+
+### Cách 2: Triển khai lên Railway.app
+1. Truy cập [Railway.app](https://railway.app), chọn **New Project** ➔ **Deploy from GitHub repo**.
+2. Chọn repository `vtt132109/splendor-`.
+3. Railway sẽ tự động build và cấp domain công khai có hỗ trợ HTTPS và WebSocket ngay lập tức.
+
 
 ## 📁 Cấu Trúc Thư Mục
 
