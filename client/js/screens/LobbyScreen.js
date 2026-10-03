@@ -100,7 +100,8 @@ class LobbyScreen {
     }
 
     const mySocketId = SplendorSocket.socket?.id;
-    const me = room.players.find(p => p.id === mySocketId);
+    const authUser = window.SplendorAuth?.getUser();
+    const me = room.players.find(p => p.id === mySocketId || (authUser?.uid && p.uid === authUser.uid));
     const isHost = me?.isHost || false;
 
     // Cập nhật danh sách người chơi

@@ -989,3 +989,83 @@ splendor/
 - **File:** `scratch/test-online-sync.js` (hoặc headless test)
 - **Phạm vi:** Nhỏ (S)
 
+---
+
+# Giai Đoạn 9: Củng Cố Kết Nối Di Động & Trạng Thái Biên (Mobile Reconnection & Edge Case Hardening)
+
+## 1. Báo Cáo Rà Soát Đa Trục Toàn Diện (5-Axis Review Summary)
+
+### Trục 1: Tính đúng đắn (Correctness)
+- **Critical: Mất kết nối đột ngột trong trận đấu xóa người chơi vĩnh viễn:** Trong `server/index.js`, hàm `handleLeaveRoom(socket)` lập tức gọi `room.players.splice(...)` ngay khi socket ngắt kết nối (`disconnect`). Trên mạng di động (chuyển sóng 4G/WiFi, tắt màn hình tạm thời, có cuộc gọi đến), việc socket ngắt tạm thời là bình thường. Khi người chơi mở lại trình duyệt và cố gắng kết nối lại, mã phòng báo lỗi vì người chơi đã bị xóa khỏi `room.players`, dẫn đến ván đấu bị kẹt cứng (deadlock) vĩnh viễn ở lượt của người chơi đó.
+- **Required: Nhận diện chỉ mục người chơi (`myPlayerIndex`) khi khởi động bàn chơi online:** Trong `startOnlineGameWithState` (`app.js`), mã chỉ đối chiếu `p.id === mySocketId`. Nếu người chơi vừa đổi socket hoặc dùng tài khoản Google, việc fallback về `0` có thể khiến người chơi khách ngỡ mình là chủ phòng (Player 0) trong một khoảnh khắc trước khi cập nhật.
+- **Required: Trạng thái chờ pha Trả đá quý thừa (`DISCARDING`) & Chọn Quý tộc (`SELECTING_NOBLE`):** Khi một người chơi vượt 10 viên đá quý và đang mở modal trả đá, các người chơi khác chỉ thấy modal bị ẩn nhưng banner lượt không giải thích lý do bàn cờ đang dừng lại.
+
+### Trục 2: Tính dễ đọc & Đơn giản (Readability & Simplicity)
+- Mã nguồn phân tách rõ ràng theo mô hình MVC thu gọn (Screen - Renderer - Engine/State).
+- Cần chuẩn hóa các thông điệp thông báo trạng thái để người chơi hiểu rõ diễn biến trên mạng di động.
+
+### Trục 3: Kiến trúc (Architecture)
+- Giao thức Socket.IO hai chiều đã chuẩn hóa theo mô hình thẩm quyền phía Server (Server-authoritative state). Cần bổ sung cờ trạng thái `connected: false` và thời gian ân hạn (Grace Period) vào mô hình phòng (`GameRoom`).
+
+### Trục 4: Bảo mật (Security)
+- Kiểm tra tính hợp lệ của mọi tham số gửi lên từ `game:action`: xác thực `playerIndex`, kiểm tra kiểu dữ liệu của `gems`, `tier`, `cardId`.
+
+### Trục 5: Hiệu năng & Trải nghiệm di động (Performance & Mobile UX)
+- Màn hình điện thoại xoay dọc có hỗ trợ cuộn 2 chiều (`-webkit-overflow-scrolling: touch`), cần tối ưu hóa thêm độ nhạy của các nút bấm và kích thước hiển thị khay đá quý khi màn hình nhỏ.
+
+---
+
+## 2. Kế Hoạch Nhiệm Vụ Giai Đoạn 9 (Phase 9 Task Breakdown)
+
+### Task 32: Cơ chế Ân Hạn Kết Nối Lại Khi Mất Mạng Đột Ngột (In-Game Disconnect Grace Period)
+- **Mô tả:** Trong `server/index.js`, phân biệt giữa thoát phòng ở sảnh chờ (`status === 'LOBBY'`) và rớt mạng trong khi đang chơi (`status === 'PLAYING'`). Khi đang chơi, nếu ngắt socket:
+  1. Không xóa người chơi khỏi `room.players`. Đánh dấu `connected = false` và lưu `disconnectedAt = Date.now()`.
+  2. Phát thông báo `room:player_status_changed` tới các người chơi còn lại để hiển thị huy hiệu "Mất kết nối - Đang chờ..." kèm đồng hồ đếm ngược 60s.
+  3. Khi người chơi quay lại và gọi `room:join`, nhận diện qua `uid` hoặc `name`, cập nhật socket mới vào `room.players` và `gameState.players`, gửi lại toàn bộ `gameState`, và phát `room:player_reconnected`.
+- **Tiêu chí hoàn thành:**
+  - [ ] Ngắt kết nối socket của 1 tab trong trận đấu không làm xóa phòng/người chơi.
+  - [ ] Tab đó tải lại trang hoặc kết nối lại thành công, tiếp tục ván đấu bình thường.
+  - [ ] Các người chơi khác thấy thông báo đối thủ đang kết nối lại thay vì ván đấu bị đơ.
+- **Kiểm tra:**
+  - [ ] Chạy script mô phỏng socket disconnect 5 giây rồi reconnect lại bằng mã phòng.
+- **Phụ thuộc:** Task 30
+- **File liên quan:** `server/index.js`, `client/js/screens/GameScreen.js`
+- **Quy mô:** M (2 files)
+
+### Task 33: Tối ưu Nhận Diện Người Chơi & Trạng Thái Chờ Toàn Bàn Cờ
+- **Mô tả:** 
+  1. Trong `app.js` (`startOnlineGameWithState`), nhận diện `myPlayerIndex` chuẩn xác bằng cách so sánh `p.id === mySocketId || (authUser?.uid && p.uid === authUser.uid) || p.name === authUser?.name`.
+  2. Trong `BoardRenderer.js`, khi `gameState.phase === 'DISCARDING'` và `gameState.discardingPlayerIndex !== myPlayerIndex`, hiển thị banner thông báo: `⏳ [Tên người chơi] đang chọn trả [N] đá quý thừa về kho...`.
+  3. Khi `gameState.phase === 'SELECTING_NOBLE'` và chưa tới lượt mình chọn, hiển thị thông báo: `👑 [Tên người chơi] đang chọn Quý tộc diện kiến...`.
+- **Tiêu chí hoàn thành:**
+  - [ ] Không còn tình trạng gán nhầm Player 0 cho khách trên điện thoại khi mới vào bàn cờ.
+  - [ ] Tất cả người chơi trong phòng luôn biết chính xác bàn cờ đang chờ ai và đang làm thao tác gì.
+- **Kiểm tra:**
+  - [ ] Kiểm tra trực quan trên 2 màn hình khi 1 bên có > 10 viên đá quý.
+- **Phụ thuộc:** Task 29, Task 30
+- **File liên quan:** `client/js/app.js`, `client/js/ui/BoardRenderer.js`
+- **Quy mô:** S (2 files)
+
+### Task 34: Tinh Chỉnh Bố Cục Cảm Ứng Di Động & Vùng Chạm Bàn Cờ
+- **Mô tả:** Nâng cao kích thước vùng chạm (hitbox) trên điện thoại cho các chip đá quý, thẻ phát triển và nút đóng/mở thanh điều khiển. Bổ sung hỗ trợ vuốt chạm mượt mà trên iOS Safari và Android Chrome.
+- **Tiêu chí hoàn thành:**
+  - [ ] Các chip đá quý có padding chạm tối thiểu 44x44px trên màn hình cảm ứng.
+  - [ ] Bàn cờ khi ở chiều dọc có thanh cuộn mượt và chỉ dẫn trực quan.
+- **Kiểm tra:**
+  - [ ] Kiểm thử cảm ứng trên Chrome DevTools Mobile Emulation.
+- **Phụ thuộc:** Task 3
+- **File liên quan:** `client/css/board.css`, `client/css/responsive.css`, `client/css/tokens.css`
+- **Quy mô:** S (3 files)
+
+### Task 35: Tự Động Hóa Kiểm Thử E2E Toàn Quy Trình Đa Thiết Bị
+- **Mô tả:** Viết script kiểm thử tự động toàn diện kiểm tra chu trình hoàn chỉnh: Tạo phòng trên PC → Vào phòng trên điện thoại → Sẵn sàng & Bắt đầu → Đồng bộ đếm ngược → Đi nước cờ lấy đá quý → Rớt mạng và kết nối lại thành công.
+- **Tiêu chí hoàn thành:**
+  - [ ] Script kiểm thử tự động chạy không có lỗi ngoại lệ.
+  - [ ] Xác nhận toàn bộ chu trình xanh 100%.
+- **Kiểm tra:**
+  - [ ] `node scratch/test-e2e-resilience.js` chạy thành công.
+- **Phụ thuộc:** Task 32, 33, 34
+- **File liên quan:** `scratch/test-e2e-resilience.js`
+- **Quy mô:** S (1 file)
+
+
