@@ -1,0 +1,18 @@
+{
+  "name": "splendor-server",
+  "version": "1.0.0",
+  "description": "Backend Socket.IO cho Board Game Splendor",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "keywords": ["splendor", "boardgame", "socketio", "multiplayer"],
+  "author": "Tris",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5"
+  }
+}

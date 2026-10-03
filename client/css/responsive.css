@@ -1,0 +1,183 @@
+/**
+ * Splendor Board Game - Bố cục Responsive & Khóa Xoay Ngang Màn Hình
+ */
+
+/* Khóa Xoay Ngang: Hiển thị overlay khi thiết bị ở chế độ dọc (portrait) trên màn hình cảm ứng/di động */
+.orientation-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: radial-gradient(circle at center, #2e1d13 0%, #120b07 100%);
+  z-index: 99999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+}
+
+.orientation-box {
+  background: rgba(36, 22, 14, 0.95);
+  border: 2px solid var(--gold-primary);
+  border-radius: var(--radius-lg);
+  padding: 32px 24px;
+  max-width: 380px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9), 0 0 20px rgba(212, 175, 55, 0.4);
+}
+
+.rotate-phone-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  animation: rotatePhone 2s ease-in-out infinite;
+}
+
+@keyframes rotatePhone {
+  0%, 10% { transform: rotate(0deg); }
+  50%, 60% { transform: rotate(-90deg); }
+  90%, 100% { transform: rotate(0deg); }
+}
+
+.orientation-box h2 {
+  font-family: var(--font-serif-royal);
+  color: var(--gold-bright);
+  font-size: 18px;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+}
+
+.orientation-box p {
+  color: var(--text-parchment-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Kích hoạt overlay khi thiết bị ở chế độ dọc (portrait) và có độ rộng nhỏ */
+@media screen and (orientation: portrait) and (max-width: 900px) {
+  .orientation-overlay {
+    display: flex !important;
+  }
+  .app-container {
+    display: none !important;
+  }
+}
+
+/* Hỗ trợ notch điện thoại (Safe Area Insets) khi xoay ngang */
+@supports (padding: env(safe-area-inset-left)) {
+  .game-header {
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+  }
+  .screen {
+    padding-left: max(10px, env(safe-area-inset-left));
+    padding-right: max(10px, env(safe-area-inset-right));
+    padding-bottom: max(6px, env(safe-area-inset-bottom));
+  }
+}
+
+/* Màn hình điện thoại xoay ngang (chiều cao hẹp: 320px - 480px) */
+@media screen and (max-height: 480px) and (orientation: landscape) {
+  .game-header {
+    height: 38px;
+    min-height: 38px;
+    padding: 0 10px;
+  }
+  .brand-title {
+    font-size: 14px;
+    letter-spacing: 1px;
+  }
+  .user-avatar {
+    width: 22px;
+    height: 22px;
+  }
+  .user-name {
+    font-size: 11px;
+    max-width: 80px;
+  }
+  .btn-header-icon {
+    padding: 2px 6px;
+    font-size: 11px;
+  }
+  .btn-header-icon .btn-text {
+    display: none;
+  }
+
+  /* Thu gọn menu trang chủ */
+  .home-hero {
+    gap: 8px;
+  }
+  .crest-gems {
+    font-size: 18px;
+    gap: 8px;
+    margin-bottom: 2px;
+  }
+  .hero-subtitle {
+    font-size: 12px;
+    letter-spacing: 2px;
+  }
+  .home-menu-grid {
+    gap: 8px;
+  }
+  .home-menu-grid .menu-card {
+    padding: 10px 8px;
+  }
+  .card-icon {
+    font-size: 22px;
+    margin-bottom: 4px;
+  }
+  .home-menu-grid .menu-card h3 {
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+  .home-menu-grid .menu-card p {
+    font-size: 9px;
+    margin-bottom: 6px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .card-action-tag {
+    font-size: 9px;
+  }
+  .user-quick-stats {
+    padding: 4px 16px;
+    gap: 16px;
+  }
+  .stat-label {
+    font-size: 9px;
+  }
+  .stat-value {
+    font-size: 13px;
+  }
+
+  /* Thu gọn bàn chơi game */
+  .turn-announcer {
+    padding: 2px 8px;
+    font-size: 11px;
+  }
+  .current-player-mat {
+    padding: 4px 8px;
+  }
+}
+
+/* Tablet & Màn hình trung bình (600px - 1024px) */
+@media screen and (min-width: 600px) and (max-width: 1024px) {
+  .home-menu-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Màn hình lớn / Desktop (> 1200px) */
+@media screen and (min-width: 1200px) {
+  .home-hero {
+    gap: 28px;
+  }
+  .hero-subtitle {
+    font-size: 17px;
+  }
+  .home-menu-grid {
+    gap: 18px;
+  }
+  .home-menu-grid .menu-card {
+    padding: 28px 18px;
+  }
+}

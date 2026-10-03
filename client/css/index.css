@@ -1,0 +1,633 @@
+/**
+ * Splendor Board Game - Hệ Thống Thiết Kế & Biến CSS (Design System)
+ * Phong cách: Bàn cờ gỗ cổ điển Phục Hưng, đá quý chạm khắc tinh xảo, viền mạ vàng
+ */
+
+:root {
+  /* Bảng màu Gỗ & Bàn Cờ Cổ Điển */
+  --bg-table-dark: #120b07;
+  --bg-table-base: #1f140e;
+  --bg-table-warm: #2b1c13;
+  --wood-grain-dark: #1c100a;
+  --wood-grain-mid: #2e1d13;
+  --wood-grain-light: #442a1b;
+  --wood-grain-accent: #5e3b25;
+  --wood-border: #6d462b;
+  --wood-border-highlight: #93603d;
+
+  /* Kim Loại Quý & Điểm Nhấn Hoàng Gia */
+  --gold-primary: #d4af37;
+  --gold-light: #f3e5ab;
+  --gold-bright: #ffd700;
+  --gold-dark: #8c6d1f;
+  --gold-gradient: linear-gradient(135deg, #f9f0c7 0%, #d4af37 50%, #8c6d1f 100%);
+  --gold-border-gradient: linear-gradient(135deg, #ffd700 0%, #b8860b 50%, #ffe484 100%);
+  --brass-rim: #a67c38;
+  --silver-accent: #d8e2dc;
+
+  /* Màu 5 Loại Đá Quý & Vàng Hoang Dã */
+  --gem-diamond: #f0f8ff;
+  --gem-diamond-glow: rgba(240, 248, 255, 0.7);
+  --gem-diamond-border: #b0c4de;
+  --gem-diamond-gradient: radial-gradient(circle at 35% 35%, #ffffff 0%, #e0f2fe 45%, #94a3b8 100%);
+
+  --gem-sapphire: #1d5fa8;
+  --gem-sapphire-glow: rgba(45, 126, 219, 0.7);
+  --gem-sapphire-border: #3b82f6;
+  --gem-sapphire-gradient: radial-gradient(circle at 35% 35%, #60a5fa 0%, #1d5fa8 50%, #0f2e54 100%);
+
+  --gem-emerald: #166534;
+  --gem-emerald-glow: rgba(34, 197, 94, 0.7);
+  --gem-emerald-border: #22c55e;
+  --gem-emerald-gradient: radial-gradient(circle at 35% 35%, #4ade80 0%, #166534 50%, #093318 100%);
+
+  --gem-ruby: #991b1b;
+  --gem-ruby-glow: rgba(239, 68, 68, 0.7);
+  --gem-ruby-border: #ef4444;
+  --gem-ruby-gradient: radial-gradient(circle at 35% 35%, #f87171 0%, #991b1b 50%, #450a0a 100%);
+
+  --gem-onyx: #1c1917;
+  --gem-onyx-glow: rgba(120, 113, 108, 0.7);
+  --gem-onyx-border: #57534e;
+  --gem-onyx-gradient: radial-gradient(circle at 35% 35%, #57534e 0%, #262626 50%, #0a0a0a 100%);
+
+  --gem-gold: #ca8a04;
+  --gem-gold-glow: rgba(250, 204, 21, 0.8);
+  --gem-gold-border: #eab308;
+  --gem-gold-gradient: radial-gradient(circle at 35% 35%, #fef08a 0%, #ca8a04 50%, #713f12 100%);
+
+  /* Bề Mặt & Nền Bảng */
+  --surface-wood-panel: #241710;
+  --surface-wood-card: #2e1e15;
+  --surface-velvet: #141f17;
+  --surface-overlay: rgba(12, 7, 4, 0.85);
+  --surface-card-back-1: #24422e; /* Xanh lá cổ điển */
+  --surface-card-back-2: #483218; /* Vàng nâu hổ phách */
+  --surface-card-back-3: #1e3148; /* Xanh lam hoàng gia */
+
+  /* Kiểu Chữ (Typography) */
+  --font-serif-royal: 'Cinzel Decorative', 'Cinzel', serif;
+  --font-serif-elegant: 'Cinzel', 'Playfair Display', serif;
+  --font-sans-vietnamese: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Màu Chữ */
+  --text-parchment: #f4ede1;
+  --text-parchment-muted: #c8b9a6;
+  --text-gold: #f3e5ab;
+  --text-gold-bright: #ffd700;
+  --text-dark: #1f140e;
+
+  /* Đổ Bóng & Hiệu Ứng Nổi (3D Tactile Elevation) */
+  --shadow-chip-3d: 0 4px 0 #0f0906, 0 8px 12px rgba(0, 0, 0, 0.6);
+  --shadow-wood-inset: inset 0 2px 4px rgba(0,0,0,0.7), inset 0 -2px 4px rgba(255,255,255,0.06);
+  --shadow-gold-glow: 0 0 16px rgba(212, 175, 55, 0.45);
+  --shadow-box-panel: 0 10px 25px -5px rgba(0, 0, 0, 0.7), 0 8px 10px -6px rgba(0, 0, 0, 0.7);
+
+  /* Bán Kính Bo Góc */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+
+  /* Tốc Độ Chuyển Cảnh */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Reset Cơ Bản */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--font-sans-vietnamese);
+  color: var(--text-parchment);
+  background-color: var(--bg-table-dark);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* Nền Gỗ Bàn Cờ Cổ Điển */
+.wood-table-bg {
+  background-color: #170d07;
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(68, 42, 27, 0.6) 0%, rgba(18, 11, 7, 0.95) 100%),
+    repeating-linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.08) 0px,
+      rgba(0, 0, 0, 0.08) 2px,
+      transparent 2px,
+      transparent 6px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      rgba(40, 24, 15, 0.9) 0px,
+      rgba(30, 18, 11, 0.95) 40px,
+      rgba(48, 29, 18, 0.9) 80px
+    );
+  background-attachment: fixed;
+}
+
+/* Hộp Bảng Gỗ (Wood Panel) */
+.wood-panel {
+  background: linear-gradient(180deg, #2b1c13 0%, #20140d 100%);
+  border: 2px solid var(--wood-border);
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 0.1),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.5),
+    var(--shadow-box-panel);
+  border-radius: var(--radius-md);
+  position: relative;
+}
+
+.wood-panel::before {
+  content: '';
+  position: absolute;
+  top: 1px; left: 1px; right: 1px; bottom: 1px;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: calc(var(--radius-md) - 2px);
+  pointer-events: none;
+}
+
+/* Thẻ Nút Bấm Gỗ (Wood Card) */
+.wood-card {
+  background: linear-gradient(180deg, #382419 0%, #261710 100%);
+  border: 2px solid var(--wood-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all var(--transition-normal);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.wood-card:hover {
+  border-color: var(--gold-primary);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.7), var(--shadow-gold-glow);
+}
+
+.wood-card:active {
+  transform: translateY(1px);
+}
+
+/* Nút Bấm Vàng Kim (Gold Buttons) */
+.btn-gold-primary {
+  background: var(--gold-gradient);
+  color: #1a1005;
+  font-family: var(--font-serif-elegant);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  padding: 10px 20px;
+  border: 1px solid #ffd700;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  box-shadow: 0 3px 0 #7c5e13, 0 5px 10px rgba(0, 0, 0, 0.4);
+  transition: all var(--transition-fast);
+  text-transform: uppercase;
+}
+
+.btn-gold-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #ffffff 0%, #ffd700 50%, #a67c38 100%);
+  box-shadow: 0 3px 0 #7c5e13, 0 0 12px rgba(255, 215, 0, 0.6);
+  transform: translateY(-1px);
+}
+
+.btn-gold-primary:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #7c5e13, 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.btn-gold-primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  filter: grayscale(0.6);
+}
+
+.btn-gold-small {
+  background: var(--gold-gradient);
+  color: #1a1005;
+  font-family: var(--font-sans-vietnamese);
+  font-weight: 700;
+  font-size: 11px;
+  padding: 6px 12px;
+  border: 1px solid #ffd700;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-gold-mini {
+  background: var(--gold-gradient);
+  color: #1a1005;
+  font-family: var(--font-sans-vietnamese);
+  font-weight: 700;
+  font-size: 10px;
+  padding: 4px 8px;
+  border: 1px solid #ffd700;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+/* Nút Bấm Gỗ (Wood Buttons) */
+.btn-wood-primary {
+  background: linear-gradient(180deg, #442a1b 0%, #2b1a11 100%);
+  color: var(--text-parchment);
+  font-family: var(--font-serif-elegant);
+  font-weight: 700;
+  font-size: 13px;
+  padding: 10px 18px;
+  border: 1px solid var(--wood-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  box-shadow: 0 3px 0 #180e09, 0 4px 8px rgba(0, 0, 0, 0.4);
+  transition: all var(--transition-fast);
+}
+
+.btn-wood-primary:hover:not(:disabled) {
+  border-color: var(--gold-primary);
+  color: var(--gold-light);
+  transform: translateY(-1px);
+}
+
+.btn-wood-small {
+  background: linear-gradient(180deg, #3d2518 0%, #24160f 100%);
+  color: var(--text-parchment-muted);
+  font-family: var(--font-sans-vietnamese);
+  font-size: 11px;
+  padding: 5px 10px;
+  border: 1px solid var(--wood-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.btn-wood-small:hover {
+  color: #fff;
+  border-color: var(--gold-primary);
+}
+
+/* Container App */
+.app-container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Header Thanh Điều Khiển */
+.game-header {
+  height: 48px;
+  min-height: 48px;
+  background: linear-gradient(180deg, #24160e 0%, #170d07 100%);
+  border-bottom: 2px solid var(--wood-border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  z-index: 100;
+}
+
+.header-left, .header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-title {
+  font-family: var(--font-serif-royal);
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: var(--gold-bright);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(212, 175, 55, 0.4);
+  cursor: pointer;
+}
+
+.gem-sparkle {
+  color: var(--gold-light);
+  font-size: 12px;
+}
+
+/* Huy hiệu mã phòng */
+.room-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--gold-dark);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.room-label {
+  font-size: 10px;
+  color: var(--text-parchment-muted);
+  font-weight: 600;
+}
+
+.room-code {
+  font-family: monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gold-bright);
+  letter-spacing: 1px;
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+/* Nút Header */
+.btn-header-icon {
+  background: rgba(43, 28, 19, 0.8);
+  border: 1px solid var(--wood-border);
+  color: var(--text-parchment);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all var(--transition-fast);
+}
+
+.btn-header-icon:hover {
+  border-color: var(--gold-primary);
+  color: var(--gold-light);
+}
+
+/* User Profile Header */
+.user-profile-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--wood-border);
+}
+
+.user-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--gold-primary);
+  object-fit: cover;
+}
+
+.user-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-parchment);
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Container Các Màn Hình */
+.screens-container {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.screen {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  display: none;
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+  padding: 12px;
+}
+
+.screen.active {
+  display: flex;
+  flex-direction: column;
+  opacity: 1;
+}
+
+/* Màn Hình Home (Trang Chủ) */
+.home-hero {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 960px;
+  margin: 0 auto;
+  width: 100%;
+  gap: 20px;
+}
+
+.hero-crest {
+  text-align: center;
+}
+
+.crest-gems {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  font-size: 24px;
+  margin-bottom: 8px;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.6));
+}
+
+.hero-subtitle {
+  font-family: var(--font-serif-royal);
+  font-size: 15px;
+  letter-spacing: 4px;
+  color: var(--gold-primary);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* Menu Grid */
+.home-menu-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  width: 100%;
+}
+
+.home-menu-grid .menu-card {
+  padding: 20px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: var(--text-parchment);
+  border-radius: var(--radius-md);
+}
+
+.card-icon {
+  font-size: 32px;
+  margin-bottom: 10px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
+}
+
+.home-menu-grid .menu-card h3 {
+  font-family: var(--font-serif-royal);
+  font-size: 16px;
+  color: var(--gold-light);
+  margin-bottom: 8px;
+}
+
+.home-menu-grid .menu-card p {
+  font-size: 11px;
+  color: var(--text-parchment-muted);
+  line-height: 1.4;
+  margin-bottom: 14px;
+  flex: 1;
+}
+
+.card-action-tag {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gold-bright);
+}
+
+/* Thống Kê Người Dùng Nhanh */
+.user-quick-stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 30px;
+  gap: 24px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--text-parchment-muted);
+}
+
+.stat-value {
+  font-family: var(--font-serif-royal);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--gold-bright);
+}
+
+.stat-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--wood-border);
+}
+
+/* Modals */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--surface-overlay);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 1;
+  transition: opacity var(--transition-normal);
+}
+
+.modal-overlay.hidden {
+  display: none !important;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.modal-content {
+  max-width: 90vw;
+  max-height: 85vh;
+  padding: 20px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--wood-border);
+  padding-bottom: 10px;
+}
+
+.modal-title {
+  font-family: var(--font-serif-royal);
+  font-size: 18px;
+  color: var(--gold-bright);
+  letter-spacing: 1px;
+}
+
+.btn-close-modal {
+  background: none;
+  border: none;
+  color: var(--text-parchment-muted);
+  font-size: 20px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.btn-close-modal:hover {
+  color: #fff;
+}
+
+/* Toasts */
+.toast-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.toast {
+  background: linear-gradient(180deg, #2e1d13 0%, #1a0f09 100%);
+  border: 1px solid var(--gold-primary);
+  color: var(--text-parchment);
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
+  font-size: 12px;
+  font-weight: 500;
+  pointer-events: auto;
+  animation: toastIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.toast.toast-success { border-color: var(--gem-emerald-border); }
+.toast.toast-error { border-color: var(--gem-ruby-border); }
+.toast.toast-warning { border-color: var(--gold-bright); }
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.hidden {
+  display: none !important;
+}

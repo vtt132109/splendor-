@@ -1,0 +1,279 @@
+/**
+ * Splendor Board Game - Kiểu Dáng Đăng Nhập Google & Hồ Sơ & Phòng Chờ
+ */
+
+/* Nút Đăng Nhập Google */
+.btn-google-sign-in {
+  background: #ffffff;
+  color: #3c4043;
+  font-family: var(--font-sans-vietnamese);
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid #dadce0;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all var(--transition-fast);
+}
+
+.btn-google-sign-in:hover {
+  background: #f8f9fa;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.google-icon-svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Phòng Chờ (Lobby Screen) */
+.lobby-wrapper {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.lobby-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--wood-border);
+  padding-bottom: 14px;
+}
+
+.panel-heading {
+  font-family: var(--font-serif-royal);
+  font-size: 20px;
+  color: var(--gold-bright);
+  letter-spacing: 1.5px;
+}
+
+.lobby-code-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--gold-primary);
+}
+
+.code-title {
+  font-size: 11px;
+  color: var(--text-parchment-muted);
+}
+
+.code-huge {
+  font-family: monospace;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--gold-bright);
+  letter-spacing: 2px;
+}
+
+.lobby-players-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.lobby-player-slot {
+  background: rgba(24, 15, 10, 0.7);
+  border: 1px solid var(--wood-border);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.lobby-player-slot.occupied {
+  border-color: var(--gold-primary);
+  background: rgba(43, 27, 18, 0.85);
+}
+
+.lobby-player-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lobby-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1.5px solid var(--gold-primary);
+}
+
+.lobby-player-name {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--text-parchment);
+}
+
+.lobby-host-tag {
+  font-size: 10px;
+  background: var(--gold-dark);
+  color: #fff;
+  padding: 1px 5px;
+  border-radius: 2px;
+  margin-left: 4px;
+}
+
+.lobby-ready-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+}
+
+.lobby-ready-badge.ready {
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+  border: 1px solid #22c55e;
+}
+
+.lobby-ready-badge.waiting {
+  background: rgba(234, 179, 8, 0.2);
+  color: #fde047;
+  border: 1px solid #eab308;
+}
+
+.lobby-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--wood-border);
+  padding-top: 14px;
+}
+
+.lobby-status-text {
+  font-size: 12px;
+  color: var(--text-parchment-muted);
+}
+
+.lobby-actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* Form Thiết Lập Trận Đấu (Setup) */
+.setup-wrapper {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.setup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.setup-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.setup-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-parchment);
+}
+
+.player-count-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-count {
+  background: rgba(43, 28, 19, 0.8);
+  border: 1px solid var(--wood-border);
+  color: var(--text-parchment);
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.btn-count.active {
+  background: var(--gold-gradient);
+  color: #1a1005;
+  border-color: var(--gold-bright);
+}
+
+.setup-players-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.setup-player-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--wood-border);
+}
+
+.setup-player-input {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--wood-border);
+  color: var(--text-parchment);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+}
+
+.setup-ai-select {
+  background: #24160e;
+  border: 1px solid var(--gold-dark);
+  color: var(--gold-light);
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+}
+
+/* Modal Vào Phòng */
+.join-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.room-code-input {
+  background: #140d08;
+  border: 2px solid var(--gold-primary);
+  color: var(--gold-bright);
+  font-family: monospace;
+  font-size: 24px;
+  font-weight: 800;
+  text-align: center;
+  letter-spacing: 4px;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+}
+
+.input-error-msg {
+  color: #f87171;
+  font-size: 12px;
+  text-align: center;
+}

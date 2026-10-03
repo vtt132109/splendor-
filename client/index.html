@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#1a110c">
+  <meta name="description" content="Board Game Splendor trực tuyến - Chơi cùng bạn bè qua mã phòng, chuyền tay hoặc đấu với máy AI thông minh. Giao diện tiếng Việt chuẩn bàn cờ cổ điển.">
+  <title>Splendor - Kiệt Tác Đá Quý Phục Hưng</title>
+
+  <!-- Google Fonts: Hỗ trợ tiếng Việt đầy đủ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Cinzel+Decorative:wght@700;900&family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/index.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/cards.css">
+  <link rel="stylesheet" href="css/board.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="css/animations.css">
+</head>
+<body class="wood-table-bg">
+  <!-- Cảnh báo xoay ngang thiết bị trên điện thoại -->
+  <div id="orientation-overlay" class="orientation-overlay" aria-hidden="true">
+    <div class="orientation-box">
+      <div class="rotate-phone-icon">📱 ➔ 🔄</div>
+      <h2>Vui Lòng Xoay Ngang Màn Hình</h2>
+      <p>Splendor được thiết kế tối ưu trên bàn cờ nằm ngang để có trải nghiệm thị giác và chiến thuật tốt nhất.</p>
+    </div>
+  </div>
+
+  <!-- Ứng dụng chính -->
+  <div id="app" class="app-container">
+    <!-- Header thanh điều khiển -->
+    <header class="game-header" id="main-header">
+      <div class="header-left">
+        <h1 class="brand-title" id="brand-logo" onclick="window.location.hash='#home'">
+          <span class="gem-sparkle">✦</span> SPLENDOR <span class="gem-sparkle">✦</span>
+        </h1>
+        <div id="room-badge" class="room-badge hidden">
+          <span class="room-label">PHÒNG:</span>
+          <span id="room-code-display" class="room-code">------</span>
+          <button id="btn-copy-code" class="btn-icon" title="Sao chép mã phòng">📋</button>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <!-- Nút âm thanh -->
+        <button id="btn-toggle-sound" class="btn-header-icon" title="Bật/Tắt âm thanh">
+          <span class="icon">🔊</span>
+        </button>
+        <!-- Nút luật chơi -->
+        <button id="btn-open-rules" class="btn-header-icon" title="Hướng dẫn luật chơi">
+          <span class="icon">📜</span>
+          <span class="btn-text">Luật Chơi</span>
+        </button>
+        <!-- Khối người dùng -->
+        <div id="user-profile-header" class="user-profile-header">
+          <img id="user-avatar" class="user-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%236b4423'/%3E%3Ctext x='50' y='60' font-size='40' text-anchor='middle' fill='%23e6c387'%3E👤%3C/text%3E%3C/svg%3E" alt="Avatar">
+          <span id="user-name" class="user-name">Đang tải...</span>
+          <button id="btn-auth-action" class="btn-gold-mini">Đăng Nhập</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Khu vực hiển thị các màn hình -->
+    <main id="screens-container" class="screens-container">
+      <!-- Màn hình chính (Home) -->
+      <section id="screen-home" class="screen active">
+        <div class="home-hero">
+          <div class="hero-crest">
+            <div class="crest-gems">
+              <span class="gem-orbit gem-diamond">💎</span>
+              <span class="gem-orbit gem-sapphire">🔷</span>
+              <span class="gem-orbit gem-emerald">🟢</span>
+              <span class="gem-orbit gem-ruby">🔴</span>
+              <span class="gem-orbit gem-onyx">⚫</span>
+            </div>
+            <h2 class="hero-subtitle">KỶ NGUYÊN THƯƠNG GIA PHỤC HƯNG</h2>
+          </div>
+
+          <div class="home-menu-grid">
+            <button id="btn-mode-online" class="menu-card wood-card">
+              <div class="card-glow"></div>
+              <div class="card-icon">🌐</div>
+              <h3>Chơi Online</h3>
+              <p>Tạo phòng hoặc nhập mã phòng để thi đấu cùng bạn bè từ xa</p>
+              <span class="card-action-tag">Mã Phòng Realtime ➔</span>
+            </button>
+
+            <button id="btn-mode-local" class="menu-card wood-card">
+              <div class="card-glow"></div>
+              <div class="card-icon">👥</div>
+              <h3>Chuyền Tay (Local)</h3>
+              <p>Chơi 2 - 4 người trên cùng một máy, phù hợp tụ tập gia đình & bạn bè</p>
+              <span class="card-action-tag">Cùng Thiết Bị ➔</span>
+            </button>
+
+            <button id="btn-mode-ai" class="menu-card wood-card">
+              <div class="card-glow"></div>
+              <div class="card-icon">🤖</div>
+              <h3>Đấu Với Máy</h3>
+              <p>Luyện tập kỹ năng với các cấp độ AI: Tập Sự, Chiến Thuật và Bậc Thầy</p>
+              <span class="card-action-tag">Luyện Tập AI ➔</span>
+            </button>
+
+            <button id="btn-mode-rules" class="menu-card wood-card">
+              <div class="card-glow"></div>
+              <div class="card-icon">📖</div>
+              <h3>Hướng Dẫn Luật</h3>
+              <p>Xem cách thức thu thập đá quý, mua thẻ bài thương gia và thu hút quý tộc</p>
+              <span class="card-action-tag">Xem Chi Tiết ➔</span>
+            </button>
+          </div>
+
+          <!-- Bảng thống kê cá nhân -->
+          <div class="user-quick-stats wood-panel">
+            <div class="stat-item">
+              <span class="stat-label">Số Trận Đã Chơi</span>
+              <span id="stat-total-games" class="stat-value">0</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+              <span class="stat-label">Trận Thắng</span>
+              <span id="stat-total-wins" class="stat-value">0</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+              <span class="stat-label">Tỷ Lệ Thắng</span>
+              <span id="stat-win-rate" class="stat-value">0%</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Màn hình phòng chờ Online (Lobby) -->
+      <section id="screen-lobby" class="screen">
+        <div class="lobby-wrapper wood-panel">
+          <div class="lobby-header">
+            <button id="btn-lobby-back" class="btn-wood-small">← Quay Lại</button>
+            <h2 class="panel-heading">PHÒNG CHỜ THI ĐẤU</h2>
+            <div class="lobby-code-box">
+              <span class="code-title">MÃ PHÒNG:</span>
+              <span id="lobby-room-code" class="code-huge">------</span>
+              <button id="btn-lobby-copy" class="btn-gold-small">Sao Chép Mã</button>
+            </div>
+          </div>
+
+          <div class="lobby-players-grid" id="lobby-players-list">
+            <!-- Render danh sách 2-4 người chơi ở đây -->
+          </div>
+
+          <div class="lobby-footer">
+            <div class="lobby-status-text" id="lobby-status-msg">Đang chờ người chơi khác tham gia...</div>
+            <div class="lobby-actions">
+              <button id="btn-lobby-ready" class="btn-wood-primary">SẴN SÀNG</button>
+              <button id="btn-lobby-start" class="btn-gold-primary" disabled>BẮT ĐẦU TRẬN ĐẤU</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Màn hình thiết lập Local / AI (Setup) -->
+      <section id="screen-setup" class="screen">
+        <div class="setup-wrapper wood-panel">
+          <div class="setup-header">
+            <button id="btn-setup-back" class="btn-wood-small">← Quay Lại</button>
+            <h2 class="panel-heading" id="setup-title">THIẾT LẬP TRẬN ĐẤU</h2>
+          </div>
+
+          <div class="setup-form">
+            <!-- Chọn số lượng người chơi -->
+            <div class="setup-row">
+              <label class="setup-label">Số lượng người chơi:</label>
+              <div class="player-count-buttons" id="player-count-selector">
+                <button class="btn-count" data-count="2">2 Người</button>
+                <button class="btn-count active" data-count="3">3 Người</button>
+                <button class="btn-count" data-count="4">4 Người</button>
+              </div>
+            </div>
+
+            <!-- Danh sách người chơi / AI -->
+            <div class="setup-players-container" id="setup-players-inputs">
+              <!-- Render động theo số người chơi -->
+            </div>
+
+            <div class="setup-actions">
+              <button id="btn-start-game-now" class="btn-gold-primary">VÀO BÀN CHƠI NGAY</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Màn hình Bàn Chơi Game Chính (Game Board) -->
+      <section id="screen-game" class="screen">
+        <div class="game-layout" id="game-layout">
+          <!-- Cột bên trái: Danh sách thẻ quý tộc & Người chơi khác -->
+          <aside class="game-sidebar-left">
+            <div class="noble-row-container">
+              <div class="section-title-mini">CÁC VỊ QUÝ TỘC (3 ĐIỂM)</div>
+              <div class="noble-tiles-list" id="noble-tiles-container">
+                <!-- 3 - 5 quý tộc được render ở đây -->
+              </div>
+            </div>
+
+            <div class="other-players-container">
+              <div class="section-title-mini">ĐỐI THỦ</div>
+              <div class="other-players-list" id="other-players-container">
+                <!-- Thẻ thông tin các đối thủ -->
+              </div>
+            </div>
+          </aside>
+
+          <!-- Khu vực trung tâm: Bàn cờ thẻ bài 3 tầng (Tier 3, 2, 1) -->
+          <div class="game-center-board">
+            <div class="turn-announcer wood-banner" id="turn-announcer">
+              <span class="turn-indicator-dot"></span>
+              <span id="turn-text" class="turn-text">Lượt của: Đang chuẩn bị...</span>
+              <span id="round-status-badge" class="round-badge">Vòng 1</span>
+            </div>
+
+            <!-- Lưới thẻ phát triển 3 tầng -->
+            <div class="card-matrix-board" id="card-matrix">
+              <!-- Tầng 3 (Cao cấp) -->
+              <div class="card-tier-row tier-3" id="tier-3-row">
+                <div class="deck-slot" id="deck-tier-3">
+                  <div class="deck-card tier-3-back">
+                    <span class="tier-dots">●●●</span>
+                    <span class="deck-count" id="deck-count-3">20</span>
+                  </div>
+                </div>
+                <div class="tier-cards-slots" id="tier-3-cards">
+                  <!-- 4 thẻ tầng 3 -->
+                </div>
+              </div>
+
+              <!-- Tầng 2 (Trung cấp) -->
+              <div class="card-tier-row tier-2" id="tier-2-row">
+                <div class="deck-slot" id="deck-tier-2">
+                  <div class="deck-card tier-2-back">
+                    <span class="tier-dots">●●</span>
+                    <span class="deck-count" id="deck-count-2">30</span>
+                  </div>
+                </div>
+                <div class="tier-cards-slots" id="tier-2-cards">
+                  <!-- 4 thẻ tầng 2 -->
+                </div>
+              </div>
+
+              <!-- Tầng 1 (Cơ bản) -->
+              <div class="card-tier-row tier-1" id="tier-1-row">
+                <div class="deck-slot" id="deck-tier-1">
+                  <div class="deck-card tier-1-back">
+                    <span class="tier-dots">●</span>
+                    <span class="deck-count" id="deck-count-1">40</span>
+                  </div>
+                </div>
+                <div class="tier-cards-slots" id="tier-1-cards">
+                  <!-- 4 thẻ tầng 1 -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cột bên phải: Nguồn cung Đá Quý (Bank) & Bảng hành động -->
+          <aside class="game-sidebar-right">
+            <div class="bank-container wood-panel">
+              <div class="section-title-mini">KHO ĐÁ QUÝ</div>
+              <div class="gem-bank-grid" id="gem-bank-container">
+                <!-- 5 loại ngọc + 1 vàng đại diện -->
+              </div>
+
+              <!-- Thanh xác nhận lấy đá quý -->
+              <div class="gem-action-bar" id="gem-action-bar">
+                <div class="selected-gems-preview" id="selected-gems-preview">
+                  <span class="preview-hint">Chọn tối đa 3 viên khác màu hoặc 2 viên cùng màu (nguồn ≥4)</span>
+                </div>
+                <div class="gem-action-buttons">
+                  <button id="btn-cancel-gem-select" class="btn-wood-small hidden">Hủy</button>
+                  <button id="btn-confirm-take-gems" class="btn-gold-small" disabled>Lấy Đá Quý</button>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
+
+        <!-- Bảng điều khiển người chơi hiện tại (Player Mat) ở đáy màn hình -->
+        <footer class="current-player-mat wood-panel" id="current-player-mat">
+          <div class="player-mat-inner">
+            <!-- Thông tin danh tính & điểm uy tín -->
+            <div class="mat-profile-col">
+              <div class="mat-avatar-box">
+                <img id="mat-avatar" class="mat-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%236b4423'/%3E%3Ctext x='50' y='60' font-size='40' text-anchor='middle' fill='%23e6c387'%3E👤%3C/text%3E%3C/svg%3E" alt="Avatar">
+              </div>
+              <div class="mat-name-box">
+                <span id="mat-player-name" class="mat-player-name">Người chơi</span>
+                <div class="mat-points-badge">
+                  <span class="pts-icon">🏆</span>
+                  <span id="mat-points-value" class="pts-val">0</span>
+                  <span class="pts-max">/15 ĐIỂM</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bộ sưu tập thẻ bài & Bonus đá quý vĩnh viễn -->
+            <div class="mat-bonuses-col">
+              <div class="col-title">GIẢM GIÁ VĨNH VIỄN (BONUS)</div>
+              <div class="bonus-counters-row" id="mat-bonuses-row">
+                <!-- 5 màu đá quý bonus -->
+              </div>
+            </div>
+
+            <!-- Đá quý đang cầm trong tay (tối đa 10) -->
+            <div class="mat-tokens-col">
+              <div class="col-title">
+                <span>ĐÁ QUÝ TRONG TAY</span>
+                <span id="mat-token-count-tag" class="token-limit-tag">0/10</span>
+              </div>
+              <div class="tokens-hand-row" id="mat-tokens-row">
+                <!-- 6 loại token đá quý đang sở hữu -->
+              </div>
+            </div>
+
+            <!-- Thẻ đã giữ chỗ (Reserved Cards - tối đa 3) -->
+            <div class="mat-reserved-col">
+              <div class="col-title">
+                <span>THẺ ĐÃ GIỮ CHỖ</span>
+                <span id="mat-reserved-count-tag" class="reserved-limit-tag">0/3</span>
+              </div>
+              <div class="reserved-cards-slots" id="mat-reserved-slots">
+                <!-- 3 ô giữ thẻ -->
+              </div>
+            </div>
+          </div>
+        </footer>
+      </section>
+
+      <!-- Màn hình kết quả trận đấu (Result Screen) -->
+      <section id="screen-result" class="screen">
+        <div class="result-modal-box wood-panel">
+          <div class="result-header">
+            <div class="trophy-icon">🏆</div>
+            <h2 class="winner-title" id="winner-announcement">VINH DANH ĐẠI THƯƠNG GIA</h2>
+            <p class="winner-subtitle" id="winner-desc">Chúc mừng người chiến thắng kỷ nguyên Splendor!</p>
+          </div>
+
+          <div class="result-scoreboard" id="result-scoreboard">
+            <!-- Render bảng xếp hạng điểm, số thẻ, quý tộc -->
+          </div>
+
+          <div class="result-actions">
+            <button id="btn-rematch" class="btn-gold-primary">CHƠI LẠI TRẬN MỚI</button>
+            <button id="btn-back-home-result" class="btn-wood-primary">VỀ TRANG CHỦ</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Modal Hướng Dẫn Luật Chơi -->
+    <div id="rules-modal" class="modal-overlay hidden">
+      <div class="modal-content wood-panel rules-modal-box">
+        <div class="modal-header">
+          <h2 class="modal-title">LUẬT CHƠI SPLENDOR TOÀN TẬP</h2>
+          <button id="btn-close-rules" class="btn-close-modal">✕</button>
+        </div>
+        <div class="modal-body rules-scrollable" id="rules-content">
+          <!-- Nội dung hướng dẫn tiếng Việt chi tiết -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Trả Đá Quý Khi Vượt Quá 10 Viên -->
+    <div id="discard-modal" class="modal-overlay hidden">
+      <div class="modal-content wood-panel discard-modal-box">
+        <div class="modal-header">
+          <h2 class="modal-title warning-title">⚠️ QUÁ GIỚI HẠN 10 ĐÁ QUÝ!</h2>
+        </div>
+        <div class="modal-body">
+          <p id="discard-instruction">Bạn hiện có <strong id="discard-total-now">12</strong> viên đá quý. Vui lòng chọn <strong id="discard-needed-count">2</strong> viên để trả lại kho cung ứng.</p>
+          <div class="discard-selection-row" id="discard-selection-container">
+            <!-- Chọn loại ngọc cần trả -->
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="btn-confirm-discard" class="btn-gold-primary" disabled>Xác Nhận Trả Đá Quý</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Chọn Quý Tộc (khi đủ điều kiện nhận 2+ quý tộc cùng lúc) -->
+    <div id="noble-select-modal" class="modal-overlay hidden">
+      <div class="modal-content wood-panel noble-modal-box">
+        <div class="modal-header">
+          <h2 class="modal-title">CHỌN VỊ QUÝ TỘC GHÉ THĂM</h2>
+        </div>
+        <div class="modal-body">
+          <p>Danh tiếng của bạn thu hút nhiều quý tộc cùng lúc! Hãy chọn 1 vị quý tộc bạn muốn diện kiến:</p>
+          <div class="noble-candidates-list" id="noble-candidates-container"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Xem Chi Tiết Thẻ Bài / Xác Nhận Mua Hoặc Giữ -->
+    <div id="card-inspect-modal" class="modal-overlay hidden">
+      <div class="modal-content wood-panel inspect-modal-box">
+        <button id="btn-close-inspect" class="btn-close-modal">✕</button>
+        <div class="inspect-layout">
+          <div class="inspect-card-preview" id="inspect-card-display"></div>
+          <div class="inspect-info-col">
+            <h3 class="inspect-card-tier-title" id="inspect-tier-name">Thẻ Phát Triển</h3>
+            <div class="inspect-cost-breakdown" id="inspect-cost-breakdown"></div>
+            <div class="inspect-actions">
+              <button id="btn-inspect-buy" class="btn-gold-primary">MUA THẺ BÀI</button>
+              <button id="btn-inspect-reserve" class="btn-wood-primary">GIỮ CHỖ THẺ (+1 VÀNG)</button>
+            </div>
+            <p id="inspect-action-msg" class="inspect-msg"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Đăng Nhập / Vào Phòng Nhanh -->
+    <div id="join-room-modal" class="modal-overlay hidden">
+      <div class="modal-content wood-panel join-modal-box">
+        <div class="modal-header">
+          <h2 class="modal-title">VÀO PHÒNG BẰNG MÃ</h2>
+          <button id="btn-close-join" class="btn-close-modal">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="join-input-group">
+            <label for="input-room-code">Nhập mã phòng 6 ký tự:</label>
+            <input type="text" id="input-room-code" maxlength="6" placeholder="Ví dụ: AB12CD" autocomplete="off" autocapitalize="characters" class="room-code-input">
+          </div>
+          <p id="join-error-msg" class="input-error-msg hidden"></p>
+        </div>
+        <div class="modal-footer">
+          <button id="btn-submit-join" class="btn-gold-primary">VÀO PHÒNG</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Container Thông Báo Toasts -->
+    <div id="toast-container" class="toast-container" aria-live="polite"></div>
+  </div>
+
+  <!-- Socket.IO Client từ server Node.js -->
+  <script src="/socket.io/socket.io.js"></script>
+
+  <!-- Hằng số dùng chung -->
+  <script src="/shared/constants.js"></script>
+
+  <!-- Các script ứng dụng -->
+  <script src="js/utils/helpers.js"></script>
+  <script src="js/utils/i18n.js"></script>
+  <script src="js/utils/SoundManager.js"></script>
+  <script src="js/game/CardData.js"></script>
+  <script src="js/game/GameState.js"></script>
+  <script src="js/game/Validator.js"></script>
+  <script src="js/game/GameEngine.js"></script>
+  <script src="js/game/AIPlayer.js"></script>
+  <script src="js/auth/AuthManager.js"></script>
+  <script src="js/network/SocketClient.js"></script>
+  <script src="js/ui/TokenRenderer.js"></script>
+  <script src="js/ui/CardRenderer.js"></script>
+  <script src="js/ui/NobleRenderer.js"></script>
+  <script src="js/ui/PlayerPanel.js"></script>
+  <script src="js/ui/BoardRenderer.js"></script>
+  <script src="js/screens/HomeScreen.js"></script>
+  <script src="js/screens/LobbyScreen.js"></script>
+  <script src="js/screens/GameScreen.js"></script>
+  <script src="js/screens/ResultScreen.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

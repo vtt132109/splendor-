@@ -1,0 +1,86 @@
+/**
+ * Splendor Board Game - Hiệu Ứng Chuyển Động & Hoạt Họa 60 FPS
+ */
+
+/* Lật thẻ khi chia bài mới */
+@keyframes cardFlipIn {
+  0% {
+    opacity: 0;
+    transform: rotateY(90deg) scale(0.8);
+  }
+  60% {
+    opacity: 1;
+    transform: rotateY(-10deg) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: rotateY(0deg) scale(1);
+  }
+}
+
+.anim-card-flip {
+  animation: cardFlipIn 0.45s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+/* Nảy đá quý khi được nhặt */
+@keyframes chipBounce {
+  0% { transform: translateY(0) scale(1); }
+  40% { transform: translateY(-12px) scale(1.15); }
+  70% { transform: translateY(2px) scale(0.95); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+.anim-chip-take {
+  animation: chipBounce 0.35s ease-out;
+}
+
+/* Quý tộc ghé thăm lướt vào */
+@keyframes nobleVisitSlide {
+  0% {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.7);
+    filter: brightness(2);
+  }
+  70% {
+    opacity: 1;
+    transform: translateY(4px) scale(1.05);
+    filter: brightness(1.2);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: brightness(1);
+  }
+}
+
+.anim-noble-visit {
+  animation: nobleVisitSlide 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* Tia sáng vàng kim lướt qua thẻ (Shimmer) */
+@keyframes goldShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer-gold {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 215, 0, 0) 0%,
+    rgba(255, 215, 0, 0.4) 50%,
+    rgba(255, 215, 0, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: goldShimmer 2.5s infinite;
+}
+
+/* Hiệu ứng chiến thắng Vinh Quang */
+@keyframes victoryPulse {
+  0% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 215, 0, 0.4); }
+  50% { transform: scale(1.04); box-shadow: 0 0 40px rgba(255, 215, 0, 0.8); }
+  100% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 215, 0, 0.4); }
+}
+
+.anim-victory {
+  animation: victoryPulse 2s infinite ease-in-out;
+}

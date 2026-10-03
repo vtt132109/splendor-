@@ -1,0 +1,250 @@
+/**
+ * Splendor Board Game - Kiểu Thẻ Phát Triển & Ô Quý Tộc
+ */
+
+/* Thẻ Phát Triển (Development Card) */
+.dev-card {
+  width: 78px;
+  height: 108px;
+  background: linear-gradient(145deg, #332115 0%, #1c1109 100%);
+  border: 1.5px solid var(--wood-border);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 5px;
+  cursor: pointer;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+  overflow: hidden;
+}
+
+.dev-card:hover {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.8), var(--shadow-gold-glow);
+  z-index: 10;
+}
+
+/* Thẻ mua được: Phát sáng viền vàng kim */
+.dev-card.affordable {
+  border-color: var(--gold-bright);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.5), 0 4px 8px rgba(0, 0, 0, 0.6);
+}
+
+.dev-card.affordable::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border: 1.5px solid var(--gold-bright);
+  border-radius: calc(var(--radius-sm) - 1px);
+  pointer-events: none;
+  animation: pulseGoldBorder 1.5s infinite alternate;
+}
+
+@keyframes pulseGoldBorder {
+  from { opacity: 0.4; }
+  to { opacity: 1; }
+}
+
+/* Header Thẻ: Điểm Uy Tín (Trái) & Bonus Đá Quý (Phải) */
+.card-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.card-prestige-points {
+  font-family: var(--font-serif-royal);
+  font-size: 16px;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9), 0 0 6px rgba(255, 255, 255, 0.4);
+  line-height: 1;
+}
+
+.card-gem-bonus {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.6);
+  border: 1px solid rgba(255,255,255,0.4);
+}
+
+.card-gem-bonus.bonus-diamond { background: var(--gem-diamond-gradient); color: #0284c7; }
+.card-gem-bonus.bonus-sapphire { background: var(--gem-sapphire-gradient); color: #fff; }
+.card-gem-bonus.bonus-emerald { background: var(--gem-emerald-gradient); color: #fff; }
+.card-gem-bonus.bonus-ruby { background: var(--gem-ruby-gradient); color: #fff; }
+.card-gem-bonus.bonus-onyx { background: var(--gem-onyx-gradient); color: #fff; }
+
+/* Tranh minh họa giữa thẻ */
+.card-artwork-frame {
+  flex: 1;
+  margin: 3px 0;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 2px;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.artwork-illustration {
+  font-size: 20px;
+  opacity: 0.85;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+}
+
+/* Danh sách chi phí đá quý góc dưới thẻ */
+.card-costs-column {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-self: flex-start;
+}
+
+.cost-pip {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+}
+
+.cost-pip-circle {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  font-weight: 800;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.6);
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+.cost-pip-circle.cost-diamond { background: var(--gem-diamond-gradient); color: #000; }
+.cost-pip-circle.cost-sapphire { background: var(--gem-sapphire-gradient); color: #fff; }
+.cost-pip-circle.cost-emerald { background: var(--gem-emerald-gradient); color: #fff; }
+.cost-pip-circle.cost-ruby { background: var(--gem-ruby-gradient); color: #fff; }
+.cost-pip-circle.cost-onyx { background: var(--gem-onyx-gradient); color: #fff; }
+
+/* Mặt lưng bộ bài (Decks) */
+.deck-slot {
+  width: 78px;
+  height: 108px;
+  perspective: 600px;
+  cursor: pointer;
+}
+
+.deck-card {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--wood-border);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.7), inset 0 2px 4px rgba(255,255,255,0.1);
+  position: relative;
+  transition: transform var(--transition-fast);
+}
+
+.deck-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--gold-primary);
+}
+
+.deck-card.tier-1-back {
+  background: radial-gradient(circle, #2d5a3d 0%, #152c1d 100%);
+  border-color: #3e7b53;
+}
+.deck-card.tier-2-back {
+  background: radial-gradient(circle, #7c5220 0%, #3e260c 100%);
+  border-color: #a36f32;
+}
+.deck-card.tier-3-back {
+  background: radial-gradient(circle, #244163 0%, #101d2d 100%);
+  border-color: #3b6699;
+}
+
+.tier-dots {
+  font-size: 14px;
+  letter-spacing: 2px;
+  color: var(--gold-bright);
+}
+
+.deck-count {
+  font-family: var(--font-serif-royal);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-parchment);
+  margin-top: 4px;
+}
+
+/* Ô Quý Tộc (Noble Tiles) */
+.noble-tile {
+  width: 76px;
+  height: 76px;
+  background: linear-gradient(135deg, #483424 0%, #2b1c11 100%);
+  border: 2px solid var(--gold-primary);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7), inset 0 1px 2px rgba(255, 255, 255, 0.15);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 5px;
+  position: relative;
+  transition: all var(--transition-fast);
+}
+
+.noble-tile:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.8), var(--shadow-gold-glow);
+  z-index: 10;
+}
+
+.noble-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.noble-points {
+  font-family: var(--font-serif-royal);
+  font-size: 14px;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+}
+
+.noble-avatar-icon {
+  font-size: 16px;
+  opacity: 0.9;
+}
+
+.noble-requirements-row {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.noble-req-pip {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 9px;
+  font-weight: 800;
+  color: #fff;
+}
