@@ -25,12 +25,17 @@
   <link rel="stylesheet" href="css/animations.css">
 </head>
 <body class="wood-table-bg">
-  <!-- Cảnh báo xoay ngang thiết bị trên điện thoại -->
-  <div id="orientation-overlay" class="orientation-overlay" aria-hidden="true">
+  <!-- Cảnh báo xoay ngang thiết bị trên điện thoại (Tùy chọn cho trận đấu, có thể tắt) -->
+  <div id="orientation-overlay" class="orientation-overlay hidden" aria-hidden="true">
     <div class="orientation-box">
+      <button id="btn-close-orientation" class="btn-close-modal" style="position: absolute; top: 12px; right: 14px; font-size: 16px;" aria-label="Đóng cảnh báo">✕</button>
       <div class="rotate-phone-icon">📱 ➔ 🔄</div>
       <h2>Vui Lòng Xoay Ngang Màn Hình</h2>
       <p>Splendor được thiết kế tối ưu trên bàn cờ nằm ngang để có trải nghiệm thị giác và chiến thuật tốt nhất.</p>
+      <div style="display: flex; flex-direction: column; gap: 8px; width: 100%; margin-top: 10px;">
+        <button id="btn-rotate-fullscreen" class="btn-gold-primary w-full">⛶ BẬT TOÀN MÀN HÌNH</button>
+        <button id="btn-ignore-orientation" class="btn-wood-small w-full">✕ VẪN CHƠI Ở MÀN HÌNH DỌC</button>
+      </div>
     </div>
   </div>
 

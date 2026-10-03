@@ -28,6 +28,20 @@ class SoundManager {
   }
 
   /**
+   * Âm thanh click nút giao diện thông thường
+   */
+  playClick() {
+    this.playGemClick();
+  }
+
+  /**
+   * Âm thanh nhặt / lấy chip
+   */
+  playTakeChip() {
+    this.playGemClick();
+  }
+
+  /**
    * Âm thanh chạm / chọn đá quý (tiếng click gốm/đá quý trong trẻo)
    */
   playGemClick() {

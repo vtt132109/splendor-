@@ -2,31 +2,41 @@
  * Splendor Board Game - Bố cục Responsive & Khóa Xoay Ngang Màn Hình
  */
 
-/* Khóa Xoay Ngang: Hiển thị overlay khi thiết bị ở chế độ dọc (portrait) trên màn hình cảm ứng/di động */
+/* Khóa Xoay Ngang: Overlay hướng dẫn tùy chọn, không chặn app */
 .orientation-overlay {
   position: fixed;
   top: 0; left: 0; width: 100vw; height: 100vh;
-  background: radial-gradient(circle at center, #2e1d13 0%, #120b07 100%);
+  background: radial-gradient(circle at center, rgba(46, 29, 19, 0.95) 0%, rgba(18, 11, 7, 0.98) 100%);
   z-index: 99999;
   display: none;
   align-items: center;
   justify-content: center;
   padding: 24px;
   text-align: center;
+  backdrop-filter: blur(8px);
+}
+
+.orientation-overlay.active {
+  display: flex !important;
 }
 
 .orientation-box {
-  background: rgba(36, 22, 14, 0.95);
+  background: rgba(36, 22, 14, 0.98);
   border: 2px solid var(--gold-primary);
   border-radius: var(--radius-lg);
-  padding: 32px 24px;
+  padding: 28px 20px;
   max-width: 380px;
+  width: 90%;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9), 0 0 20px rgba(212, 175, 55, 0.4);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
 }
 
 .rotate-phone-icon {
-  font-size: 48px;
-  margin-bottom: 16px;
+  font-size: 42px;
   animation: rotatePhone 2s ease-in-out infinite;
 }
 
@@ -39,24 +49,164 @@
 .orientation-box h2 {
   font-family: var(--font-serif-royal);
   color: var(--gold-bright);
-  font-size: 18px;
-  margin-bottom: 10px;
+  font-size: 17px;
   letter-spacing: 1px;
 }
 
 .orientation-box p {
   color: var(--text-parchment-muted);
-  font-size: 13px;
+  font-size: 12px;
   line-height: 1.5;
 }
 
-/* Kích hoạt overlay khi thiết bị ở chế độ dọc (portrait) và có độ rộng nhỏ */
-@media screen and (orientation: portrait) and (max-width: 900px) {
-  .orientation-overlay {
-    display: flex !important;
-  }
+/* Tối ưu hóa giao diện cho Mobile Portrait (Điện thoại màn hình dọc) */
+@media screen and (max-width: 768px) and (orientation: portrait) {
+  /* KHÔNG BAO GIỜ ẩn app-container */
   .app-container {
-    display: none !important;
+    display: flex !important;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .game-header {
+    height: 42px;
+    min-height: 42px;
+    padding: 0 8px;
+    gap: 6px;
+  }
+
+  .brand-title {
+    font-size: 13px;
+    letter-spacing: 1px;
+  }
+
+  .btn-header-icon {
+    padding: 3px 6px;
+    font-size: 12px;
+  }
+
+  .btn-header-icon .btn-text {
+    display: none;
+  }
+
+  .user-avatar {
+    width: 24px;
+    height: 24px;
+  }
+
+  .user-name {
+    font-size: 11px;
+    max-width: 70px;
+  }
+
+  .btn-gold-mini {
+    font-size: 9px;
+    padding: 2px 6px;
+  }
+
+  /* Cuộn mượt trên màn hình dọc */
+  .screens-container {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .screen {
+    min-height: 100%;
+    overflow-y: auto;
+    padding: 12px 10px;
+  }
+
+  /* Menu Trang Chủ trên điện thoại */
+  .home-hero {
+    gap: 12px;
+    margin: 8px 0 16px 0;
+  }
+
+  .hero-subtitle {
+    font-size: 12px;
+    letter-spacing: 2px;
+  }
+
+  .crest-gems {
+    font-size: 20px;
+    gap: 8px;
+  }
+
+  .home-menu-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    max-width: 440px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .home-menu-grid .menu-card {
+    padding: 14px 12px;
+  }
+
+  .card-icon {
+    font-size: 26px;
+    margin-bottom: 4px;
+  }
+
+  .home-menu-grid .menu-card h3 {
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+
+  .home-menu-grid .menu-card p {
+    font-size: 11px;
+    margin-bottom: 6px;
+  }
+
+  .card-action-tag {
+    font-size: 10px;
+  }
+
+  .user-quick-stats {
+    padding: 8px 12px;
+    gap: 14px;
+    max-width: 440px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  /* Modal trên di động */
+  .modal-content {
+    max-width: 95vw;
+    width: 95%;
+    padding: 16px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .online-options-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .avatar-palette {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .avatar-choice-item {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto;
+  }
+
+  /* Bàn cờ khi ở chế độ dọc: Cho phép cuộn ngang/dọc xem toàn cảnh */
+  #screen-game.screen {
+    overflow: auto;
+    padding: 4px;
+  }
+
+  .board-container {
+    min-width: 720px;
+    transform-origin: top left;
   }
 }
 

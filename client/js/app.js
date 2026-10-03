@@ -20,6 +20,7 @@ class SplendorApp {
     // 3. Khởi tạo thanh điều khiển Header (Âm thanh, Toàn màn hình, Luật chơi, Logo)
     this.initHeaderControls();
     this.initFullscreenControls();
+    this.initOrientationControls();
 
     // 4. Khởi tạo Modal vào phòng
     this.initJoinModal();
@@ -106,6 +107,33 @@ class SplendorApp {
     document.addEventListener('fullscreenchange', updateFsIcons);
     document.addEventListener('webkitfullscreenchange', updateFsIcons);
     updateFsIcons();
+  }
+
+  initOrientationControls() {
+    const overlay = document.getElementById('orientation-overlay');
+    const closeBtn = document.getElementById('btn-close-orientation');
+    const ignoreBtn = document.getElementById('btn-ignore-orientation');
+    const rotateFsBtn = document.getElementById('btn-rotate-fullscreen');
+
+    const hideOverlay = () => {
+      if (overlay) overlay.classList.add('hidden');
+      sessionStorage.setItem('splendor_ignore_orientation', 'true');
+    };
+
+    if (closeBtn) closeBtn.addEventListener('click', hideOverlay);
+    if (ignoreBtn) ignoreBtn.addEventListener('click', hideOverlay);
+
+    if (rotateFsBtn) {
+      rotateFsBtn.addEventListener('click', () => {
+        hideOverlay();
+        const docEl = document.documentElement;
+        if (docEl.requestFullscreen) {
+          docEl.requestFullscreen().catch(() => {});
+        } else if (docEl.webkitRequestFullscreen) {
+          docEl.webkitRequestFullscreen();
+        }
+      });
+    }
   }
 
   runGameCountdown(callback) {
@@ -384,6 +412,13 @@ class SplendorApp {
 
   showGameScreen() {
     this.showScreen('game');
+    // Gợi ý xoay ngang màn hình nếu đang chơi trận đấu trên điện thoại ở chế độ dọc
+    if (window.innerWidth <= 768 && window.innerHeight > window.innerWidth) {
+      if (!sessionStorage.getItem('splendor_ignore_orientation')) {
+        const overlay = document.getElementById('orientation-overlay');
+        if (overlay) overlay.classList.remove('hidden');
+      }
+    }
   }
 
   openRulesModal() {
