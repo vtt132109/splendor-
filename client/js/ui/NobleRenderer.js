@@ -1,5 +1,5 @@
 /**
- * Splendor Board Game - Trình Hiển Thị Ô Quý Tộc (NobleRenderer.js)
+ * Splendor Board Game - Trình Hiển Thị Ô Quý Tộc Chuẩn Bản Gốc (NobleRenderer.js)
  */
 
 class NobleRenderer {
@@ -7,8 +7,16 @@ class NobleRenderer {
     this.onSelectNoble = null;
   }
 
+  getNoblePortraitUrl(noble) {
+    const queenIds = ['noble_1', 'noble_3', 'noble_6', 'noble_7', 'noble_8', 'noble_10'];
+    if (queenIds.includes(noble.id)) {
+      return 'assets/nobles/queen.jpg';
+    }
+    return 'assets/nobles/king.jpg';
+  }
+
   /**
-   * Tạo element hiển thị cho 1 ô quý tộc
+   * Tạo element hiển thị cho 1 ô quý tộc với tranh chân dung Phục Hưng
    */
   createNobleElement(noble, player) {
     const { GEM_INFO_VI } = SplendorConstants;
@@ -16,6 +24,9 @@ class NobleRenderer {
     tile.className = 'noble-tile';
     tile.dataset.nobleId = noble.id;
     tile.title = `${noble.name} - ${noble.title} (+3 điểm uy tín)`;
+
+    const portraitUrl = this.getNoblePortraitUrl(noble);
+    tile.style.backgroundImage = `url('${portraitUrl}')`;
 
     let reqsHtml = '';
     let isFullyQualified = true;
@@ -26,27 +37,26 @@ class NobleRenderer {
       if (!isMet) isFullyQualified = false;
 
       reqsHtml += `
-        <div class="noble-req-pip" title="${needed} thẻ bonus ${GEM_INFO_VI[gem].name}">
-          <span class="cost-pip-circle cost-${gem}">${needed}</span>
-          <span style="font-size: 8px; color: ${isMet ? '#4ade80' : '#d1d5db'}">(${current})</span>
+        <div class="noble-req-badge" title="${needed} thẻ bonus ${GEM_INFO_VI[gem].name}">
+          <span class="cost-token-disc cost-${gem}">${needed}</span>
+          <span style="font-size: 8px; font-weight:800; color: ${isMet ? '#4ade80' : '#e5e7eb'}">${current}/${needed}</span>
         </div>
       `;
     }
 
     if (isFullyQualified) {
       tile.style.borderColor = 'var(--gold-bright)';
-      tile.style.boxShadow = '0 0 10px rgba(255, 215, 0, 0.6)';
+      tile.style.boxShadow = '0 0 14px rgba(255, 215, 0, 0.8)';
     }
 
     tile.innerHTML = `
       <div class="noble-header">
         <span class="noble-points">${noble.points}</span>
-        <span class="noble-avatar-icon">${noble.icon || '👑'}</span>
+        <span style="font-size: 11px; font-weight: 700; color: var(--gold-light); text-shadow: 0 1px 3px #000; max-width: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+          ${noble.name}
+        </span>
       </div>
-      <div style="font-size: 9px; font-weight: 700; color: var(--gold-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-        ${noble.name}
-      </div>
-      <div class="noble-requirements-row">
+      <div class="noble-requirements-col">
         ${reqsHtml}
       </div>
     `;
@@ -78,14 +88,15 @@ class NobleRenderer {
 
     container.innerHTML = '';
     container.style.display = 'flex';
-    container.style.gap = '12px';
+    container.style.gap = '14px';
     container.style.justifyContent = 'center';
     container.style.padding = '14px 0';
 
     for (const noble of nobles) {
       const el = this.createNobleElement(noble, null);
       el.style.cursor = 'pointer';
-      el.style.transform = 'scale(1.1)';
+      el.style.transform = 'scale(1.2)';
+      el.style.margin = '10px';
       el.addEventListener('click', () => {
         modal.classList.add('hidden');
         if (typeof onSelect === 'function') {

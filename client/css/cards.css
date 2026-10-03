@@ -1,45 +1,42 @@
 /**
- * Splendor Board Game - Kiểu Thẻ Phát Triển & Ô Quý Tộc
+ * Splendor Board Game - Kiểu Thẻ Phát Triển & Ô Quý Tộc (Phong Cách Bản Gốc Chuẩn)
  */
 
 /* Thẻ Phát Triển (Development Card) */
 .dev-card {
-  width: 78px;
-  height: 108px;
-  background: linear-gradient(145deg, #332115 0%, #1c1109 100%);
+  width: 82px;
+  height: 114px;
+  background: #1c1109;
   border: 1.5px solid var(--wood-border);
   border-radius: var(--radius-sm);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.15);
   position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 5px;
   cursor: pointer;
   transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
   overflow: hidden;
 }
 
 .dev-card:hover {
-  transform: translateY(-4px) scale(1.03);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.8), var(--shadow-gold-glow);
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.85), var(--shadow-gold-glow);
   z-index: 10;
 }
 
 /* Thẻ mua được: Phát sáng viền vàng kim */
 .dev-card.affordable {
   border-color: var(--gold-bright);
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.5), 0 4px 8px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.6), 0 4px 10px rgba(0, 0, 0, 0.7);
 }
 
 .dev-card.affordable::after {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  border: 1.5px solid var(--gold-bright);
+  border: 2px solid var(--gold-bright);
   border-radius: calc(var(--radius-sm) - 1px);
   pointer-events: none;
   animation: pulseGoldBorder 1.5s infinite alternate;
+  z-index: 6;
 }
 
 @keyframes pulseGoldBorder {
@@ -47,102 +44,113 @@
   to { opacity: 1; }
 }
 
-/* Header Thẻ: Điểm Uy Tín (Trái) & Bonus Đá Quý (Phải) */
-.card-header-row {
+/* Tranh Minh Họa Nền Bán Phần Trên (64% Chiều Cao Thẻ) */
+.card-artwork-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 64%;
+  background-size: cover;
+  background-position: center;
+  border-bottom: 1.5px solid var(--wood-border);
+}
+
+.card-artwork-bg::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.65) 0%, rgba(0, 0, 0, 0.05) 50%, rgba(0, 0, 0, 0.5) 100%);
+  pointer-events: none;
+}
+
+/* Lớp Phủ Header Thẻ: Điểm Uy Tín & Gem Bonus */
+.card-top-overlay {
+  position: absolute;
+  top: 3px;
+  left: 5px;
+  right: 5px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
+  z-index: 5;
 }
 
 .card-prestige-points {
   font-family: var(--font-serif-royal);
-  font-size: 16px;
+  font-size: 19px;
   font-weight: 900;
-  color: #fff;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9), 0 0 6px rgba(255, 255, 255, 0.4);
+  color: #ffffff;
+  text-shadow: 0 1px 3px #000, 0 2px 6px rgba(0, 0, 0, 0.9);
   line-height: 1;
 }
 
-.card-gem-bonus {
-  width: 22px;
-  height: 22px;
+.card-gem-facet-badge {
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.6);
-  border: 1px solid rgba(255,255,255,0.4);
+  font-size: 14px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.8), inset 0 1px 2px rgba(255, 255, 255, 0.6);
+  border: 1.5px solid rgba(255, 255, 255, 0.7);
 }
 
-.card-gem-bonus.bonus-diamond { background: var(--gem-diamond-gradient); color: #0284c7; }
-.card-gem-bonus.bonus-sapphire { background: var(--gem-sapphire-gradient); color: #fff; }
-.card-gem-bonus.bonus-emerald { background: var(--gem-emerald-gradient); color: #fff; }
-.card-gem-bonus.bonus-ruby { background: var(--gem-ruby-gradient); color: #fff; }
-.card-gem-bonus.bonus-onyx { background: var(--gem-onyx-gradient); color: #fff; }
+.card-gem-facet-badge.bonus-diamond { background: var(--gem-diamond-gradient); color: #0284c7; }
+.card-gem-facet-badge.bonus-sapphire { background: var(--gem-sapphire-gradient); color: #fff; }
+.card-gem-facet-badge.bonus-emerald { background: var(--gem-emerald-gradient); color: #fff; }
+.card-gem-facet-badge.bonus-ruby { background: var(--gem-ruby-gradient); color: #fff; }
+.card-gem-facet-badge.bonus-onyx { background: var(--gem-onyx-gradient); color: #fff; }
 
-/* Tranh minh họa giữa thẻ */
-.card-artwork-frame {
-  flex: 1;
-  margin: 3px 0;
-  background: rgba(0, 0, 0, 0.4);
-  border-radius: 2px;
-  border: 1px solid rgba(212, 175, 55, 0.2);
+/* Khay Đáy Thẻ Chứa Chi Phí Đá Quý (36% Chiều Cao) */
+.card-bottom-tray {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 36%;
+  background: linear-gradient(180deg, #24160d 0%, #150c07 100%);
   display: flex;
   align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  position: relative;
+  padding: 2px 5px;
+  z-index: 4;
 }
 
-.artwork-illustration {
-  font-size: 20px;
-  opacity: 0.85;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
-}
-
-/* Danh sách chi phí đá quý góc dưới thẻ */
-.card-costs-column {
+.card-costs-grid {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  align-self: flex-start;
+  flex-wrap: wrap;
+  max-height: 100%;
+  gap: 2px 4px;
+  align-content: flex-start;
 }
 
-.cost-pip {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  font-size: 10px;
-  font-weight: 800;
-  color: #fff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
-}
-
-.cost-pip-circle {
-  width: 14px;
-  height: 14px;
+.cost-token-disc {
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 8px;
-  font-weight: 800;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.6);
-  border: 1px solid rgba(255,255,255,0.3);
+  font-family: var(--font-sans-vietnamese);
+  font-size: 9px;
+  font-weight: 900;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.4);
 }
 
-.cost-pip-circle.cost-diamond { background: var(--gem-diamond-gradient); color: #000; }
-.cost-pip-circle.cost-sapphire { background: var(--gem-sapphire-gradient); color: #fff; }
-.cost-pip-circle.cost-emerald { background: var(--gem-emerald-gradient); color: #fff; }
-.cost-pip-circle.cost-ruby { background: var(--gem-ruby-gradient); color: #fff; }
-.cost-pip-circle.cost-onyx { background: var(--gem-onyx-gradient); color: #fff; }
+.cost-token-disc.cost-diamond { background: var(--gem-diamond-gradient); color: #111; }
+.cost-token-disc.cost-sapphire { background: var(--gem-sapphire-gradient); color: #fff; }
+.cost-token-disc.cost-emerald { background: var(--gem-emerald-gradient); color: #fff; }
+.cost-token-disc.cost-ruby { background: var(--gem-ruby-gradient); color: #fff; }
+.cost-token-disc.cost-onyx { background: var(--gem-onyx-gradient); color: #fff; }
 
-/* Mặt lưng bộ bài (Decks) */
+/* Mặt Lưng Bộ Bài (Decks) */
 .deck-slot {
-  width: 78px;
-  height: 108px;
+  width: 82px;
+  height: 114px;
   perspective: 600px;
   cursor: pointer;
 }
@@ -162,32 +170,32 @@
 }
 
 .deck-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   border-color: var(--gold-primary);
 }
 
 .deck-card.tier-1-back {
-  background: radial-gradient(circle, #2d5a3d 0%, #152c1d 100%);
+  background: radial-gradient(circle, #2d5a3d 0%, #122418 100%);
   border-color: #3e7b53;
 }
 .deck-card.tier-2-back {
-  background: radial-gradient(circle, #7c5220 0%, #3e260c 100%);
+  background: radial-gradient(circle, #7c5220 0%, #352009 100%);
   border-color: #a36f32;
 }
 .deck-card.tier-3-back {
-  background: radial-gradient(circle, #244163 0%, #101d2d 100%);
+  background: radial-gradient(circle, #244163 0%, #0c1724 100%);
   border-color: #3b6699;
 }
 
 .tier-dots {
-  font-size: 14px;
-  letter-spacing: 2px;
+  font-size: 15px;
+  letter-spacing: 3px;
   color: var(--gold-bright);
 }
 
 .deck-count {
   font-family: var(--font-serif-royal);
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--text-parchment);
   margin-top: 4px;
@@ -195,23 +203,33 @@
 
 /* Ô Quý Tộc (Noble Tiles) */
 .noble-tile {
-  width: 76px;
-  height: 76px;
-  background: linear-gradient(135deg, #483424 0%, #2b1c11 100%);
+  width: 78px;
+  height: 78px;
   border: 2px solid var(--gold-primary);
   border-radius: var(--radius-sm);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7), inset 0 1px 2px rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.8), inset 0 1px 2px rgba(255, 255, 255, 0.2);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 5px;
   position: relative;
   transition: all var(--transition-fast);
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+}
+
+.noble-tile::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.7) 100%);
+  pointer-events: none;
 }
 
 .noble-tile:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 14px rgba(0,0,0,0.8), var(--shadow-gold-glow);
+  transform: scale(1.08);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.9), var(--shadow-gold-glow);
   z-index: 10;
 }
 
@@ -219,32 +237,38 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: relative;
+  z-index: 2;
 }
 
 .noble-points {
   font-family: var(--font-serif-royal);
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 900;
   color: #fff;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.9), 0 0 6px rgba(255,215,0,0.8);
 }
 
-.noble-avatar-icon {
-  font-size: 16px;
-  opacity: 0.9;
-}
-
-.noble-requirements-row {
+.noble-requirements-col {
   display: flex;
-  gap: 4px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 2px;
+  position: relative;
+  z-index: 2;
+  align-self: flex-start;
 }
 
-.noble-req-pip {
+.noble-req-badge {
   display: flex;
   align-items: center;
-  gap: 2px;
-  font-size: 9px;
-  font-weight: 800;
-  color: #fff;
+  gap: 3px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: var(--radius-full);
+  padding: 1px 4px 1px 1px;
+}
+
+.noble-req-badge .cost-token-disc {
+  width: 13px;
+  height: 13px;
+  font-size: 8px;
 }

@@ -1,5 +1,5 @@
 /**
- * Splendor Board Game - Trình Hiển Thị Thẻ Phát Triển (CardRenderer.js)
+ * Splendor Board Game - Trình Hiển Thị Thẻ Phát Triển Chuẩn Bản Gốc (CardRenderer.js)
  */
 
 class CardRenderer {
@@ -9,6 +9,29 @@ class CardRenderer {
     this.selectedInspectCard = null;
     this.selectedInspectFromReserved = false;
     this.initInspectModalEvents();
+  }
+
+  /**
+   * Chọn tranh minh họa chuẩn xác nhất theo Tier và Loại Đá Quý
+   */
+  getCardArtworkUrl(card) {
+    if (card.tier === 1) {
+      switch (card.gem) {
+        case 'diamond': return 'assets/cards/diamond_mine.jpg';
+        case 'sapphire': return 'assets/cards/sapphire_mine.jpg';
+        case 'emerald': return 'assets/cards/emerald_mine.jpg';
+        case 'ruby': return 'assets/cards/ruby_mine.jpg';
+        case 'onyx': return 'assets/cards/onyx_mine.jpg';
+      }
+    } else if (card.tier === 2) {
+      if (card.gem === 'sapphire') return 'assets/cards/trade_ship.jpg';
+      if (card.gem === 'emerald' || card.gem === 'onyx') return 'assets/cards/caravan.jpg';
+      return 'assets/cards/workshop.jpg';
+    } else if (card.tier === 3) {
+      if (card.points >= 4) return 'assets/cards/crown_jewels.jpg';
+      return 'assets/cards/palace.jpg';
+    }
+    return 'assets/cards/diamond_mine.jpg';
   }
 
   initInspectModalEvents() {
@@ -44,7 +67,7 @@ class CardRenderer {
   }
 
   /**
-   * Tạo element HTML cho một thẻ phát triển
+   * Tạo element HTML cho một thẻ phát triển chuẩn bản gốc Splendor
    */
   createCardElement(card, player, isCurrentTurn) {
     const { GEM_INFO_VI } = SplendorConstants;
@@ -63,40 +86,37 @@ class CardRenderer {
     }
 
     const gemInfo = GEM_INFO_VI[card.gem];
+    const artworkUrl = this.getCardArtworkUrl(card);
 
-    // Tạo cột chi phí góc dưới
+    // Tạo các chấm chi phí đá quý hình đĩa tròn góc dưới
     let costPipsHtml = '';
     for (const [costGem, count] of Object.entries(card.cost)) {
       if (count > 0) {
         costPipsHtml += `
-          <div class="cost-pip">
-            <span class="cost-pip-circle cost-${costGem}">${count}</span>
+          <div class="cost-token-disc cost-${costGem}" title="${count} ${GEM_INFO_VI[costGem].name}">
+            ${count}
           </div>
         `;
       }
     }
 
-    // Biểu tượng tranh minh họa tùy theo tier và gem
-    const illustrations = {
-      diamond: '💎',
-      sapphire: '⛵',
-      emerald: '⛏️',
-      ruby: '🏛️',
-      onyx: '🏰'
-    };
-
     cardEl.innerHTML = `
-      <div class="card-header-row">
+      <!-- Tranh minh họa nền 64% thẻ -->
+      <div class="card-artwork-bg" style="background-image: url('${artworkUrl}');"></div>
+
+      <!-- Header: Điểm uy tín & Bonus đá quý -->
+      <div class="card-top-overlay">
         <span class="card-prestige-points">${card.points > 0 ? card.points : ''}</span>
-        <div class="card-gem-bonus bonus-${card.gem}" title="Bonus vĩnh viễn: ${gemInfo.name}">
+        <div class="card-gem-facet-badge bonus-${card.gem}" title="Bonus vĩnh viễn: ${gemInfo.name}">
           ${gemInfo.icon}
         </div>
       </div>
-      <div class="card-artwork-frame">
-        <span class="artwork-illustration">${illustrations[card.gem] || '💎'}</span>
-      </div>
-      <div class="card-costs-column">
-        ${costPipsHtml}
+
+      <!-- Khay đáy: Danh sách chi phí đá quý -->
+      <div class="card-bottom-tray">
+        <div class="card-costs-grid">
+          ${costPipsHtml}
+        </div>
       </div>
     `;
 
@@ -161,7 +181,10 @@ class CardRenderer {
     this.selectedInspectFromReserved = fromReserved;
 
     previewContainer.innerHTML = '';
-    previewContainer.appendChild(this.createCardElement(card, player, false));
+    const inspectCard = this.createCardElement(card, player, false);
+    inspectCard.style.transform = 'scale(1.2)';
+    inspectCard.style.margin = '10px auto';
+    previewContainer.appendChild(inspectCard);
 
     const { GEM_INFO_VI } = SplendorConstants;
     titleEl.textContent = `Thẻ Phát Triển Tầng ${card.tier} (Bonus: ${GEM_INFO_VI[card.gem].name})`;
@@ -232,29 +255,28 @@ class CardRenderer {
     for (let i = 0; i < 3; i++) {
       const card = reservedCards[i];
       if (card) {
-        const miniCard = document.createElement('div');
-        miniCard.className = 'dev-card mini-card';
-        miniCard.style.width = '38px';
-        miniCard.style.height = '52px';
+        const miniCard = this.createCardElement(card, player, isCurrentTurn);
+        miniCard.classList.add('mini-card');
+        miniCard.style.width = '40px';
+        miniCard.style.height = '54px';
         miniCard.style.cursor = 'pointer';
 
-        const payment = window.currentGameState?.calculateCardPayment(player, card);
-        if (payment?.canAfford && isCurrentTurn) {
-          miniCard.classList.add('affordable');
+        // Thu nhỏ các thành phần trên thẻ giữ
+        const pointsEl = miniCard.querySelector('.card-prestige-points');
+        if (pointsEl) pointsEl.style.fontSize = '12px';
+
+        const facetEl = miniCard.querySelector('.card-gem-facet-badge');
+        if (facetEl) {
+          facetEl.style.width = '14px';
+          facetEl.style.height = '14px';
+          facetEl.style.fontSize = '9px';
         }
 
-        const gemInfo = SplendorConstants.GEM_INFO_VI[card.gem];
-        miniCard.innerHTML = `
-          <div style="display:flex;justify-content:space-between;align-items:center;">
-            <span style="font-size:10px;font-weight:900;color:#fff;">${card.points || ''}</span>
-            <span style="font-size:10px;">${gemInfo.icon}</span>
-          </div>
-          <div style="font-size:8px;text-align:center;color:var(--gold-light);margin-top:8px;">
-            T${card.tier}
-          </div>
-        `;
+        const tray = miniCard.querySelector('.card-bottom-tray');
+        if (tray) tray.style.display = 'none';
 
-        miniCard.addEventListener('click', () => {
+        miniCard.addEventListener('click', (e) => {
+          e.stopPropagation();
           this.openInspectModal(card, player, isCurrentTurn, true);
         });
 
