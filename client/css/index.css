@@ -113,6 +113,11 @@
   -webkit-touch-callout: none;
 }
 
+input, select, textarea {
+  user-select: auto !important;
+  -webkit-user-select: auto !important;
+}
+
 html, body {
   width: 100%;
   height: 100%;
@@ -549,26 +554,32 @@ html, body {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
   background: var(--surface-overlay);
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
   opacity: 1;
   transition: opacity var(--transition-normal);
+  padding: 12px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .modal-overlay.hidden {
   display: none !important;
-  opacity: 0;
-  pointer-events: none;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
 }
 
 .modal-content {
-  max-width: 90vw;
-  max-height: 85vh;
+  max-width: 92vw;
+  max-height: 90vh;
+  max-height: 90dvh;
   padding: 20px;
-  overflow: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   display: flex;
   flex-direction: column;
 }

@@ -476,45 +476,49 @@
 }
 
 /* ==========================================================================
-   MODAL LỰA CHỌN CHẾ ĐỘ THI ĐẤU ONLINE
+   MODAL LỰA CHỌN CHẾ ĐỘ THI ĐẤU ONLINE (SIÊU TỐI ƯU CHO MOBILE)
    ========================================================================== */
 
 .online-choice-box {
-  max-width: 680px;
-  width: 94%;
-  padding: 24px;
+  max-width: 580px;
+  width: 95%;
+  padding: 16px 18px;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 12px;
   background: linear-gradient(180deg, #2b1b12 0%, #170d07 100%);
   border: 2px solid var(--gold-primary);
   box-shadow: 0 12px 35px rgba(0, 0, 0, 0.95), 0 0 28px rgba(212, 175, 55, 0.4);
+  max-height: 90vh;
+  max-height: 90dvh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .online-header-badge {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .online-choice-body {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 10px;
 }
 
 .server-status-bar {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   background: rgba(14, 8, 4, 0.7);
-  padding: 8px 14px;
+  padding: 6px 12px;
   border-radius: var(--radius-sm);
   border: 1px solid rgba(34, 197, 94, 0.3);
 }
 
 .status-label {
-  font-size: 11.5px;
+  font-size: 11px;
   color: var(--text-parchment-muted);
   flex: 1;
 }
@@ -525,58 +529,90 @@
   color: #4ade80;
   font-weight: 700;
   background: rgba(34, 197, 94, 0.15);
-  padding: 2px 8px;
+  padding: 2px 6px;
   border-radius: 4px;
 }
 
-.online-options-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+/* Tabs Chuyển Đổi Trên Điện Thoại */
+.online-modal-tabs {
+  display: flex;
+  gap: 6px;
+  background: rgba(12, 7, 3, 0.8);
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--wood-border);
 }
 
-@media (max-width: 600px) {
-  .online-options-grid {
-    grid-template-columns: 1fr;
-  }
+.btn-tab-online {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-parchment-muted);
+  font-family: var(--font-serif-royal);
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: center;
+}
+
+.btn-tab-online.active {
+  background: var(--gold-gradient);
+  color: #1a0f07;
+  border-color: var(--gold-bright);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.tab-hidden {
+  display: none !important;
+}
+
+.online-options-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
 }
 
 .online-option-card {
-  padding: 20px 16px;
+  padding: 14px 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 12px;
+  gap: 8px;
   border: 1.5px solid var(--wood-border);
   background: linear-gradient(180deg, #321e14 0%, #20130c 100%);
+  border-radius: var(--radius-sm);
 }
 
 .option-icon-glow {
-  font-size: 38px;
-  filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+  font-size: 26px;
+  filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.5));
 }
 
 .option-title {
   font-family: var(--font-serif-royal);
-  font-size: 15px;
+  font-size: 14px;
   color: var(--gold-bright);
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
 }
 
 .option-desc {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-parchment-muted);
-  line-height: 1.4;
-  flex: 1;
+  line-height: 1.35;
 }
 
 .room-size-selector {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   width: 100%;
+  margin: 2px 0 4px 0;
 }
 
 .room-size-selector label {
@@ -590,10 +626,10 @@
 }
 
 .btn-size-chip {
-  background: rgba(14, 8, 4, 0.8);
+  background: rgba(14, 8, 4, 0.85);
   border: 1px solid var(--wood-border);
   color: var(--text-parchment);
-  padding: 4px 10px;
+  padding: 5px 12px;
   border-radius: var(--radius-sm);
   font-size: 11px;
   font-weight: 700;
@@ -611,8 +647,9 @@
 .join-code-entry {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   width: 100%;
+  margin: 2px 0 4px 0;
 }
 
 .join-code-entry label {
@@ -629,12 +666,14 @@
   font-weight: 800;
   text-align: center;
   letter-spacing: 3px;
-  padding: 8px;
+  padding: 8px 12px;
   border-radius: var(--radius-sm);
   text-transform: uppercase;
   outline: none;
   width: 100%;
   transition: all var(--transition-fast);
+  user-select: auto !important;
+  -webkit-user-select: auto !important;
 }
 
 .room-code-input-glow:focus {
@@ -649,4 +688,34 @@
 .arrow-sparkle {
   margin-left: 6px;
   font-size: 13px;
+}
+
+/* Trên màn hình máy tính lớn (vừa rộng vừa đủ chiều cao) */
+@media (min-width: 768px) and (min-height: 521px) {
+  .online-choice-box {
+    max-width: 680px;
+    padding: 22px;
+    gap: 16px;
+  }
+  .online-modal-tabs {
+    display: none;
+  }
+  .online-options-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .online-option-card.tab-hidden {
+    display: flex !important;
+  }
+  .online-option-card {
+    padding: 20px 16px;
+    gap: 12px;
+  }
+  .option-icon-glow {
+    font-size: 34px;
+  }
+  .option-title {
+    font-size: 15px;
+  }
 }

@@ -56,6 +56,11 @@ class HomeScreen {
     const btnJoin = document.getElementById('btn-action-join-room');
     const inputCode = document.getElementById('input-online-room-code');
 
+    const tabCreate = document.getElementById('tab-btn-create');
+    const tabJoin = document.getElementById('tab-btn-join');
+    const cardCreate = document.getElementById('card-create-room');
+    const cardJoin = document.getElementById('card-join-room');
+
     if (closeBtn) {
       closeBtn.addEventListener('click', () => this.closeOnlineChoiceModal());
     }
@@ -63,6 +68,26 @@ class HomeScreen {
     if (modal) {
       modal.addEventListener('click', (e) => {
         if (e.target === modal) this.closeOnlineChoiceModal();
+      });
+    }
+
+    // Chuyển Tab Tạo Phòng / Vào Phòng
+    if (tabCreate && tabJoin) {
+      tabCreate.addEventListener('click', () => {
+        tabCreate.classList.add('active');
+        tabJoin.classList.remove('active');
+        if (cardCreate) cardCreate.classList.remove('tab-hidden');
+        if (cardJoin) cardJoin.classList.add('tab-hidden');
+        if (window.SplendorSound) SplendorSound.playClick();
+      });
+
+      tabJoin.addEventListener('click', () => {
+        tabJoin.classList.add('active');
+        tabCreate.classList.remove('active');
+        if (cardJoin) cardJoin.classList.remove('tab-hidden');
+        if (cardCreate) cardCreate.classList.add('tab-hidden');
+        if (inputCode) setTimeout(() => inputCode.focus(), 100);
+        if (window.SplendorSound) SplendorSound.playClick();
       });
     }
 
@@ -155,6 +180,18 @@ class HomeScreen {
     if (!modal) return;
     if (inputCode) inputCode.value = '';
     if (errorEl) errorEl.classList.add('hidden');
+
+    // Mặc định về Tab Tạo Phòng
+    const tabCreate = document.getElementById('tab-btn-create');
+    const tabJoin = document.getElementById('tab-btn-join');
+    const cardCreate = document.getElementById('card-create-room');
+    const cardJoin = document.getElementById('card-join-room');
+    if (tabCreate && tabJoin) {
+      tabCreate.classList.add('active');
+      tabJoin.classList.remove('active');
+      if (cardCreate) cardCreate.classList.remove('tab-hidden');
+      if (cardJoin) cardJoin.classList.add('tab-hidden');
+    }
 
     // Đo ping realtime
     if (SplendorSocket.socket?.connected && pingBadge) {

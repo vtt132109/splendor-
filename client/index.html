@@ -537,16 +537,22 @@
         <div class="modal-body online-choice-body">
           <div class="server-status-bar">
             <span class="status-indicator-live"></span>
-            <span class="status-label">Máy chủ Trực Tuyến Realtime (Socket.IO)</span>
+            <span class="status-label">Máy chủ Trực Tuyến (Socket.IO)</span>
             <span id="server-ping-badge" class="ping-badge">Ping: 18ms</span>
+          </div>
+
+          <!-- Thanh Chuyển Tab Siêu Gọn Cho Điện Thoại -->
+          <div class="online-modal-tabs" id="online-modal-tabs">
+            <button type="button" class="btn-tab-online active" id="tab-btn-create">🏰 TẠO PHÒNG MỚI</button>
+            <button type="button" class="btn-tab-online" id="tab-btn-join">🗝️ VÀO BẰNG MÃ</button>
           </div>
 
           <div class="online-options-grid">
             <!-- Thẻ 1: Tạo phòng mới -->
             <div class="online-option-card wood-card" id="card-create-room">
               <div class="option-icon-glow">🏰</div>
-              <h3 class="option-title">TẠO PHÒNG MỚI</h3>
-              <p class="option-desc">Khởi tạo phòng chơi với mã 6 ký tự để gửi bạn bè cùng thi đấu từ xa</p>
+              <h3 class="option-title">TẠO PHÒNG HOÀNG GIA</h3>
+              <p class="option-desc">Tạo bàn mới với mã 6 ký tự để mời bạn bè tham gia thi đấu</p>
               
               <div class="room-size-selector">
                 <label>Số người chơi trong phòng:</label>
@@ -558,16 +564,16 @@
               </div>
 
               <button type="button" id="btn-action-create-room" class="btn-gold-primary w-full">
-                <span>TẠO PHÒNG HOÀNG GIA</span>
+                <span>TẠO BÀN NGAY</span>
                 <span class="arrow-sparkle">➔</span>
               </button>
             </div>
 
             <!-- Thẻ 2: Vào phòng bằng mã -->
-            <div class="online-option-card wood-card" id="card-join-room">
+            <div class="online-option-card wood-card tab-hidden" id="card-join-room">
               <div class="option-icon-glow">🗝️</div>
               <h3 class="option-title">VÀO PHÒNG ĐÃ CÓ</h3>
-              <p class="option-desc">Nhập mã phòng 6 ký tự do bạn bè chia sẻ để tham gia bàn thi đấu</p>
+              <p class="option-desc">Nhập mã 6 ký tự bạn bè chia sẻ để tham gia bàn đấu</p>
 
               <div class="join-code-entry">
                 <label for="input-online-room-code">Mã phòng (6 ký tự):</label>
