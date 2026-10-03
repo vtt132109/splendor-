@@ -20,16 +20,21 @@ class BoardRenderer {
     const isMyTurn = gameState.currentPlayerIndex === myPlayerIndex;
 
     // 1. Cập nhật banner thông báo lượt
+    const turnAnnouncerEl = document.getElementById('turn-announcer');
     const turnTextEl = document.getElementById('turn-text');
     const roundBadgeEl = document.getElementById('round-status-badge');
+
+    if (turnAnnouncerEl) {
+      turnAnnouncerEl.classList.toggle('my-turn', isMyTurn);
+    }
 
     if (turnTextEl) {
       if (gameState.isFinalRound) {
         turnTextEl.textContent = `🔥 VÒNG CUỐI: Lượt của ${currentPlayer.name} ${isMyTurn ? '(LƯỢT CỦA BẠN!)' : ''}`;
         turnTextEl.style.color = '#ef4444';
       } else {
-        turnTextEl.textContent = `Lượt của: ${currentPlayer.name} ${isMyTurn ? '(LƯỢT CỦA BẠN)' : ''}`;
-        turnTextEl.style.color = 'var(--gold-light)';
+        turnTextEl.textContent = `Lượt của: ${currentPlayer.name} ${isMyTurn ? '(✦ LƯỢT CỦA BẠN ✦)' : ''}`;
+        turnTextEl.style.color = isMyTurn ? 'var(--gold-bright)' : 'var(--gold-light)';
       }
     }
 

@@ -12,6 +12,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Cinzel+Decorative:wght@700;900&family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
 
+  <!-- Google Identity Services (Sign-In With Google) -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
   <!-- Stylesheets -->
   <link rel="stylesheet" href="css/index.css">
   <link rel="stylesheet" href="css/responsive.css">
@@ -47,6 +50,11 @@
       </div>
 
       <div class="header-right">
+        <!-- Nút toàn màn hình -->
+        <button id="btn-toggle-fullscreen" class="btn-header-icon" title="Bật/Tắt toàn màn hình">
+          <span class="icon" id="header-fs-icon">⛶</span>
+          <span class="btn-text" id="header-fs-text">Toàn Màn Hình</span>
+        </button>
         <!-- Nút âm thanh -->
         <button id="btn-toggle-sound" class="btn-header-icon" title="Bật/Tắt âm thanh">
           <span class="icon">🔊</span>
@@ -219,6 +227,7 @@
               <span class="turn-indicator-dot"></span>
               <span id="turn-text" class="turn-text">Lượt của: Đang chuẩn bị...</span>
               <span id="round-status-badge" class="round-badge">Vòng 1</span>
+              <button id="btn-board-fullscreen" class="btn-board-fs" title="Toàn màn hình (Fullscreen)">⛶</button>
             </div>
 
             <!-- Lưới thẻ phát triển 3 tầng -->
@@ -438,6 +447,145 @@
         <div class="modal-footer">
           <button id="btn-submit-join" class="btn-gold-primary">VÀO PHÒNG</button>
         </div>
+      </div>
+    </div>
+
+    <!-- Modal Đăng Nhập Tài Khoản Google & Danh Tính Thương Gia -->
+    <div id="google-auth-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+      <div class="modal-content wood-panel auth-modal-box anim-modal-pop">
+        <div class="modal-header">
+          <div class="auth-header-title">
+            <span class="auth-royal-crown">👑</span>
+            <h2 id="auth-modal-title" class="modal-title">HỒ SƠ THƯƠNG GIA</h2>
+          </div>
+          <button id="btn-close-auth-modal" class="btn-close-modal" aria-label="Đóng cửa sổ">✕</button>
+        </div>
+        
+        <div class="modal-body auth-modal-body">
+          <!-- Khu vực Đăng Nhập Google Chính Thức -->
+          <div class="google-auth-section" id="google-auth-section">
+            <p class="auth-subtitle">Đăng nhập bằng tài khoản Google để lưu trữ thành tích và đồng bộ bảng vinh danh</p>
+            
+            <button type="button" id="btn-google-login-action" class="btn-google-primary">
+              <svg class="google-icon-svg" viewBox="0 0 48 48">
+                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                <path fill="none" d="M0 0h48v48H0z"/>
+              </svg>
+              <span id="google-btn-text">Tiếp Tục Với Tài Khoản Google</span>
+              <div class="google-spinner hidden" id="google-auth-spinner"></div>
+            </button>
+
+            <!-- Khối hiển thị thông tin khi đã đăng nhập Google -->
+            <div id="google-logged-info" class="google-logged-info hidden">
+              <div class="user-badge-online">
+                <span class="badge-dot-green"></span>
+                <span>Đã kết nối tài khoản Google</span>
+              </div>
+              <div class="user-email-display" id="user-email-display">user@gmail.com</div>
+              <button type="button" id="btn-google-signout" class="btn-wood-small">Đăng Xuất Khỏi Thiết Bị</button>
+            </div>
+          </div>
+
+          <!-- Phân cách -->
+          <div class="auth-divider">
+            <span class="divider-line"></span>
+            <span class="divider-text">HOẶC TÙY CHỈNH DANH TÍNH</span>
+            <span class="divider-line"></span>
+          </div>
+
+          <!-- Tùy chỉnh danh tính & Avatar -->
+          <div class="quick-identity-section">
+            <div class="identity-field">
+              <label for="input-custom-name">Tên hiển thị thương nhân:</label>
+              <input type="text" id="input-custom-name" maxlength="20" placeholder="Ví dụ: Leonardo, Medici, Tris..." class="auth-name-input">
+            </div>
+
+            <div class="avatar-selection-group">
+              <label>Biểu tượng Avatar Phục Hưng:</label>
+              <div class="avatar-palette" id="auth-avatar-palette">
+                <!-- 6 Avatar Hoàng Gia -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer auth-modal-footer">
+          <button id="btn-save-identity" class="btn-gold-primary">LƯU & XÁC NHẬN</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Lựa Chọn Chế Độ Online Đầy Hoạt Ảnh -->
+    <div id="online-choice-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="online-choice-title">
+      <div class="modal-content wood-panel online-choice-box anim-modal-pop">
+        <div class="modal-header">
+          <div class="online-header-badge">
+            <span class="radar-ping-icon"></span>
+            <h2 id="online-choice-title" class="modal-title">SẢNH THI ĐẤU TRỰC TUYẾN</h2>
+          </div>
+          <button id="btn-close-online-choice" class="btn-close-modal" aria-label="Đóng">✕</button>
+        </div>
+
+        <div class="modal-body online-choice-body">
+          <div class="server-status-bar">
+            <span class="status-indicator-live"></span>
+            <span class="status-label">Máy chủ Trực Tuyến Realtime (Socket.IO)</span>
+            <span id="server-ping-badge" class="ping-badge">Ping: 18ms</span>
+          </div>
+
+          <div class="online-options-grid">
+            <!-- Thẻ 1: Tạo phòng mới -->
+            <div class="online-option-card wood-card" id="card-create-room">
+              <div class="option-icon-glow">🏰</div>
+              <h3 class="option-title">TẠO PHÒNG MỚI</h3>
+              <p class="option-desc">Khởi tạo phòng chơi với mã 6 ký tự để gửi bạn bè cùng thi đấu từ xa</p>
+              
+              <div class="room-size-selector">
+                <label>Số người chơi trong phòng:</label>
+                <div class="size-buttons" id="create-room-size-btns">
+                  <button type="button" class="btn-size-chip" data-size="2">2 Người</button>
+                  <button type="button" class="btn-size-chip" data-size="3">3 Người</button>
+                  <button type="button" class="btn-size-chip active" data-size="4">4 Người</button>
+                </div>
+              </div>
+
+              <button type="button" id="btn-action-create-room" class="btn-gold-primary w-full">
+                <span>TẠO PHÒNG HOÀNG GIA</span>
+                <span class="arrow-sparkle">➔</span>
+              </button>
+            </div>
+
+            <!-- Thẻ 2: Vào phòng bằng mã -->
+            <div class="online-option-card wood-card" id="card-join-room">
+              <div class="option-icon-glow">🗝️</div>
+              <h3 class="option-title">VÀO PHÒNG ĐÃ CÓ</h3>
+              <p class="option-desc">Nhập mã phòng 6 ký tự do bạn bè chia sẻ để tham gia bàn thi đấu</p>
+
+              <div class="join-code-entry">
+                <label for="input-online-room-code">Mã phòng (6 ký tự):</label>
+                <input type="text" id="input-online-room-code" maxlength="6" placeholder="VÍ DỤ: AB12CD" autocomplete="off" autocapitalize="characters" class="room-code-input-glow">
+              </div>
+              <p id="online-join-error" class="input-error-msg hidden"></p>
+
+              <button type="button" id="btn-action-join-room" class="btn-wood-primary w-full">
+                <span>GIA NHẬP BÀN</span>
+                <span class="arrow-sparkle">➔</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lớp Đếm Ngược Trực Tuyến 3... 2... 1... Bắt Đầu! -->
+    <div id="game-countdown-overlay" class="game-countdown-overlay hidden" aria-hidden="true">
+      <div class="countdown-content">
+        <div class="countdown-title">TRẬN ĐẤU BẮT ĐẦU TRONG</div>
+        <div id="countdown-number" class="countdown-number">3</div>
+        <div class="countdown-subtitle">Chúc các vị đại thương gia chiến thắng rực rỡ!</div>
       </div>
     </div>
 

@@ -1,6 +1,281 @@
 /**
- * Splendor Board Game - Hiệu Ứng Chuyển Động & Hoạt Họa 60 FPS
+ * Splendor Board Game - Hiệu Ứng Chuyển Động & Hoạt Họa 60 FPS (animations.css)
  */
+
+/* ==========================================================================
+   1. POP-UP MODAL & OVERLAY ANIMATIONS
+   ========================================================================== */
+
+@keyframes modalPopIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.85) translateY(20px);
+  }
+  65% {
+    opacity: 1;
+    transform: scale(1.02) translateY(-2px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.anim-modal-pop {
+  animation: modalPopIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* Radar Ping cho Trạng Thái Server Online */
+@keyframes radarPulse {
+  0% {
+    transform: scale(0.92);
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.8);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 10px rgba(34, 197, 94, 0);
+  }
+  100% {
+    transform: scale(0.92);
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+  }
+}
+
+.radar-ping-icon {
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #22c55e;
+  animation: radarPulse 1.8s infinite;
+  flex-shrink: 0;
+}
+
+.status-indicator-live {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px #22c55e;
+  animation: radarPulse 2s infinite;
+}
+
+/* ==========================================================================
+   2. GOOGLE AUTH & BUTTON ANIMATIONS
+   ========================================================================== */
+
+.btn-google-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  padding: 11px 18px;
+  background: #ffffff;
+  color: #3c4043;
+  font-family: var(--font-sans-vietnamese);
+  font-size: 13.5px;
+  font-weight: 600;
+  border: 1px solid #dadce0;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-google-primary:hover {
+  background: #f8f9fa;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45), 0 0 16px rgba(66, 133, 244, 0.35);
+  transform: translateY(-2px);
+}
+
+.btn-google-primary:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.google-icon-svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.google-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #e0e0e0;
+  border-top-color: #4285f4;
+  border-radius: 50%;
+  animation: spinLoader 0.75s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spinLoader {
+  to { transform: rotate(360deg); }
+}
+
+/* Nút Toàn Màn Hình tiện lợi */
+.btn-board-fs {
+  background: rgba(43, 28, 19, 0.9);
+  border: 1px solid var(--gold-primary);
+  color: var(--gold-bright);
+  font-size: 14px;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  margin-left: auto;
+  transition: all var(--transition-fast);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.btn-board-fs:hover {
+  background: var(--gold-gradient);
+  color: #1a0f07;
+  transform: scale(1.08);
+}
+
+/* ==========================================================================
+   3. ONLINE LOBBY & COUNTDOWN ANIMATIONS
+   ========================================================================== */
+
+/* Nảy Slot Người Chơi Khi Có Người Tham Gia */
+@keyframes playerSlotPop {
+  0% { transform: scale(0.85); opacity: 0; filter: brightness(2); }
+  60% { transform: scale(1.04); filter: brightness(1.2); }
+  100% { transform: scale(1); opacity: 1; filter: brightness(1); }
+}
+
+.anim-slot-pop {
+  animation: playerSlotPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* Slot trống thở nhẹ */
+@keyframes slotPulse {
+  0%, 100% { border-color: rgba(184, 134, 11, 0.25); background: rgba(24, 15, 10, 0.6); }
+  50% { border-color: rgba(255, 215, 0, 0.6); background: rgba(36, 22, 14, 0.75); }
+}
+
+.lobby-player-slot:not(.occupied) {
+  animation: slotPulse 2.8s infinite ease-in-out;
+}
+
+/* Shimmer Ánh Kim Cho Mã Phòng */
+@keyframes goldSweep {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.code-huge {
+  background: linear-gradient(90deg, #ffd700 0%, #fff6cc 50%, #d4af37 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: goldSweep 3s linear infinite;
+}
+
+/* Nút Sao Chép Đã Nhấn */
+.btn-copied-success {
+  background: linear-gradient(135deg, #22c55e 0%, #15803d 100%) !important;
+  color: #ffffff !important;
+  border-color: #4ade80 !important;
+  transform: scale(1.05);
+}
+
+/* Màn Hình Đếm Ngược Hoàng Gia */
+.game-countdown-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: radial-gradient(circle at center, rgba(30, 18, 11, 0.95) 0%, rgba(10, 5, 2, 0.98) 100%);
+  backdrop-filter: blur(8px);
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.countdown-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.countdown-title {
+  font-family: var(--font-serif-royal);
+  color: var(--text-parchment);
+  letter-spacing: 3px;
+  font-size: clamp(14px, 2.5vw, 22px);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.countdown-subtitle {
+  font-family: var(--font-sans-vietnamese);
+  color: var(--gold-light);
+  font-size: clamp(12px, 1.8vw, 16px);
+  font-style: italic;
+}
+
+@keyframes countdownPulse {
+  0% { transform: scale(0.3); opacity: 0; filter: drop-shadow(0 0 40px #ffd700); }
+  50% { transform: scale(1.2); opacity: 1; filter: drop-shadow(0 0 60px #ffd700); }
+  75% { transform: scale(0.95); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.countdown-number {
+  font-family: var(--font-serif-royal);
+  font-size: clamp(80px, 18vw, 160px);
+  font-weight: 900;
+  color: var(--gold-bright);
+  text-shadow: 0 0 35px rgba(255, 215, 0, 0.9), 0 0 70px rgba(255, 165, 0, 0.6);
+  animation: countdownPulse 0.9s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* ==========================================================================
+   4. IN-GAME TURN & ACTION ANIMATIONS
+   ========================================================================== */
+
+/* Hào Quang Cho Lượt Đi Của Tôi */
+@keyframes turnBannerPulse {
+  0%, 100% {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.6), inset 0 0 8px rgba(255,215,0,0.2);
+    border-color: var(--wood-border);
+  }
+  50% {
+    box-shadow: 0 0 24px rgba(255, 215, 0, 0.7), inset 0 0 16px rgba(255, 215, 0, 0.5);
+    border-color: var(--gold-bright);
+  }
+}
+
+.turn-announcer.my-turn {
+  animation: turnBannerPulse 1.8s infinite ease-in-out;
+  border-color: var(--gold-bright);
+}
+
+/* Vòng Hào Quang Xoay Quanh Avatar Đang Đến Lượt */
+@keyframes haloSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.active-turn-glow {
+  position: relative;
+}
+
+.active-turn-glow::after {
+  content: '';
+  position: absolute;
+  top: -4px; left: -4px; right: -4px; bottom: -4px;
+  border-radius: 50%;
+  border: 2px dashed #ffd700;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+  animation: haloSpin 6s linear infinite;
+  pointer-events: none;
+}
 
 /* Lật thẻ khi chia bài mới */
 @keyframes cardFlipIn {

@@ -277,3 +277,376 @@
   font-size: 12px;
   text-align: center;
 }
+
+/* ==========================================================================
+   MODAL ĐĂNG NHẬP GOOGLE & HỒ SƠ THƯƠNG GIA
+   ========================================================================== */
+
+.auth-modal-box {
+  max-width: 480px;
+  width: 92%;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  background: linear-gradient(180deg, #2b1b12 0%, #1a0f08 100%);
+  border: 2px solid var(--gold-primary);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9), 0 0 25px rgba(212, 175, 55, 0.4);
+}
+
+.auth-header-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.auth-royal-crown {
+  font-size: 22px;
+  filter: drop-shadow(0 0 8px #ffd700);
+}
+
+.auth-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.google-auth-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: rgba(15, 8, 4, 0.65);
+  padding: 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.auth-subtitle {
+  font-size: 12px;
+  color: var(--text-parchment-muted);
+  text-align: center;
+  line-height: 1.4;
+}
+
+.google-logged-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: var(--radius-sm);
+}
+
+.user-badge-online {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #4ade80;
+}
+
+.badge-dot-green {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 6px #22c55e;
+}
+
+.user-email-display {
+  font-size: 12px;
+  color: var(--gold-light);
+  font-family: monospace;
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 2px 0;
+}
+
+.divider-line {
+  flex: 1;
+  height: 1px;
+  background: rgba(212, 175, 55, 0.25);
+}
+
+.divider-text {
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--gold-dark);
+  font-weight: 700;
+}
+
+.quick-identity-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.identity-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.identity-field label {
+  font-size: 11.5px;
+  color: var(--text-parchment-muted);
+  font-weight: 600;
+}
+
+.auth-name-input {
+  background: rgba(14, 8, 4, 0.8);
+  border: 1px solid var(--wood-border);
+  color: var(--text-parchment);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-family: var(--font-sans-vietnamese);
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.auth-name-input:focus {
+  border-color: var(--gold-bright);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+}
+
+.avatar-selection-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.avatar-selection-group label {
+  font-size: 11.5px;
+  color: var(--text-parchment-muted);
+  font-weight: 600;
+}
+
+.avatar-palette {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+}
+
+.avatar-choice-item {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid var(--wood-border);
+  background: rgba(20, 10, 5, 0.8);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  overflow: hidden;
+  padding: 2px;
+}
+
+.avatar-choice-item img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.avatar-choice-item:hover {
+  border-color: var(--gold-light);
+  transform: scale(1.1);
+}
+
+.avatar-choice-item.selected {
+  border-color: var(--gold-bright);
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.8);
+  transform: scale(1.15);
+}
+
+.auth-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid var(--wood-border);
+  padding-top: 12px;
+}
+
+/* ==========================================================================
+   MODAL LỰA CHỌN CHẾ ĐỘ THI ĐẤU ONLINE
+   ========================================================================== */
+
+.online-choice-box {
+  max-width: 680px;
+  width: 94%;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  background: linear-gradient(180deg, #2b1b12 0%, #170d07 100%);
+  border: 2px solid var(--gold-primary);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.95), 0 0 28px rgba(212, 175, 55, 0.4);
+}
+
+.online-header-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.online-choice-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.server-status-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(14, 8, 4, 0.7);
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.status-label {
+  font-size: 11.5px;
+  color: var(--text-parchment-muted);
+  flex: 1;
+}
+
+.ping-badge {
+  font-family: monospace;
+  font-size: 11px;
+  color: #4ade80;
+  font-weight: 700;
+  background: rgba(34, 197, 94, 0.15);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.online-options-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 600px) {
+  .online-options-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.online-option-card {
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  border: 1.5px solid var(--wood-border);
+  background: linear-gradient(180deg, #321e14 0%, #20130c 100%);
+}
+
+.option-icon-glow {
+  font-size: 38px;
+  filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+}
+
+.option-title {
+  font-family: var(--font-serif-royal);
+  font-size: 15px;
+  color: var(--gold-bright);
+  letter-spacing: 1px;
+}
+
+.option-desc {
+  font-size: 12px;
+  color: var(--text-parchment-muted);
+  line-height: 1.4;
+  flex: 1;
+}
+
+.room-size-selector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.room-size-selector label {
+  font-size: 11px;
+  color: var(--text-parchment-muted);
+}
+
+.size-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.btn-size-chip {
+  background: rgba(14, 8, 4, 0.8);
+  border: 1px solid var(--wood-border);
+  color: var(--text-parchment);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-size-chip.active {
+  background: var(--gold-gradient);
+  color: #1a0f07;
+  border-color: var(--gold-bright);
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+}
+
+.join-code-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.join-code-entry label {
+  font-size: 11px;
+  color: var(--text-parchment-muted);
+}
+
+.room-code-input-glow {
+  background: #110905;
+  border: 1.5px solid var(--gold-primary);
+  color: var(--gold-bright);
+  font-family: monospace;
+  font-size: 18px;
+  font-weight: 800;
+  text-align: center;
+  letter-spacing: 3px;
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+  outline: none;
+  width: 100%;
+  transition: all var(--transition-fast);
+}
+
+.room-code-input-glow:focus {
+  border-color: #ffd700;
+  box-shadow: 0 0 14px rgba(255, 215, 0, 0.6);
+}
+
+.w-full {
+  width: 100%;
+}
+
+.arrow-sparkle {
+  margin-left: 6px;
+  font-size: 13px;
+}

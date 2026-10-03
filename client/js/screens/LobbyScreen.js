@@ -1,5 +1,6 @@
 /**
  * Splendor Board Game - Màn Hình Phòng Chờ Online (LobbyScreen.js)
+ * Tích hợp hiệu ứng sao chép ánh kim, slot nảy sinh động và đếm ngược chuyển trận
  */
 
 class LobbyScreen {
@@ -16,6 +17,7 @@ class LobbyScreen {
 
     if (btnBack) {
       btnBack.addEventListener('click', () => {
+        if (window.SplendorSound) SplendorSound.playClick();
         SplendorSocket.leaveRoom();
         window.SplendorApp.showScreen('home');
       });
@@ -25,12 +27,23 @@ class LobbyScreen {
       btnCopy.addEventListener('click', () => {
         if (this.currentRoom) {
           SplendorHelpers.copyToClipboard(this.currentRoom.code, `Đã sao chép mã phòng: ${this.currentRoom.code}`);
+          if (window.SplendorSound) SplendorSound.playTakeChip();
+
+          // Hiệu ứng nút đổi màu xanh lục và thông báo
+          const originalText = btnCopy.textContent;
+          btnCopy.classList.add('btn-copied-success');
+          btnCopy.textContent = '✓ ĐÃ SAO CHÉP!';
+          setTimeout(() => {
+            btnCopy.classList.remove('btn-copied-success');
+            btnCopy.textContent = originalText;
+          }, 2000);
         }
       });
     }
 
     if (btnReady) {
       btnReady.addEventListener('click', () => {
+        if (window.SplendorSound) SplendorSound.playClick();
         SplendorSocket.toggleReady();
       });
     }
@@ -38,8 +51,10 @@ class LobbyScreen {
     if (btnStart) {
       btnStart.addEventListener('click', () => {
         if (this.currentRoom && this.currentRoom.players.length >= 2) {
-          // Bắt đầu game online
-          window.SplendorApp.startOnlineGame(this.currentRoom);
+          // Bắt đầu game online với hoạt ảnh đếm ngược hoàng gia
+          window.SplendorApp.runGameCountdown(() => {
+            window.SplendorApp.startOnlineGame(this.currentRoom);
+          });
         }
       });
     }
@@ -82,10 +97,10 @@ class LobbyScreen {
         const slotEl = document.createElement('div');
 
         if (player) {
-          slotEl.className = 'lobby-player-slot occupied';
+          slotEl.className = 'lobby-player-slot occupied anim-slot-pop';
           slotEl.innerHTML = `
             <div class="lobby-player-info">
-              <img class="lobby-avatar" src="${player.avatar || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%236b4423'/%3E%3Ctext x='50' y='60' font-size='40' text-anchor='middle' fill='%23e6c387'%3E👤%3C/text%3E%3C/svg%3E"}" alt="">
+              <img class="lobby-avatar" src="${player.avatar || "assets/nobles/king.jpg"}" alt="">
               <div>
                 <span class="lobby-player-name">${player.name}</span>
                 ${player.isHost ? '<span class="lobby-host-tag">CHỦ PHÒNG</span>' : ''}
@@ -98,8 +113,8 @@ class LobbyScreen {
         } else {
           slotEl.className = 'lobby-player-slot';
           slotEl.innerHTML = `
-            <div class="lobby-player-info" style="opacity: 0.4;">
-              <div class="lobby-avatar" style="border-style: dashed; display:flex; align-items:center; justify-content:center;">+</div>
+            <div class="lobby-player-info" style="opacity: 0.5;">
+              <div class="lobby-avatar" style="border-style: dashed; display:flex; align-items:center; justify-content:center; color: var(--gold-light);">+</div>
               <span class="lobby-player-name">Đang chờ người chơi...</span>
             </div>
           `;
@@ -130,7 +145,7 @@ class LobbyScreen {
         } else if (!allReady) {
           if (statusMsgEl) statusMsgEl.textContent = 'Đang chờ tất cả người chơi sẵn sàng...';
         } else {
-          if (statusMsgEl) statusMsgEl.textContent = 'Mọi người đã sẵn sàng! Chủ phòng có thể bắt đầu ngay.';
+          if (statusMsgEl) statusMsgEl.textContent = '✨ Mọi người đã sẵn sàng! Bấm nút để bắt đầu.';
         }
       } else {
         startBtn.classList.add('hidden');

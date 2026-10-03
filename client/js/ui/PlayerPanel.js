@@ -12,12 +12,14 @@ class PlayerPanel {
     // Tên & Avatar & Điểm Uy Tín
     const nameEl = document.getElementById('mat-player-name');
     const avatarEl = document.getElementById('mat-avatar');
+    const avatarBox = avatarEl?.parentElement;
     const pointsEl = document.getElementById('mat-points-value');
     const tokenTagEl = document.getElementById('mat-token-count-tag');
     const reservedTagEl = document.getElementById('mat-reserved-count-tag');
 
     if (nameEl) nameEl.textContent = player.name;
     if (avatarEl && player.avatar) avatarEl.src = player.avatar;
+    if (avatarBox) avatarBox.classList.toggle('active-turn-glow', !!isCurrentTurn);
     if (pointsEl) pointsEl.textContent = player.prestigePoints;
 
     const totalTokens = ALL_TOKENS.reduce((s, g) => s + (player.tokens[g] || 0), 0);
@@ -85,8 +87,8 @@ class PlayerPanel {
 
       oppCard.innerHTML = `
         <div class="opp-header">
-          <div class="opp-name-box">
-            <img class="opp-avatar" src="${opp.avatar || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%236b4423'/%3E%3Ctext x='50' y='60' font-size='40' text-anchor='middle' fill='%23e6c387'%3E👤%3C/text%3E%3C/svg%3E"}" alt="">
+          <div class="opp-name-box ${isTurn ? 'active-turn-glow' : ''}">
+            <img class="opp-avatar" src="${opp.avatar || "assets/nobles/king.jpg"}" alt="">
             <span class="opp-name" title="${opp.name}">${opp.name}</span>
           </div>
           <div class="opp-pts-badge">${opp.prestigePoints}đ</div>

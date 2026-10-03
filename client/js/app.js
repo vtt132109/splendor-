@@ -17,8 +17,9 @@ class SplendorApp {
     // 2. Khởi tạo xác thực & header
     this.initAuthHeader();
 
-    // 3. Khởi tạo thanh điều khiển Header (Âm thanh, Luật chơi, Logo)
+    // 3. Khởi tạo thanh điều khiển Header (Âm thanh, Toàn màn hình, Luật chơi, Logo)
     this.initHeaderControls();
+    this.initFullscreenControls();
 
     // 4. Khởi tạo Modal vào phòng
     this.initJoinModal();
@@ -40,27 +41,109 @@ class SplendorApp {
     const avatarEl = document.getElementById('user-avatar');
     const nameEl = document.getElementById('user-name');
     const authBtn = document.getElementById('btn-auth-action');
+    const userProfileBox = document.getElementById('user-profile-header');
 
     SplendorAuth.onAuthStateChanged((user) => {
       if (user) {
         if (avatarEl && user.avatar) avatarEl.src = user.avatar;
         if (nameEl) nameEl.textContent = user.name;
         if (authBtn) {
-          authBtn.textContent = user.isLoggedIn ? 'Đăng Xuất' : 'Đăng Nhập';
+          authBtn.textContent = user.isLoggedIn ? (user.isGoogle ? 'Google' : 'Hồ Sơ') : 'Đăng Nhập';
+          authBtn.title = user.isLoggedIn ? 'Xem & sửa hồ sơ thương gia' : 'Đăng nhập Google';
         }
       }
     });
 
-    if (authBtn) {
-      authBtn.addEventListener('click', () => {
-        const user = SplendorAuth.getUser();
-        if (user.isLoggedIn) {
-          SplendorAuth.logout();
-        } else {
-          SplendorAuth.loginWithGoogle();
-        }
-      });
+    const openAuth = () => {
+      if (window.SplendorSound) SplendorSound.playClick();
+      SplendorAuth.openModal();
+    };
+
+    if (userProfileBox) {
+      userProfileBox.addEventListener('click', openAuth);
+      userProfileBox.style.cursor = 'pointer';
     }
+  }
+
+  initFullscreenControls() {
+    const fsBtn = document.getElementById('btn-toggle-fullscreen');
+    const boardFsBtn = document.getElementById('btn-board-fullscreen');
+    const fsIcon = document.getElementById('header-fs-icon');
+    const fsText = document.getElementById('header-fs-text');
+
+    const updateFsIcons = () => {
+      const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+      if (fsIcon) fsIcon.textContent = isFs ? '🗗' : '⛶';
+      if (fsText) fsText.textContent = isFs ? 'Thu Nhỏ' : 'Toàn Màn Hình';
+      if (boardFsBtn) boardFsBtn.textContent = isFs ? '🗗' : '⛶';
+      if (fsBtn) fsBtn.title = isFs ? 'Thu nhỏ cửa sổ' : 'Toàn màn hình';
+    };
+
+    const toggleFs = () => {
+      if (window.SplendorSound) SplendorSound.playClick();
+      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        const docEl = document.documentElement;
+        if (docEl.requestFullscreen) {
+          docEl.requestFullscreen().catch(err => {
+            console.log('[Fullscreen] request error:', err);
+            SplendorHelpers.showToast('Vui lòng cấp quyền toàn màn hình trên trình duyệt.', 'info');
+          });
+        } else if (docEl.webkitRequestFullscreen) {
+          docEl.webkitRequestFullscreen();
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen().catch(e => console.log(e));
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        }
+      }
+    };
+
+    if (fsBtn) fsBtn.addEventListener('click', toggleFs);
+    if (boardFsBtn) boardFsBtn.addEventListener('click', toggleFs);
+
+    document.addEventListener('fullscreenchange', updateFsIcons);
+    document.addEventListener('webkitfullscreenchange', updateFsIcons);
+    updateFsIcons();
+  }
+
+  runGameCountdown(callback) {
+    const overlay = document.getElementById('game-countdown-overlay');
+    const numEl = document.getElementById('countdown-number');
+    if (!overlay || !numEl) {
+      if (callback) callback();
+      return;
+    }
+
+    overlay.classList.remove('hidden');
+    let count = 3;
+    numEl.textContent = count;
+    numEl.style.animation = 'none';
+    numEl.offsetHeight; // trigger reflow
+    numEl.style.animation = null;
+    if (window.SplendorSound) SplendorSound.playTakeChip();
+
+    const interval = setInterval(() => {
+      count--;
+      if (count > 0) {
+        numEl.textContent = count;
+        numEl.style.animation = 'none';
+        numEl.offsetHeight;
+        numEl.style.animation = null;
+        if (window.SplendorSound) SplendorSound.playTakeChip();
+      } else if (count === 0) {
+        numEl.textContent = 'BẮT ĐẦU!';
+        numEl.style.animation = 'none';
+        numEl.offsetHeight;
+        numEl.style.animation = null;
+        if (window.SplendorSound) SplendorSound.playNobleVisit();
+      } else {
+        clearInterval(interval);
+        overlay.classList.add('hidden');
+        if (callback) callback();
+      }
+    }, 850);
   }
 
   initHeaderControls() {

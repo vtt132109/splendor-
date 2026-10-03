@@ -4,3 +4,5 @@ server/node_modules/
 .env
 .DS_Store
 Thumbs.db
+.agents/
+skills-lock.json
