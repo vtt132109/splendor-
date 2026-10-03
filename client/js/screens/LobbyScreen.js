@@ -51,9 +51,16 @@ class LobbyScreen {
     if (btnStart) {
       btnStart.addEventListener('click', () => {
         if (this.currentRoom && this.currentRoom.players.length >= 2) {
-          // Bắt đầu game online với hoạt ảnh đếm ngược hoàng gia
-          window.SplendorApp.runGameCountdown(() => {
-            window.SplendorApp.startOnlineGame(this.currentRoom);
+          if (window.SplendorSound) SplendorSound.playClick();
+          btnStart.disabled = true;
+          btnStart.textContent = 'ĐANG KHỞI TẠO...';
+
+          SplendorSocket.startGame().then(res => {
+            if (res && res.success === false) {
+              btnStart.disabled = false;
+              btnStart.textContent = 'BẮT ĐẦU TRẬN ĐẤU';
+              SplendorHelpers.showToast(res.message || 'Không thể bắt đầu trận đấu!', 'error');
+            }
           });
         }
       });
@@ -62,6 +69,14 @@ class LobbyScreen {
     // Lắng nghe cập nhật phòng từ Socket.IO
     SplendorSocket.on('room:updated', (room) => {
       this.updateRoom(room);
+    });
+
+    // Lắng nghe tín hiệu bắt đầu trận đấu từ máy chủ (đồng bộ toàn bộ phòng: PC & Điện thoại)
+    SplendorSocket.on('game:started', (data) => {
+      console.log('[Lobby] Nhận game:started từ máy chủ:', data);
+      window.SplendorApp.runGameCountdown(() => {
+        window.SplendorApp.startOnlineGameWithState(data.gameState);
+      });
     });
   }
 
@@ -139,6 +154,9 @@ class LobbyScreen {
         startBtn.classList.remove('hidden');
         const allReady = room.players.length >= 2 && room.players.every(p => p.isReady);
         startBtn.disabled = !allReady;
+        if (!startBtn.disabled) {
+          startBtn.textContent = 'BẮT ĐẦU TRẬN ĐẤU';
+        }
 
         if (room.players.length < 2) {
           if (statusMsgEl) statusMsgEl.textContent = 'Cần ít nhất 2 người chơi để bắt đầu trận đấu.';

@@ -7,12 +7,20 @@
     "start": "node index.js",
     "dev": "node --watch index.js"
   },
-  "keywords": ["splendor", "boardgame", "socketio", "multiplayer"],
+  "keywords": [
+    "splendor",
+    "boardgame",
+    "socketio",
+    "multiplayer"
+  ],
   "author": "Tris",
   "license": "MIT",
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "socket.io": "^4.7.5"
+  },
+  "devDependencies": {
+    "socket.io-client": "^4.8.4"
   }
 }

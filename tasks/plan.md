@@ -896,4 +896,96 @@ splendor/
 | 5. Local & AI | 3 (+ 4 phần nhỏ) | Lớn |
 | 6. Online Multiplayer | 4 | Lớn |
 | 7. Hoàn thiện | 4 | TB |
-| **Tổng** | **25 công việc** | — |
+| 8. Sửa Lỗi Đồng Bộ Realtime | 6 | TB |
+| **Tổng** | **31 công việc** | — |
+
+---
+
+# Giai Đoạn 8: Khắc Phục Triệt Để Lỗi Đồng Bộ Chơi Online & Chuyển Trận Đấu (Điện Thoại & Khách)
+
+## 1. Báo Cáo Rà Soát Đa Trục (Code Review & Quality Findings)
+
+### 🔴 Lỗi 1: Chủ phòng (Host) bấm nút bắt đầu chỉ chạy cục bộ (Client-only Local Trigger)
+- **Vị trí:** `client/js/screens/LobbyScreen.js` (dòng 51–60)
+- **Hiện trạng:** Khi chủ phòng bấm `btn-lobby-start`, mã lệnh chỉ gọi `window.SplendorApp.runGameCountdown()` và `window.SplendorApp.startOnlineGame(this.currentRoom)` trực tiếp trên máy chủ phòng. **Hoàn toàn không gửi bất kỳ sự kiện nào lên server!**
+- **Hậu quả:** Server không hề biết trận đấu đã bắt đầu, không đổi trạng thái phòng sang `PLAYING`, và các thiết bị khách (như điện thoại tham gia) hoàn toàn không nhận được tín hiệu gì, vĩnh viễn kẹt ở phòng chờ (`LobbyScreen`).
+
+### 🔴 Lỗi 2: Thiếu phương thức phát và nhận sự kiện `game:started` ở tầng mạng (`SocketClient.js`)
+- **Vị trí:** `client/js/network/SocketClient.js`
+- **Hiện trạng:** 
+  1. Chưa có hàm `startGame(roomCode)` để gửi `room:start` lên server.
+  2. Trong hàm `init()`, socket client chỉ lắng nghe `room:updated`, `room:player_left`, `game:state_updated`, `latency:pong`. Không hề đăng ký nhận `game:started`.
+- **Hậu quả:** Tầng mạng bỏ qua hoàn toàn thông điệp khởi động ván đấu từ server.
+
+### 🔴 Lỗi 3: Chưa có cơ chế đồng bộ hoạt ảnh đếm ngược và chuyển màn hình tập trung
+- **Vị trí:** `client/js/screens/LobbyScreen.js`, `client/js/app.js`
+- **Hiện trạng:** Hoạt ảnh đếm ngược 3... 2... 1... hoàng gia (`runGameCountdown`) chỉ được kích hoạt đơn phương bởi nút bấm của chủ phòng, thay vì phản hồi lại sự kiện `game:started` từ server phát tới tất cả người chơi trong phòng.
+- **Giải pháp:** Khi server phát `game:started` kèm `gameState`, mọi client trong phòng (cả chủ phòng PC lẫn khách trên điện thoại) cùng lúc bật overlay đếm ngược 3... 2... 1..., sau đó đồng loạt chuyển vào `screen-game`.
+
+### 🔴 Lỗi 4: Khởi tạo bàn chơi Online dùng ngẫu nhiên cục bộ thay vì GameState có thẩm quyền từ Server
+- **Vị trí:** `client/js/app.js` (`startOnlineGame`) & `client/js/screens/GameScreen.js` (`startNewGame`)
+- **Hiện trạng:** Hàm `startOnlineGame` gọi `SplendorGameScreen.startNewGame(configs, 'ONLINE', myIdx)` tạo ra một đối tượng `SplendorGameState.createNewGame()` mới toanh trên máy khách. Hàm này gọi `Math.random()` xáo bài riêng, khiến các máy trong cùng phòng sẽ nhìn thấy bộ bài và đá quý khác nhau hoàn toàn nếu cùng vào game.
+- **Giải pháp:** Server đã có sẵn logic sinh `GameState` chuẩn tại `server/index.js` (dòng 208). Client khi nhận `game:started` phải nạp trạng thái bằng `SplendorGameState.fromJSON(serverGameState)` để mọi người chơi có chung 1 bàn cờ chính xác 100%.
+
+### 🔴 Lỗi 5: Thao tác trong trận đấu Online bị xử lý cục bộ, không gửi lệnh lên Server
+- **Vị trí:** `client/js/screens/GameScreen.js` (dòng 13–92)
+- **Hiện trạng:** Khi người chơi lấy ngọc (`takeThreeGems`, `takeTwoSameGems`), mua thẻ (`purchaseCard`), giữ thẻ (`reserveCard`), các listener gọi thẳng vào `this.gameEngine` nội bộ trên máy đó mà không gọi `SplendorSocket.sendGameAction(actionType, actionData)`.
+- **Hậu quả:** Người này đi nước cờ thì người kia trên điện thoại không thấy cập nhật, lượt chơi không chuyển qua mạng.
+
+---
+
+## 2. Kế Hoạch Nhiệm Vụ Chi Tiết (Phase 8 Task Breakdown)
+
+### Task 26: Hoàn thiện tầng giao thức mạng Socket (`SocketClient.js`)
+- **Mô tả:** Thêm phương thức `startGame()` gửi sự kiện `room:start` kèm callback phản hồi. Đăng ký listener sự kiện `game:started` trong `init()` và chuyển tiếp vào hệ thống sự kiện nội bộ `emitLocal('game:started', data)`.
+- **Tiêu chí hoàn thành:**
+  - `SplendorSocket.startGame()` gửi đúng định dạng `room:start`.
+  - Khi server phát `game:started`, `SocketClient` kích hoạt callback nội bộ kèm dữ liệu `gameState`.
+- **File:** `client/js/network/SocketClient.js`
+- **Phạm vi:** Nhỏ (S, 1 file)
+
+### Task 27: Sửa nút Bắt Đầu ở Phòng Chờ (`LobbyScreen.js`)
+- **Mô tả:** Thay đổi sự kiện click nút `#btn-lobby-start`: Khi chủ phòng bấm, hiển thị trạng thái đang gửi lệnh và gọi `SplendorSocket.startGame()`. Nếu server báo lỗi (ví dụ chưa đủ người, chưa sẵn sàng), hiển thị Toast thông báo lỗi. Không tự ý chuyển màn hình tại đây.
+- **Tiêu chí hoàn thành:**
+  - Nút bắt đầu gửi tín hiệu qua Socket lên server.
+  - Xử lý mượt mà khi server trả về lỗi hoặc thành công.
+- **File:** `client/js/screens/LobbyScreen.js`
+- **Phạm vi:** Nhỏ (S, 1 file)
+
+### Task 28: Đồng bộ đếm ngược & Chuyển màn hình cho toàn bộ phòng
+- **Mô tả:** Lắng nghe sự kiện `game:started` trên `LobbyScreen.js` (hoặc `app.js`). Khi nhận được sự kiện:
+  1. Cả chủ phòng và người chơi khách (điện thoại) cùng chạy hoạt ảnh đếm ngược `window.SplendorApp.runGameCountdown()`.
+  2. Khi đếm ngược kết thúc, tự động gọi `window.SplendorApp.startOnlineGameWithState(data.gameState)`.
+- **Tiêu chí hoàn thành:**
+  - Cả PC và điện thoại đồng loạt hiển thị overlay đếm ngược 3... 2... 1...
+  - Cả hai thiết bị đồng loạt chuyển sang màn hình `#screen-game`.
+- **File:** `client/js/screens/LobbyScreen.js`, `client/js/app.js`
+- **Phạm vi:** Nhỏ (S, 2 files)
+
+### Task 29: Khởi tạo bàn chơi Online với GameState có thẩm quyền từ Server
+- **Mô tả:** Xây dựng hàm `startOnlineGameWithState(serverStateJSON)` trong `app.js` và `initFromOnlineState(serverStateJSON, myIndex)` trong `GameScreen.js`. Sử dụng `SplendorGameState.fromJSON(serverStateJSON)` để khôi phục chính xác 100% bàn cờ, bài 3 tầng, đá quý và lượt đi đầu tiên.
+- **Tiêu chí hoàn thành:**
+  - Cả 2 máy hiển thị cùng một bộ bài Tier 1, Tier 2, Tier 3 và các Quý tộc giống hệt nhau.
+  - Vị trí `myPlayerIndex` được gán chính xác theo Socket ID của từng thiết bị.
+- **File:** `client/js/app.js`, `client/js/screens/GameScreen.js`
+- **Phạm vi:** Trung bình (M, 2 files)
+
+### Task 30: Đồng bộ hành động người chơi trong trận đấu Online (`GameScreen.js`)
+- **Mô tả:** 
+  1. Trong `GameScreen.js`, nếu `this.gameState.mode === 'ONLINE'`: các thao tác lấy ngọc, mua thẻ, giữ chỗ, trả ngọc, chọn quý tộc sẽ gửi payload qua `SplendorSocket.sendGameAction(actionType, actionData)`.
+  2. Lắng nghe `game:state_updated` từ server: Khi nhận được trạng thái mới, cập nhật `this.gameState = SplendorGameState.fromJSON(data.gameState)`, phát âm thanh tương ứng với hành động của đối thủ, và vẽ lại bàn chơi (`this.render()`).
+  3. Khóa tương tác khi chưa đến lượt (`this.gameState.currentPlayerIndex !== this.myPlayerIndex`).
+- **Tiêu chí hoàn thành:**
+  - Thao tác trên một máy ngay lập tức được server xử lý và cập nhật lên máy còn lại.
+  - Lượt chơi chuyển mượt mà giữa PC và điện thoại.
+- **File:** `client/js/screens/GameScreen.js`, `server/index.js`
+- **Phạm vi:** Trung bình (M, 2 files)
+
+### Task 31: Kiểm thử đa thiết bị (PC Host + Phone Guest)
+- **Mô tả:** Sử dụng kịch bản kiểm thử đa socket (CDP headless hoặc mô phỏng 2 phiên trình duyệt đồng thời) để xác thực toàn bộ luồng: Tạo phòng → Nhập mã trên điện thoại → Cả 2 sẵn sàng → Chủ phòng bấm Bắt đầu → Cả 2 đếm ngược → Cả 2 vào bàn cờ cùng trạng thái → Lấy đá quý đồng bộ thành công.
+- **Tiêu chí hoàn thành:**
+  - Không còn hiện tượng điện thoại bị kẹt ở phòng chờ.
+  - Ván đấu diễn ra trơn tru giữa 2 thiết bị.
+- **File:** `scratch/test-online-sync.js` (hoặc headless test)
+- **Phạm vi:** Nhỏ (S)
+

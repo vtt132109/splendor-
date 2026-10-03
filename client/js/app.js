@@ -394,8 +394,21 @@ class SplendorApp {
     this.showScreen('lobby');
   }
 
+  startOnlineGameWithState(serverGameState) {
+    if (!serverGameState) return;
+
+    const mySocketId = SplendorSocket.socket?.id;
+    let myIdx = (serverGameState.players || []).findIndex(p => p.id === mySocketId);
+    if (myIdx === -1) myIdx = 0;
+
+    window.lastGameConfig = { players: serverGameState.players, mode: 'ONLINE' };
+    this.showGameScreen();
+    SplendorGameScreen.initFromOnlineState(serverGameState, myIdx);
+  }
+
   startOnlineGame(room) {
-    const configs = room.players.map(p => ({
+    if (!room) return;
+    const configs = (room.players || []).map(p => ({
       id: p.id,
       name: p.name,
       avatar: p.avatar,

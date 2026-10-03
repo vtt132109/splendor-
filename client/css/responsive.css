@@ -302,11 +302,13 @@
   #screen-game.screen {
     overflow: auto;
     padding: 4px;
+    -webkit-overflow-scrolling: touch;
   }
 
-  .board-container {
-    min-width: 680px;
-    transform-origin: top left;
+  .game-layout {
+    min-width: 760px;
+    height: auto;
+    min-height: calc(100vh - 120px);
   }
 }
 

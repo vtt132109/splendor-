@@ -122,6 +122,35 @@ io.on('connection', (socket) => {
       }
 
       if (room.status !== 'LOBBY') {
+        // Kiểm tra xem người này có phải là người chơi cũ đang kết nối lại vào ván đấu không
+        const existingPlayer = room.players.find(p => (player?.uid && p.uid === player.uid) || p.name === player?.name);
+        if (existingPlayer) {
+          const oldSocketId = existingPlayer.id;
+          existingPlayer.id = socket.id;
+          existingPlayer.connected = true;
+
+          // Cập nhật socket id trong gameState nếu có
+          if (room.gameState && room.gameState.players) {
+            const gp = room.gameState.players.find(p => p.id === oldSocketId || (player?.uid && p.id === player.uid) || p.name === existingPlayer.name);
+            if (gp) gp.id = socket.id;
+          }
+
+          socket.join(cleanCode);
+          socket.currentRoom = cleanCode;
+
+          console.log(`[Phòng] Người chơi ${existingPlayer.name} đã kết nối lại ván đấu đang diễn ra trong phòng ${cleanCode}`);
+
+          if (typeof callback === 'function') {
+            callback({ success: true, room, reconnected: true, gameState: room.gameState ? room.gameState.toJSON() : null });
+          }
+
+          io.to(cleanCode).emit('room:updated', room);
+          if (room.gameState) {
+            socket.emit('game:started', { gameState: room.gameState.toJSON() });
+          }
+          return;
+        }
+
         if (typeof callback === 'function') {
           callback({ success: false, message: 'Trận đấu trong phòng này đã bắt đầu!' });
         }
@@ -197,6 +226,12 @@ io.on('connection', (socket) => {
       return;
     }
 
+    const notReady = room.players.some(p => !p.isReady);
+    if (notReady) {
+      if (typeof callback === 'function') callback({ success: false, message: 'Tất cả người chơi phải sẵn sàng mới có thể bắt đầu!' });
+      return;
+    }
+
     try {
       const playerConfigs = room.players.map(p => ({
         id: p.id,
@@ -208,6 +243,8 @@ io.on('connection', (socket) => {
       room.gameState = GameState.createNewGame(playerConfigs, 'ONLINE');
       room.gameEngine = new GameEngine(room.gameState);
       room.status = 'PLAYING';
+
+      console.log(`[Game] Trận đấu phòng ${code} chính thức bắt đầu với ${room.players.length} người chơi!`);
 
       io.to(code).emit('room:updated', room);
       io.to(code).emit('game:started', { gameState: room.gameState.toJSON() });

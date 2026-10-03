@@ -45,3 +45,12 @@
   - [x] Task 23: SoundManager & hiệu ứng âm thanh cổ điển Web Audio (`SoundManager.js`)
   - [x] Task 24: Hướng dẫn luật chơi trực quan (Cách Chơi) (`i18n.js`, modal)
   - [x] Task 25: Tối ưu PWA, mobile landscape lock, xử lý biên
+
+- [x] **Giai Đoạn 8: Sửa Lỗi Đồng Bộ Realtime & Chuyển Trận Đấu Online (Phase 8: Online Sync & Transition Fix)**
+  - [x] Task 26: Hoàn thiện tầng giao thức mạng Socket (`SocketClient.js`) — bổ sung method `startGame()`, event listener `game:started`, `game:state_updated`
+  - [x] Task 27: Sửa nút Bắt Đầu ở Phòng Chờ (`LobbyScreen.js`) — Host gửi yêu cầu bắt đầu lên Server thay vì tự chạy local
+  - [x] Task 28: Đồng bộ đếm ngược & Chuyển màn hình cho toàn bộ phòng (`LobbyScreen.js` & `app.js`)
+  - [x] Task 29: Khởi tạo bàn chơi Online với GameState có thẩm quyền từ Server (`GameScreen.js` & `app.js`)
+  - [x] Task 30: Đồng bộ hành động người chơi trong trận đấu Online (`GameScreen.js` → `SocketClient.js` → Server → broadcast `game:state_updated`)
+  - [x] Task 31: Kiểm thử đa thiết bị (PC host + Phone client qua kịch bản kiểm thử tự động 2 socket và Chrome E2E)
+

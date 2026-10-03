@@ -46,8 +46,19 @@ class SocketClient {
         this.emitLocal('room:player_left', data);
       });
 
-      this.socket.on('game:state_updated', (gameState) => {
-        this.emitLocal('game:state_updated', gameState);
+      this.socket.on('game:started', (data) => {
+        console.log('[Socket] Nhận thông báo trận đấu bắt đầu từ máy chủ:', data);
+        this.emitLocal('game:started', data);
+      });
+
+      this.socket.on('game:state_updated', (data) => {
+        this.emitLocal('game:state_updated', data);
+      });
+
+      this.socket.on('game:action_error', (data) => {
+        console.warn('[Socket] Lỗi hành động từ máy chủ:', data);
+        if (data?.error) SplendorHelpers.showToast(data.error, 'error');
+        this.emitLocal('game:action_error', data);
       });
 
       this.socket.on('latency:pong', (start) => {
@@ -91,6 +102,18 @@ class SocketClient {
     }
   }
 
+  startGame() {
+    return new Promise((resolve) => {
+      if (!this.socket) {
+        resolve({ success: false, message: 'Chưa kết nối máy chủ.' });
+        return;
+      }
+      this.socket.emit('room:start', {}, (res) => {
+        if (typeof resolve === 'function') resolve(res || { success: true });
+      });
+    });
+  }
+
   leaveRoom() {
     if (this.socket) {
       this.socket.emit('room:leave');
@@ -98,9 +121,15 @@ class SocketClient {
   }
 
   sendGameAction(actionType, actionData) {
-    if (this.socket) {
-      this.socket.emit('game:action', { actionType, actionData });
-    }
+    return new Promise((resolve) => {
+      if (!this.socket) {
+        resolve({ success: false, error: 'Chưa kết nối máy chủ.' });
+        return;
+      }
+      this.socket.emit('game:action', { actionType, actionData }, (res) => {
+        if (typeof resolve === 'function') resolve(res);
+      });
+    });
   }
 
   on(event, handler) {

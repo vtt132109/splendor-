@@ -18,8 +18,34 @@ class GameScreen {
     if (confirmBtn) {
       confirmBtn.addEventListener('click', () => {
         const selected = SplendorTokenRenderer.selectedGems;
-        if (!this.gameEngine || selected.length === 0) return;
+        if (selected.length === 0) return;
 
+        // Nếu đang trong trận đấu Online
+        if (this.gameState && this.gameState.mode === 'ONLINE') {
+          if (this.gameState.currentPlayerIndex !== this.myPlayerIndex) {
+            SplendorHelpers.showToast('Chưa đến lượt của bạn!', 'warning');
+            return;
+          }
+
+          const actionType = (selected.length === 2 && selected[0] === selected[1])
+            ? 'TAKE_TWO_SAME_GEMS'
+            : 'TAKE_THREE_GEMS';
+          const actionData = (actionType === 'TAKE_TWO_SAME_GEMS')
+            ? { gem: selected[0] }
+            : { gems: selected };
+
+          SplendorSocket.sendGameAction(actionType, actionData).then(res => {
+            if (res && res.success === false) {
+              SplendorHelpers.showToast(res.error || 'Hành động không hợp lệ!', 'error');
+            } else {
+              SplendorTokenRenderer.clearSelection();
+            }
+          });
+          return;
+        }
+
+        // Chế độ Local / AI
+        if (!this.gameEngine) return;
         let result = null;
         if (selected.length === 2 && selected[0] === selected[1]) {
           result = this.gameEngine.takeTwoSameGems(this.gameState.currentPlayerIndex, selected[0]);
@@ -45,6 +71,22 @@ class GameScreen {
 
     // 2. Mua thẻ bài
     SplendorCardRenderer.onPurchaseCard = (cardId, fromReserved) => {
+      // Nếu đang trong trận đấu Online
+      if (this.gameState && this.gameState.mode === 'ONLINE') {
+        if (this.gameState.currentPlayerIndex !== this.myPlayerIndex) {
+          SplendorHelpers.showToast('Chưa đến lượt của bạn!', 'warning');
+          return;
+        }
+
+        SplendorSocket.sendGameAction('PURCHASE_CARD', { cardId, fromReserved }).then(res => {
+          if (res && res.success === false) {
+            SplendorHelpers.showToast(res.error || 'Không thể mua thẻ bài!', 'error');
+          }
+        });
+        return;
+      }
+
+      // Chế độ Local / AI
       if (!this.gameEngine) return;
       const result = this.gameEngine.purchaseCard(this.gameState.currentPlayerIndex, { cardId, fromReserved });
       if (result?.valid === false) {
@@ -57,6 +99,24 @@ class GameScreen {
 
     // 3. Giữ chỗ thẻ bài
     SplendorCardRenderer.onReserveCard = (tier, cardId) => {
+      // Nếu đang trong trận đấu Online
+      if (this.gameState && this.gameState.mode === 'ONLINE') {
+        if (this.gameState.currentPlayerIndex !== this.myPlayerIndex) {
+          SplendorHelpers.showToast('Chưa đến lượt của bạn!', 'warning');
+          return;
+        }
+
+        SplendorSocket.sendGameAction('RESERVE_CARD', { tier, cardId, isDeckTop: false }).then(res => {
+          if (res && res.success === false) {
+            SplendorHelpers.showToast(res.error || 'Không thể giữ chỗ thẻ bài!', 'error');
+          } else {
+            SplendorHelpers.showToast('Đã giữ chỗ thẻ bài vào tay!', 'info');
+          }
+        });
+        return;
+      }
+
+      // Chế độ Local / AI
       if (!this.gameEngine) return;
       const result = this.gameEngine.reserveCard(this.gameState.currentPlayerIndex, { tier, cardId, isDeckTop: false });
       if (result?.valid === false) {
@@ -69,6 +129,17 @@ class GameScreen {
 
     // 4. Hook trả đá quý thừa
     window.onConfirmDiscardAction = (tokensToDiscard) => {
+      // Nếu đang trong trận đấu Online
+      if (this.gameState && this.gameState.mode === 'ONLINE') {
+        SplendorSocket.sendGameAction('DISCARD_TOKENS', { tokens: tokensToDiscard }).then(res => {
+          if (res && res.success === false) {
+            SplendorHelpers.showToast(res.error || 'Lỗi trả đá quý!', 'error');
+          }
+        });
+        return;
+      }
+
+      // Chế độ Local / AI
       if (!this.gameEngine) return;
       const result = this.gameEngine.discardTokens(this.gameState.discardingPlayerIndex, tokensToDiscard);
       if (result?.valid === false) {
@@ -80,6 +151,17 @@ class GameScreen {
 
     // 5. Hook chọn quý tộc khi có nhiều vị đủ điều kiện
     window.onSelectNobleAction = (nobleId) => {
+      // Nếu đang trong trận đấu Online
+      if (this.gameState && this.gameState.mode === 'ONLINE') {
+        SplendorSocket.sendGameAction('SELECT_NOBLE', { nobleId }).then(res => {
+          if (res && res.success === false) {
+            SplendorHelpers.showToast(res.error || 'Lỗi chọn quý tộc!', 'error');
+          }
+        });
+        return;
+      }
+
+      // Chế độ Local / AI
       if (!this.gameEngine) return;
       const result = this.gameEngine.selectNoble(this.gameState.currentPlayerIndex, nobleId);
       if (result?.valid === false) {
@@ -89,10 +171,16 @@ class GameScreen {
       SplendorSound.playNobleVisit();
       this.onAfterAction(result);
     };
+
+    // 6. Lắng nghe cập nhật trạng thái bàn cờ từ máy chủ (Online Multiplayer)
+    SplendorSocket.on('game:state_updated', (data) => {
+      if (!this.gameState || this.gameState.mode !== 'ONLINE') return;
+      this.onServerStateUpdated(data);
+    });
   }
 
   /**
-   * Khởi chạy trận đấu mới
+   * Khởi chạy trận đấu mới (Chế độ Local hoặc AI)
    */
   startNewGame(playerConfigs, mode = 'LOCAL', myIndex = 0) {
     this.myPlayerIndex = myIndex;
@@ -108,13 +196,71 @@ class GameScreen {
     this.checkAndRunAITurn();
   }
 
+  /**
+   * Khởi tạo bàn chơi Online trực tiếp từ GameState có thẩm quyền của Server
+   */
+  initFromOnlineState(serverGameState, myIndex = 0) {
+    this.myPlayerIndex = myIndex;
+    this.gameState = SplendorGameState.fromJSON(serverGameState);
+    this.gameEngine = new SplendorGameEngine(this.gameState);
+
+    // Vẽ bàn chơi
+    this.render();
+
+    const currentP = this.gameState.getCurrentPlayer();
+    const isMe = this.gameState.currentPlayerIndex === this.myPlayerIndex;
+    SplendorHelpers.showToast(`Bắt đầu trận đấu Online! Lượt đầu: ${currentP ? currentP.name : 'Người chơi'} ${isMe ? '(✦ Lượt của bạn! ✦)' : ''}`, 'info');
+
+    if (isMe) {
+      SplendorSound.playTurnBell();
+    }
+  }
+
+  /**
+   * Cập nhật trạng thái trận đấu Online khi nhận dữ liệu từ server
+   */
+  onServerStateUpdated(data) {
+    if (!data || !data.gameState) return;
+
+    const prevPlayerIdx = this.gameState ? this.gameState.currentPlayerIndex : -1;
+    this.gameState = SplendorGameState.fromJSON(data.gameState);
+    this.gameEngine = new SplendorGameEngine(this.gameState);
+
+    const lastAction = data.lastAction;
+    if (lastAction) {
+      if (lastAction.actionType === 'PURCHASE_CARD') {
+        SplendorSound.playCardBuy();
+      } else if (lastAction.actionType === 'TAKE_THREE_GEMS' || lastAction.actionType === 'TAKE_TWO_SAME_GEMS') {
+        SplendorSound.playTakeChip();
+      } else if (lastAction.result?.nobleVisit) {
+        SplendorSound.playNobleVisit();
+        SplendorHelpers.showToast(`Quý tộc ${lastAction.result.nobleVisit.name} đã ghé thăm!`, 'success');
+      }
+    }
+
+    this.render();
+
+    // Kiểm tra kết thúc game
+    if (this.gameState.phase === SplendorConstants.GAME_PHASES.FINISHED) {
+      SplendorSound.playVictory();
+      window.SplendorResultScreen.showResult(this.gameState);
+      return;
+    }
+
+    // Thông báo chuông khi lượt vừa chuyển sang mình
+    if (this.gameState.currentPlayerIndex === this.myPlayerIndex && prevPlayerIdx !== this.myPlayerIndex) {
+      SplendorSound.playTurnBell();
+      SplendorHelpers.showToast('✨ Đến lượt của bạn!', 'info');
+    }
+  }
+
   render() {
     if (!this.gameState) return;
     SplendorBoardRenderer.render(this.gameState, this.myPlayerIndex);
   }
 
   /**
-   * Xử lý sau mỗi hành động thành công
+   * Xử lý sau mỗi hành động thành công (Local / AI)
    */
   onAfterAction(result) {
     // Nếu có Quý tộc ghé thăm
