@@ -257,19 +257,19 @@ class CardRenderer {
       if (card) {
         const miniCard = this.createCardElement(card, player, isCurrentTurn);
         miniCard.classList.add('mini-card');
-        miniCard.style.width = '40px';
-        miniCard.style.height = '54px';
+        miniCard.style.width = 'clamp(46px, 3.8vw, 60px)';
+        miniCard.style.height = 'clamp(62px, 5.2vw, 82px)';
         miniCard.style.cursor = 'pointer';
 
         // Thu nhỏ các thành phần trên thẻ giữ
         const pointsEl = miniCard.querySelector('.card-prestige-points');
-        if (pointsEl) pointsEl.style.fontSize = '12px';
+        if (pointsEl) pointsEl.style.fontSize = '14px';
 
         const facetEl = miniCard.querySelector('.card-gem-facet-badge');
         if (facetEl) {
-          facetEl.style.width = '14px';
-          facetEl.style.height = '14px';
-          facetEl.style.fontSize = '9px';
+          facetEl.style.width = '18px';
+          facetEl.style.height = '18px';
+          facetEl.style.fontSize = '11px';
         }
 
         const tray = miniCard.querySelector('.card-bottom-tray');

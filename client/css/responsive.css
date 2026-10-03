@@ -149,7 +149,15 @@
     font-size: 13px;
   }
 
-  /* Thu gọn bàn chơi game */
+  /* Thu gọn bàn chơi game trên mobile landscape */
+  :root {
+    --card-width: 68px;
+    --card-height: 94px;
+    --noble-size: 64px;
+    --sidebar-left-width: 155px;
+    --sidebar-right-width: 110px;
+    --player-mat-height: 80px;
+  }
   .turn-announcer {
     padding: 2px 8px;
     font-size: 11px;
@@ -166,8 +174,16 @@
   }
 }
 
-/* Màn hình lớn / Desktop (> 1200px) */
-@media screen and (min-width: 1200px) {
+/* Màn hình Desktop Tiêu Chuẩn (> 1200px) */
+@media screen and (min-width: 1200px) and (min-height: 650px) {
+  :root {
+    --card-width: 124px;
+    --card-height: 174px;
+    --noble-size: 108px;
+    --sidebar-left-width: 250px;
+    --sidebar-right-width: 180px;
+    --player-mat-height: 125px;
+  }
   .home-hero {
     gap: 28px;
   }
@@ -179,5 +195,17 @@
   }
   .home-menu-grid .menu-card {
     padding: 28px 18px;
+  }
+}
+
+/* Màn hình Desktop Lớn (> 1500px Full HD & 2K) */
+@media screen and (min-width: 1500px) and (min-height: 780px) {
+  :root {
+    --card-width: 140px;
+    --card-height: 198px;
+    --noble-size: 122px;
+    --sidebar-left-width: 280px;
+    --sidebar-right-width: 200px;
+    --player-mat-height: 135px;
   }
 }

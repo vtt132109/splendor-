@@ -1,15 +1,15 @@
 /**
- * Splendor Board Game - Kiểu Thẻ Phát Triển & Ô Quý Tộc (Phong Cách Bản Gốc Chuẩn)
+ * Splendor Board Game - Kiểu Thẻ Phát Triển & Ô Quý Tộc (Kích Thước Chuẩn Lớn & Rõ Nét)
  */
 
 /* Thẻ Phát Triển (Development Card) */
 .dev-card {
-  width: 82px;
-  height: 114px;
+  width: var(--card-width);
+  height: var(--card-height);
   background: #1c1109;
-  border: 1.5px solid var(--wood-border);
+  border: 2px solid var(--wood-border);
   border-radius: var(--radius-sm);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.2);
   position: relative;
   cursor: pointer;
   transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
@@ -17,15 +17,15 @@
 }
 
 .dev-card:hover {
-  transform: translateY(-5px) scale(1.05);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.85), var(--shadow-gold-glow);
+  transform: translateY(-6px) scale(1.05);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.9), var(--shadow-gold-glow);
   z-index: 10;
 }
 
 /* Thẻ mua được: Phát sáng viền vàng kim */
 .dev-card.affordable {
   border-color: var(--gold-bright);
-  box-shadow: 0 0 12px rgba(255, 215, 0, 0.6), 0 4px 10px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 0 14px rgba(255, 215, 0, 0.65), 0 5px 12px rgba(0, 0, 0, 0.75);
 }
 
 .dev-card.affordable::after {
@@ -44,32 +44,32 @@
   to { opacity: 1; }
 }
 
-/* Tranh Minh Họa Nền Bán Phần Trên (64% Chiều Cao Thẻ) */
+/* Tranh Minh Họa Nền Bán Phần Trên (65% Chiều Cao Thẻ) */
 .card-artwork-bg {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 64%;
+  height: 65%;
   background-size: cover;
   background-position: center;
-  border-bottom: 1.5px solid var(--wood-border);
+  border-bottom: 2px solid var(--wood-border);
 }
 
 .card-artwork-bg::before {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.65) 0%, rgba(0, 0, 0, 0.05) 50%, rgba(0, 0, 0, 0.5) 100%);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.05) 50%, rgba(0, 0, 0, 0.55) 100%);
   pointer-events: none;
 }
 
 /* Lớp Phủ Header Thẻ: Điểm Uy Tín & Gem Bonus */
 .card-top-overlay {
   position: absolute;
-  top: 3px;
-  left: 5px;
-  right: 5px;
+  top: 4px;
+  left: 6px;
+  right: 6px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -78,23 +78,23 @@
 
 .card-prestige-points {
   font-family: var(--font-serif-royal);
-  font-size: 19px;
+  font-size: clamp(20px, 1.8vw, 28px);
   font-weight: 900;
   color: #ffffff;
-  text-shadow: 0 1px 3px #000, 0 2px 6px rgba(0, 0, 0, 0.9);
+  text-shadow: 0 2px 4px #000, 0 3px 8px rgba(0, 0, 0, 0.95);
   line-height: 1;
 }
 
 .card-gem-facet-badge {
-  width: 24px;
-  height: 24px;
+  width: clamp(26px, 2.2vw, 36px);
+  height: clamp(26px, 2.2vw, 36px);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.8), inset 0 1px 2px rgba(255, 255, 255, 0.6);
-  border: 1.5px solid rgba(255, 255, 255, 0.7);
+  font-size: clamp(15px, 1.3vw, 20px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.85), inset 0 1px 2px rgba(255, 255, 255, 0.65);
+  border: 1.5px solid rgba(255, 255, 255, 0.8);
 }
 
 .card-gem-facet-badge.bonus-diamond { background: var(--gem-diamond-gradient); color: #0284c7; }
@@ -103,17 +103,17 @@
 .card-gem-facet-badge.bonus-ruby { background: var(--gem-ruby-gradient); color: #fff; }
 .card-gem-facet-badge.bonus-onyx { background: var(--gem-onyx-gradient); color: #fff; }
 
-/* Khay Đáy Thẻ Chứa Chi Phí Đá Quý (36% Chiều Cao) */
+/* Khay Đáy Thẻ Chứa Chi Phí Đá Quý (35% Chiều Cao) */
 .card-bottom-tray {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  height: 36%;
+  height: 35%;
   background: linear-gradient(180deg, #24160d 0%, #150c07 100%);
   display: flex;
   align-items: center;
-  padding: 2px 5px;
+  padding: 3px 8px;
   z-index: 4;
 }
 
@@ -122,23 +122,23 @@
   flex-direction: column;
   flex-wrap: wrap;
   max-height: 100%;
-  gap: 2px 4px;
+  gap: 3px 6px;
   align-content: flex-start;
 }
 
 .cost-token-disc {
-  width: 15px;
-  height: 15px;
+  width: clamp(17px, 1.4vw, 23px);
+  height: clamp(17px, 1.4vw, 23px);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-sans-vietnamese);
-  font-size: 9px;
+  font-size: clamp(10px, 0.85vw, 13px);
   font-weight: 900;
   color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+  border: 1.5px solid rgba(255, 255, 255, 0.45);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.85), inset 0 1px 1px rgba(255, 255, 255, 0.45);
 }
 
 .cost-token-disc.cost-diamond { background: var(--gem-diamond-gradient); color: #111; }
@@ -149,8 +149,8 @@
 
 /* Mặt Lưng Bộ Bài (Decks) */
 .deck-slot {
-  width: 82px;
-  height: 114px;
+  width: var(--card-width);
+  height: var(--card-height);
   perspective: 600px;
   cursor: pointer;
 }
@@ -164,13 +164,13 @@
   align-items: center;
   justify-content: center;
   border: 2px solid var(--wood-border);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.7), inset 0 2px 4px rgba(255,255,255,0.1);
+  box-shadow: 0 5px 12px rgba(0,0,0,0.75), inset 0 2px 4px rgba(255,255,255,0.15);
   position: relative;
   transition: transform var(--transition-fast);
 }
 
 .deck-card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-4px);
   border-color: var(--gold-primary);
 }
 
@@ -188,14 +188,14 @@
 }
 
 .tier-dots {
-  font-size: 15px;
+  font-size: clamp(16px, 1.4vw, 22px);
   letter-spacing: 3px;
   color: var(--gold-bright);
 }
 
 .deck-count {
   font-family: var(--font-serif-royal);
-  font-size: 15px;
+  font-size: clamp(16px, 1.4vw, 22px);
   font-weight: 700;
   color: var(--text-parchment);
   margin-top: 4px;
@@ -203,15 +203,15 @@
 
 /* Ô Quý Tộc (Noble Tiles) */
 .noble-tile {
-  width: 78px;
-  height: 78px;
+  width: var(--noble-size);
+  height: var(--noble-size);
   border: 2px solid var(--gold-primary);
   border-radius: var(--radius-sm);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.8), inset 0 1px 2px rgba(255, 255, 255, 0.2);
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.85), inset 0 1px 2px rgba(255, 255, 255, 0.2);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 5px;
+  padding: 6px;
   position: relative;
   transition: all var(--transition-fast);
   overflow: hidden;
@@ -229,7 +229,7 @@
 
 .noble-tile:hover {
   transform: scale(1.08);
-  box-shadow: 0 8px 18px rgba(0,0,0,0.9), var(--shadow-gold-glow);
+  box-shadow: 0 10px 22px rgba(0,0,0,0.95), var(--shadow-gold-glow);
   z-index: 10;
 }
 
@@ -243,16 +243,16 @@
 
 .noble-points {
   font-family: var(--font-serif-royal);
-  font-size: 16px;
+  font-size: clamp(18px, 1.6vw, 24px);
   font-weight: 900;
   color: #fff;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.9), 0 0 6px rgba(255,215,0,0.8);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.9), 0 0 8px rgba(255,215,0,0.9);
 }
 
 .noble-requirements-col {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
   position: relative;
   z-index: 2;
   align-self: flex-start;
@@ -261,14 +261,14 @@
 .noble-req-badge {
   display: flex;
   align-items: center;
-  gap: 3px;
-  background: rgba(0, 0, 0, 0.6);
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.65);
   border-radius: var(--radius-full);
-  padding: 1px 4px 1px 1px;
+  padding: 1px 5px 1px 1px;
 }
 
 .noble-req-badge .cost-token-disc {
-  width: 13px;
-  height: 13px;
-  font-size: 8px;
+  width: clamp(15px, 1.3vw, 20px);
+  height: clamp(15px, 1.3vw, 20px);
+  font-size: clamp(9px, 0.75vw, 11px);
 }
