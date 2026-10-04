@@ -1154,12 +1154,117 @@ splendor/
   - Phân tích tọa độ phần tử (boundingClientRect): Đảm bảo cạnh đáy của thẻ Tầng 1 luôn nhỏ hơn cạnh trên của Player Mat (`tier1.bottom <= playerMat.top`).
   - Đảm bảo cạnh đáy của nút "Lấy Đá Quý" luôn nhỏ hơn cạnh trên của Player Mat hoặc đáy viewport.
 - **Tiêu chí hoàn thành:**
-  - [ ] Script kiểm thử tự động xác nhận không có bất kỳ phần tử nào bị che lấp hoặc tràn màn hình.
-  - [ ] Lưu ảnh chụp kiểm chứng vào `scratch/` để đối chiếu với ảnh lỗi ban đầu của người dùng.
+  - [x] Script kiểm thử tự động xác nhận không có bất kỳ phần tử nào bị che lấp hoặc tràn màn hình.
+  - [x] Lưu ảnh chụp kiểm chứng vào `scratch/` để đối chiếu với ảnh lỗi ban đầu của người dùng.
 - **Kiểm tra:** `node scratch/verify-viewport-fit.js` chạy đạt 100%.
 - **Phụ thuộc:** Task 36, 37, 38, 39
 - **File liên quan:** `scratch/verify-viewport-fit.js`
 - **Quy mô:** S (1 file)
+
+---
+
+# Giai Đoạn 11: Tích Hợp Xác Thực Google OAuth Thực Tế & Chống Trùng Lặp Tài Khoản Đa Thiết Bị (Phase 11: Real Google OAuth Redirect & Multi-Device Account Conflict Prevention)
+
+## 1. Yêu Cầu & Thách Thức Cốt Lõi Của Người Dùng
+
+1. **Bắt buộc đăng nhập thật bằng Google Account:**
+   - Xóa bỏ hoàn toàn cơ chế đăng nhập giả lập/mô phỏng (`simulateGoogleSignIn`) vốn chỉ tự sinh tên ảo và email ảo khi nhấn nút.
+   - Khi người chơi bấm "Đăng nhập Google", trình duyệt bắt buộc phải chuyển hướng (redirect) thực tế sang cổng xác thực chính thức của Google (`accounts.google.com/o/oauth2/v2/auth`).
+   - Người dùng phải chọn tài khoản Google thật, đăng nhập mật khẩu/xác thực 2 lớp trên máy chủ Google, sau đó Google chuyển hướng ngược trở lại web game mang theo Token danh tính thật (Google ID Token / Access Token).
+   - Từ token đó, hệ thống trích xuất thông tin định danh chính xác: Tên thật của tài khoản Google, Email thật (`@gmail.com`), Avatar ảnh chân dung thật từ Google, và mã định danh duy nhất không thể thay đổi (`sub` ID).
+
+2. **Chặn đăng nhập cùng 1 tài khoản trên 2 thiết bị khác nhau để chơi game:**
+   - Khi 2 thiết bị (ví dụ: 1 máy tính PC và 1 điện thoại) đều đăng nhập cùng một tài khoản Google:
+     - **Không được phép cùng vào 1 phòng chơi để thi đấu với nhau.** Nếu thiết bị 2 cố tình nhập mã phòng hoặc tạo phòng đấu với thiết bị 1 mang cùng tài khoản Google, Server phải từ chối ngay lập tức: *"Tài khoản Google này đang được sử dụng bởi một người chơi khác trong phòng! Vui lòng dùng tài khoản Google riêng biệt trên mỗi thiết bị."*
+     - Phân biệt rõ giữa hành vi gian lận/trùng lặp tài khoản (2 thiết bị cùng online `connected === true`) và hành vi rớt mạng kết nối lại (thiết bị cũ đã ngắt `connected === false`).
+     - Quản lý phiên hoạt động thời gian thực (`activeSessions`), tự động phát hiện xung đột và thông báo rõ ràng cho người dùng.
+
+---
+
+## 2. Kế Hoạch Nhiệm Vụ Chi Tiết (Phase 11 Task Breakdown)
+
+### Task 41: Tích Hợp Chuyển Hướng Google OAuth2 Thực Tế Phía Client (Real Google OAuth2 Redirect Flow)
+- **Mô tả:** 
+  1. Trong `client/js/auth/AuthManager.js`, xóa bỏ hoàn toàn `simulateGoogleSignIn`.
+  2. Xây dựng luồng `loginWithGoogleRedirect()`:
+     - Chuyển hướng trình duyệt tới endpoint Google OAuth2:
+       `https://accounts.google.com/o/oauth2/v2/auth?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=token%20id_token&scope=openid%20profile%20email&prompt=select_account&nonce=${NONCE}`
+     - Tham số `prompt=select_account` đảm bảo Google luôn hiện danh sách tài khoản để người dùng chọn tài khoản muốn đăng nhập.
+  3. Xử lý khi Google chuyển hướng trở lại trang web (`handleRedirectCallback()`):
+     - Đọc URL fragment hash (`#id_token=...&access_token=...`).
+     - Giải mã JWT payload hoặc gọi Google UserInfo API (`https://www.googleapis.com/oauth2/v3/userinfo`).
+     - Lưu thông tin tài khoản thật vào `localStorage` (`uid`, `name`, `email`, `avatar`, `isGoogle: true`).
+     - Xóa token khỏi thanh địa chỉ URL (`history.replaceState`) để bảo mật.
+     - Phát tín hiệu cập nhật toàn bộ giao diện Header và Bảng người chơi.
+- **Tiêu chí hoàn thành:**
+  - [ ] Bấm nút "Đăng nhập Google" chuyển hướng thật sang `accounts.google.com`.
+  - [ ] Đăng nhập thành công trả về tên thật, email thật và avatar thật từ tài khoản Google của người dùng.
+- **Kiểm tra:** Kiểm tra URL chuyển hướng và giải mã token hợp lệ.
+- **Phụ thuộc:** Không có
+- **File liên quan:** `client/js/auth/AuthManager.js`, `client/index.html`
+- **Quy mô:** M (2 files)
+
+### Task 42: Quản Lý Cấu Hình & Xác Thực Token Phía Backend (Server Google Auth & Config)
+- **Mô tả:** 
+  1. Tạo module `server/auth.js` và nạp cấu hình OAuth từ file môi trường `.env` (`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`).
+  2. Tạo endpoint `GET /api/auth/config` để client tự động lấy `googleClientId` an toàn.
+  3. Tạo endpoint `POST /api/auth/google/verify` để xác minh ID Token với máy chủ Google (`https://oauth2.googleapis.com/tokeninfo?id_token=...`), ngăn chặn giả mạo UID.
+  4. Cung cấp file `.env.example` và hướng dẫn cấu hình chi tiết cho người quản trị.
+- **Tiêu chí hoàn thành:**
+  - [ ] Endpoint `/api/auth/config` phục vụ đúng cấu hình Google Client ID.
+  - [ ] Server xác minh được tính hợp lệ của token trước khi chấp thuận phiên đăng nhập.
+- **Kiểm tra:** `curl http://localhost:3000/api/auth/config` trả về JSON hợp lệ.
+- **Phụ thuộc:** Không có
+- **File liên quan:** `server/auth.js`, `server/index.js`, `.env.example`
+- **Quy mô:** S (3 files)
+
+### Task 43: Cơ Chế Ngăn Chặn Đăng Nhập Cùng 1 Tài Khoản Trên 2 Thiết Bị (Prevent Duplicate Account Conflict)
+- **Mô tả:** 
+  1. Trong `server/index.js` tại sự kiện `room:join`:
+     - Kiểm tra nếu `room.players` đã tồn tại một người chơi có cùng `uid` hoặc cùng `email` với người chơi mới:
+       - Nếu người chơi cũ đang kết nối (`connected === true`) và socket ID khác socket hiện tại (`p.id !== socket.id`):
+         **TỪ CHỐI THAM GIA**: Trả về callback lỗi: `"Tài khoản Google này (${player.email}) đang hoạt động trên thiết bị khác trong phòng! Mỗi người chơi phải dùng tài khoản riêng."`
+       - Nếu người chơi cũ đã ngắt kết nối (`connected === false`):
+         Chấp thuận đây là hành động **Kết nối lại (Reconnection)** và chuyển giao socket ID an toàn.
+  2. Trong sự kiện `room:create`:
+     - Không cho phép tạo phòng nếu tài khoản đó đang làm Host hoặc đang ở trong một phòng khác chưa kết thúc.
+- **Tiêu chí hoàn thành:**
+  - [ ] Thiết bị 2 dùng cùng 1 tài khoản Google không thể tham gia vào cùng 1 phòng với thiết bị 1.
+  - [ ] Thiết bị 2 dùng tài khoản Google khác tham gia bình thường không gặp lỗi.
+  - [ ] Cơ chế kết nối lại sau khi rớt mạng vẫn hoạt động chính xác 100%.
+- **Kiểm tra:** Viết script kiểm thử tự động với 2 socket mang cùng `uid`/`email`.
+- **Phụ thuộc:** Task 41, Task 42
+- **File liên quan:** `server/index.js`, `client/js/screens/LobbyScreen.js`
+- **Quy mô:** M (2 files)
+
+### Task 44: Quản Lý Phiên Hoạt Động Thời Gian Thực Toàn Server (Realtime Active Session Displacement)
+- **Mô tả:** 
+  1. Server duy trì `activeSessions = new Map()` (`uid -> { socketId, name, email, roomCode, loginTime }`).
+  2. Khi một tài khoản Google đăng nhập ở thiết bị mới (Socket B):
+     - Nếu Socket A đang online ở một phòng khác: Thông báo cho Socket A sự kiện `auth:session_displaced` kèm modal: *"Tài khoản của bạn vừa được đăng nhập trên một thiết bị khác. Phiên hiện tại đã bị ngắt."*
+  3. Client hiển thị modal cảnh báo phiên đăng nhập trùng lặp và đưa người chơi về màn hình đăng nhập.
+- **Tiêu chí hoàn thành:**
+  - [ ] Không còn tình trạng 1 tài khoản chạy ngầm song song trên nhiều thiết bị gây sai lệch dữ liệu.
+- **Kiểm tra:** Kiểm thử mở 2 tab với cùng tài khoản và kiểm tra thông báo đẩy.
+- **Phụ thuộc:** Task 43
+- **File liên quan:** `server/index.js`, `client/js/auth/AuthManager.js`
+- **Quy mô:** S (2 files)
+
+### Task 45: Kịch Bản Kiểm Thử Tự Động Toàn Diện & Hướng Dẫn Cấu Hình (E2E Multi-Device Auth Test & Setup Docs)
+- **Mô tả:** 
+  1. Viết kịch bản kiểm thử tự động `scratch/test-google-auth-conflict.js`:
+     - Mô phỏng Thiết bị 1 (PC) đăng nhập tài khoản Google `user_tris@gmail.com` tạo phòng.
+     - Mô phỏng Thiết bị 2 (Phone) cố tình dùng cùng tài khoản `user_tris@gmail.com` để vào phòng -> Xác nhận bị từ chối 100%.
+     - Mô phỏng Thiết bị 2 đổi sang tài khoản `user_friend@gmail.com` -> Vào phòng thành công, bắt đầu trận đấu bình thường.
+  2. Tạo file `docs/google-auth-setup.md` hướng dẫn chi tiết cách tạo Google OAuth Client ID trên Google Cloud Console (chỉ mất 2 phút) và cấu hình vào `.env`.
+- **Tiêu chí hoàn thành:**
+  - [ ] `node scratch/test-google-auth-conflict.js` chạy đạt 100%.
+  - [ ] Tài liệu hướng dẫn cấu hình rõ ràng, dễ hiểu.
+- **Kiểm tra:** Chạy test tự động và đối soát tài liệu.
+- **Phụ thuộc:** Task 41, 42, 43, 44
+- **File liên quan:** `scratch/test-google-auth-conflict.js`, `docs/google-auth-setup.md`
+- **Quy mô:** S (2 files)
+
 
 
 

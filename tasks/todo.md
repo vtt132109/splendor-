@@ -67,6 +67,9 @@
   - [x] Task 39: Tinh Chỉnh Kho Đá Quý & Nút "Lấy Đá Quý" Luôn Trong Tầm Nhìn (Right Sidebar Bank: 3x2 grid on mobile, pinned take-gems action in `tokens.css`, `responsive.css`)
   - [x] Task 40: Kiểm Thử Xác Thực Trực Quan Bằng Ảnh Chụp Đa Màn Hình (Visual Snapshot Verification: `scratch/verify-viewport-fit.js` with CDP screenshots on PC & Mobile)
 
-
-
-
+- [ ] **Giai Đoạn 11: Tích Hợp Xác Thực Google OAuth Thực Tế & Chống Trùng Lặp Tài Khoản Đa Thiết Bị (Phase 11: Real Google OAuth Redirect & Multi-Device Account Conflict Prevention)**
+  - [ ] Task 41: Tích Hợp Chuyển Hướng Google OAuth2 Thực Tế Phía Client (`client/js/auth/AuthManager.js`, xóa bỏ mô phỏng, redirect qua `accounts.google.com/o/oauth2/v2/auth`, giải mã hồ sơ thật)
+  - [ ] Task 42: Quản Lý Cấu Hình & Xác Thực Token Phía Backend (`server/auth.js`, endpoint `GET /api/auth/config`, xác minh token với Google API, file `.env`)
+  - [ ] Task 43: Cơ Chế Ngăn Chặn Đăng Nhập Cùng 1 Tài Khoản Trên 2 Thiết Bị (`server/index.js`, kiểm tra trùng lặp `uid`/`email` trong `room:join`, từ chối thiết bị thứ 2 tham gia cùng phòng)
+  - [ ] Task 44: Quản Lý Phiên Hoạt Động Thời Gian Thực Toàn Server (`activeSessions` map, thông báo sự kiện `auth:session_displaced` khi tài khoản bị đăng nhập ở thiết bị mới)
+  - [ ] Task 45: Kịch Bản Kiểm Thử Tự Động Toàn Diện & Hướng Dẫn Cấu Hình (`scratch/test-google-auth-conflict.js`, tài liệu hướng dẫn tạo Google Client ID trong `docs/google-auth-setup.md`)
