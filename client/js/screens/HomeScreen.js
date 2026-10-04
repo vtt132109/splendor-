@@ -16,6 +16,12 @@ class HomeScreen {
     if (btnOnline) {
       btnOnline.addEventListener('click', () => {
         if (window.SplendorSound) SplendorSound.playClick();
+        const user = SplendorAuth.getUser();
+        if (!user || !user.isLoggedIn || !user.isGoogle) {
+          SplendorHelpers.showToast('Vui lòng đăng nhập Google để tham gia thi đấu Online!', 'info');
+          SplendorAuth.handleGoogleButtonClick();
+          return;
+        }
         this.openOnlineChoiceModal();
       });
     }

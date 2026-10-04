@@ -57,8 +57,22 @@ class SplendorApp {
 
     const openAuth = () => {
       if (window.SplendorSound) SplendorSound.playClick();
-      SplendorAuth.openModal();
+      const user = SplendorAuth.getUser();
+      if (!user || !user.isLoggedIn || !user.isGoogle) {
+        // Chưa đăng nhập -> Chuyển hướng trực tiếp sang Google Account Chooser
+        SplendorAuth.handleGoogleButtonClick();
+      } else {
+        // Đã đăng nhập -> Mở modal xem thông tin hồ sơ
+        SplendorAuth.openModal();
+      }
     };
+
+    if (authBtn) {
+      authBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openAuth();
+      });
+    }
 
     if (userProfileBox) {
       userProfileBox.addEventListener('click', openAuth);

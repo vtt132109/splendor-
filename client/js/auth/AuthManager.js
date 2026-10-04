@@ -237,11 +237,12 @@ class AuthManager {
 
     // Nếu chưa có Google Client ID cấu hình
     if (!this.googleClientId) {
+      this.openModal();
       if (configNotice) {
         configNotice.classList.remove('hidden');
         if (clientIdInput) clientIdInput.focus();
       }
-      SplendorHelpers.showToast('Vui lòng cấu hình Google Client ID để chuyển hướng xác thực thật!', 'warning');
+      SplendorHelpers.showToast('Vui lòng nhập Google Client ID một lần để kết nối Google thật!', 'warning');
       return;
     }
 
