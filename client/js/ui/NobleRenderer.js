@@ -52,9 +52,7 @@ class NobleRenderer {
     tile.innerHTML = `
       <div class="noble-header">
         <span class="noble-points">${noble.points}</span>
-        <span style="font-size: 11px; font-weight: 700; color: var(--gold-light); text-shadow: 0 1px 3px #000; max-width: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-          ${noble.name}
-        </span>
+        <span class="noble-name">${noble.name}</span>
       </div>
       <div class="noble-requirements-col">
         ${reqsHtml}

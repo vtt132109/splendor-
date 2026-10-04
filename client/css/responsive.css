@@ -401,21 +401,202 @@
     font-size: 13px;
   }
 
-  /* Thu gọn bàn chơi game trên mobile landscape */
+  /* Thu gọn bàn chơi game trên mobile landscape (vừa khít 100%, không bị che lấp) */
   :root {
-    --card-width: 68px;
-    --card-height: 94px;
-    --noble-size: 64px;
-    --sidebar-left-width: 155px;
-    --sidebar-right-width: 110px;
-    --player-mat-height: 80px;
+    --card-width: auto;
+    --noble-size: 44px;
+    --sidebar-left-width: 140px;
+    --sidebar-right-width: 135px;
+    --player-mat-height: 44px;
   }
+
+  .game-header {
+    height: 32px !important;
+    min-height: 32px !important;
+    padding: 0 8px !important;
+  }
+  .brand-title {
+    font-size: 12px !important;
+  }
+
+  .game-layout {
+    gap: 6px !important;
+    padding: 2px 4px !important;
+  }
+
   .turn-announcer {
-    padding: 2px 8px;
-    font-size: 11px;
+    padding: 1px 6px !important;
+    min-height: 22px !important;
+    font-size: 10px !important;
   }
+  .turn-text {
+    font-size: 10px !important;
+  }
+  .round-badge {
+    font-size: 8.5px !important;
+    padding: 0 4px !important;
+  }
+
+  /* Quý tộc dạng lưới 2 cột siêu gọn, không bị cắt trên đỉnh */
+  .noble-row-container {
+    padding-top: 1px !important;
+    gap: 2px !important;
+  }
+  .noble-tiles-list {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 3px !important;
+    justify-items: center !important;
+  }
+  .noble-tile {
+    width: 44px !important;
+    height: 44px !important;
+    padding: 2px 3px !important;
+  }
+  .noble-points {
+    font-size: 11.5px !important;
+  }
+  .noble-req-badge {
+    padding: 0 2px !important;
+  }
+  .noble-req-badge .cost-token-disc {
+    width: 10px !important;
+    height: 10px !important;
+    font-size: 7px !important;
+  }
+
+  /* Đối thủ siêu gọn */
+  .opponent-card {
+    padding: 2px 4px !important;
+    gap: 1px !important;
+  }
+  .opp-avatar {
+    width: 14px !important;
+    height: 14px !important;
+  }
+  .opp-name {
+    font-size: 9.5px !important;
+    max-width: 55px !important;
+  }
+  .opp-pts-badge {
+    font-size: 9px !important;
+    padding: 0 3px !important;
+  }
+  .opp-assets-row {
+    font-size: 8px !important;
+  }
+
+  /* Kho đá quý: Lưới 3 cột x 2 hàng, nút Lấy Đá Quý 100% hiển thị */
+  .bank-container {
+    padding: 3px !important;
+    gap: 2px !important;
+  }
+  .section-title-mini {
+    font-size: 9px !important;
+    padding-bottom: 1px !important;
+    margin-bottom: 1px !important;
+  }
+  .gem-bank-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 3px 2px !important;
+    padding: 1px !important;
+  }
+  .gem-chip {
+    width: 32px !important;
+    height: 32px !important;
+  }
+  .gem-chip .chip-icon {
+    font-size: 13px !important;
+  }
+  .gem-chip .chip-count-badge {
+    font-size: 8.5px !important;
+    padding: 0 3px !important;
+    bottom: -3px !important;
+    min-width: 14px !important;
+  }
+  .gem-action-bar {
+    padding: 2px 3px !important;
+    gap: 2px !important;
+    margin-top: auto !important;
+  }
+  .selected-gems-preview {
+    min-height: 18px !important;
+    gap: 2px !important;
+  }
+  .preview-hint {
+    font-size: 7.5px !important;
+    line-height: 1.05 !important;
+  }
+  .gem-action-buttons button {
+    min-height: 24px !important;
+    padding: 2px 6px !important;
+    font-size: 9.5px !important;
+  }
+
+  /* Bảng người chơi đáy: Cực kỳ tinh gọn, không chiếm không gian */
   .current-player-mat {
-    padding: 4px 8px;
+    padding: 2px 6px !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    max-height: 44px !important;
+  }
+  .player-mat-inner {
+    gap: 6px !important;
+  }
+  .mat-avatar {
+    width: 24px !important;
+    height: 24px !important;
+  }
+  .mat-player-name {
+    font-size: 9px !important;
+    max-width: 55px !important;
+  }
+  .mat-points-badge {
+    padding: 0 3px !important;
+    font-size: 8.5px !important;
+  }
+  .pts-val {
+    font-size: 10px !important;
+  }
+  .pts-max {
+    display: none !important;
+  }
+  .col-title {
+    display: none !important;
+  }
+  .bonus-counters-row, .tokens-hand-row {
+    gap: 2px !important;
+  }
+  .bonus-box {
+    padding: 1px 3px !important;
+    min-width: 18px !important;
+  }
+  .bonus-box span:first-child {
+    font-size: 9px !important;
+  }
+  .bonus-count {
+    font-size: 9px !important;
+  }
+  .gem-chip.mini-chip {
+    width: 22px !important;
+    height: 22px !important;
+  }
+  .gem-chip.mini-chip .chip-icon {
+    font-size: 9.5px !important;
+  }
+  .gem-chip.mini-chip .chip-count-badge {
+    font-size: 7px !important;
+    padding: 0 2px !important;
+    bottom: -2px !important;
+    min-width: 11px !important;
+  }
+  .reserved-cards-slots {
+    gap: 3px !important;
+  }
+  .reserved-empty-slot {
+    width: 18px !important;
+    height: 26px !important;
+    font-size: 9px !important;
   }
 
   /* Tối ưu modal khi màn hình chiều cao hẹp (mobile landscape) */
@@ -498,15 +679,13 @@
   }
 }
 
-/* Màn hình Desktop Tiêu Chuẩn (> 1200px) */
+/* Màn hình Desktop Tiêu Chuẩn (> 1200px) — Giữ player mat gọn gàng để Tier 1 luôn hiển thị 100% */
 @media screen and (min-width: 1200px) and (min-height: 650px) {
   :root {
-    --card-width: 124px;
-    --card-height: 174px;
-    --noble-size: 108px;
-    --sidebar-left-width: 250px;
-    --sidebar-right-width: 180px;
-    --player-mat-height: 125px;
+    --noble-size: clamp(56px, 7.5vh, 85px);
+    --sidebar-left-width: 220px;
+    --sidebar-right-width: 175px;
+    --player-mat-height: clamp(62px, 8.5vh, 74px);
   }
   .home-hero {
     gap: 28px;
@@ -522,14 +701,12 @@
   }
 }
 
-/* Màn hình Desktop Lớn (> 1500px Full HD & 2K) */
+/* Màn hình Desktop Lớn (> 1500px Full HD & 2K) — Tự động căn chỉnh */
 @media screen and (min-width: 1500px) and (min-height: 780px) {
   :root {
-    --card-width: 140px;
-    --card-height: 198px;
-    --noble-size: 122px;
-    --sidebar-left-width: 280px;
-    --sidebar-right-width: 200px;
-    --player-mat-height: 135px;
+    --noble-size: clamp(62px, 8vh, 95px);
+    --sidebar-left-width: 240px;
+    --sidebar-right-width: 190px;
+    --player-mat-height: clamp(64px, 8.5vh, 76px);
   }
 }

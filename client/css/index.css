@@ -65,13 +65,13 @@
   --surface-card-back-2: #483218; /* Vàng nâu hổ phách */
   --surface-card-back-3: #1e3148; /* Xanh lam hoàng gia */
 
-  /* Kích Thước Bàn Cờ & Thẻ Bài (Lớn, Rõ Nét Chuẩn Desktop) */
-  --card-width: clamp(100px, 8.2vw, 140px);
-  --card-height: clamp(140px, 11.5vw, 196px);
-  --noble-size: clamp(92px, 7.2vw, 122px);
-  --sidebar-left-width: clamp(210px, 17vw, 280px);
-  --sidebar-right-width: clamp(155px, 12.5vw, 210px);
-  --player-mat-height: clamp(110px, 13vh, 136px);
+  /* Kích Thước Bàn Cờ & Thẻ Bài (Tự Động Vừa Khít Viewport) */
+  --card-width: clamp(80px, 7vw, 130px);
+  --card-height: clamp(110px, 9.8vw, 182px);
+  --noble-size: clamp(52px, 7.5vh, 85px);
+  --sidebar-left-width: clamp(170px, 15vw, 240px);
+  --sidebar-right-width: clamp(140px, 12vw, 185px);
+  --player-mat-height: clamp(60px, 8.5vh, 74px);
 
   /* Kiểu Chữ (Typography) */
   --font-serif-royal: 'Cinzel Decorative', 'Cinzel', serif;
@@ -301,15 +301,15 @@ html, body {
 
 /* Header Thanh Điều Khiển */
 .game-header {
-  height: 48px;
-  min-height: 48px;
+  height: 40px;
+  min-height: 40px;
   background: linear-gradient(180deg, #24160e 0%, #170d07 100%);
   border-bottom: 2px solid var(--wood-border);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
+  padding: 0 12px;
   z-index: 100;
 }
 
@@ -435,6 +435,12 @@ html, body {
   display: flex;
   flex-direction: column;
   opacity: 1;
+}
+
+#screen-game.screen {
+  padding: 0;
+  overflow: hidden;
+  height: 100%;
 }
 
 /* Màn Hình Home (Trang Chủ) */

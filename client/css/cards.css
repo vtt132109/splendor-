@@ -1,31 +1,34 @@
 /**
- * Splendor Board Game - Kiểu Thẻ Phát Triển & Ô Quý Tộc (Kích Thước Chuẩn Lớn & Rõ Nét)
+ * Splendor Board Game - Kiểu Thẻ Phát Triển & Ô Quý Tộc (Tự Động Co Giãn Vừa Khít 100%)
  */
 
 /* Thẻ Phát Triển (Development Card) */
 .dev-card {
-  width: var(--card-width);
-  height: var(--card-height);
+  height: 100%;
+  aspect-ratio: 5 / 7;
+  width: auto;
+  max-width: 145px;
   background: #1c1109;
   border: 2px solid var(--wood-border);
   border-radius: var(--radius-sm);
-  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.2);
   position: relative;
   cursor: pointer;
   transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
   overflow: hidden;
+  container-type: size;
 }
 
 .dev-card:hover {
-  transform: translateY(-6px) scale(1.05);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.9), var(--shadow-gold-glow);
+  transform: translateY(-4px) scale(1.04);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.9), var(--shadow-gold-glow);
   z-index: 10;
 }
 
 /* Thẻ mua được: Phát sáng viền vàng kim */
 .dev-card.affordable {
   border-color: var(--gold-bright);
-  box-shadow: 0 0 14px rgba(255, 215, 0, 0.65), 0 5px 12px rgba(0, 0, 0, 0.75);
+  box-shadow: 0 0 14px rgba(255, 215, 0, 0.65), 0 4px 10px rgba(0, 0, 0, 0.75);
 }
 
 .dev-card.affordable::after {
@@ -44,16 +47,16 @@
   to { opacity: 1; }
 }
 
-/* Tranh Minh Họa Nền Bán Phần Trên (65% Chiều Cao Thẻ) */
+/* Tranh Minh Họa Nền Bán Phần Trên (62% Chiều Cao Thẻ) */
 .card-artwork-bg {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 65%;
+  height: 62%;
   background-size: cover;
   background-position: center;
-  border-bottom: 2px solid var(--wood-border);
+  border-bottom: 1.5px solid var(--wood-border);
 }
 
 .card-artwork-bg::before {
@@ -67,9 +70,9 @@
 /* Lớp Phủ Header Thẻ: Điểm Uy Tín & Gem Bonus */
 .card-top-overlay {
   position: absolute;
-  top: 4px;
-  left: 6px;
-  right: 6px;
+  top: 2px;
+  left: 4px;
+  right: 4px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -78,22 +81,26 @@
 
 .card-prestige-points {
   font-family: var(--font-serif-royal);
-  font-size: clamp(20px, 1.8vw, 28px);
+  font-size: clamp(11px, 2.5vh, 22px);
+  font-size: clamp(11px, 18cqh, 24px);
   font-weight: 900;
   color: #ffffff;
-  text-shadow: 0 2px 4px #000, 0 3px 8px rgba(0, 0, 0, 0.95);
+  text-shadow: 0 1px 3px #000, 0 2px 6px rgba(0, 0, 0, 0.95);
   line-height: 1;
 }
 
 .card-gem-facet-badge {
-  width: clamp(26px, 2.2vw, 36px);
-  height: clamp(26px, 2.2vw, 36px);
+  width: clamp(16px, 3.2vh, 28px);
+  height: clamp(16px, 3.2vh, 28px);
+  width: clamp(16px, 24cqh, 30px);
+  height: clamp(16px, 24cqh, 30px);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: clamp(15px, 1.3vw, 20px);
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.85), inset 0 1px 2px rgba(255, 255, 255, 0.65);
+  font-size: clamp(10px, 2vh, 16px);
+  font-size: clamp(10px, 15cqh, 17px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.85), inset 0 1px 2px rgba(255, 255, 255, 0.65);
   border: 1.5px solid rgba(255, 255, 255, 0.8);
 }
 
@@ -103,17 +110,17 @@
 .card-gem-facet-badge.bonus-ruby { background: var(--gem-ruby-gradient); color: #fff; }
 .card-gem-facet-badge.bonus-onyx { background: var(--gem-onyx-gradient); color: #fff; }
 
-/* Khay Đáy Thẻ Chứa Chi Phí Đá Quý (35% Chiều Cao) */
+/* Khay Đáy Thẻ Chứa Chi Phí Đá Quý (38% Chiều Cao) */
 .card-bottom-tray {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  height: 35%;
+  height: 38%;
   background: linear-gradient(180deg, #24160d 0%, #150c07 100%);
   display: flex;
   align-items: center;
-  padding: 3px 8px;
+  padding: 2px 4px;
   z-index: 4;
 }
 
@@ -122,23 +129,26 @@
   flex-direction: column;
   flex-wrap: wrap;
   max-height: 100%;
-  gap: 3px 6px;
+  gap: 2px 4px;
   align-content: flex-start;
 }
 
 .cost-token-disc {
-  width: clamp(17px, 1.4vw, 23px);
-  height: clamp(17px, 1.4vw, 23px);
+  width: clamp(12px, 2.2vh, 19px);
+  height: clamp(12px, 2.2vh, 19px);
+  width: clamp(12px, 16cqh, 20px);
+  height: clamp(12px, 16cqh, 20px);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-sans-vietnamese);
-  font-size: clamp(10px, 0.85vw, 13px);
+  font-size: clamp(8px, 1.4vh, 11px);
+  font-size: clamp(8px, 10cqh, 12px);
   font-weight: 900;
   color: #fff;
   border: 1.5px solid rgba(255, 255, 255, 0.45);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.85), inset 0 1px 1px rgba(255, 255, 255, 0.45);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.85), inset 0 1px 1px rgba(255, 255, 255, 0.45);
 }
 
 .cost-token-disc.cost-diamond { background: var(--gem-diamond-gradient); color: #111; }
@@ -149,8 +159,10 @@
 
 /* Mặt Lưng Bộ Bài (Decks) */
 .deck-slot {
-  width: var(--card-width);
-  height: var(--card-height);
+  height: 100%;
+  aspect-ratio: 5 / 7;
+  width: auto;
+  max-width: 145px;
   perspective: 600px;
   cursor: pointer;
 }
@@ -164,13 +176,13 @@
   align-items: center;
   justify-content: center;
   border: 2px solid var(--wood-border);
-  box-shadow: 0 5px 12px rgba(0,0,0,0.75), inset 0 2px 4px rgba(255,255,255,0.15);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.75), inset 0 2px 4px rgba(255,255,255,0.15);
   position: relative;
   transition: transform var(--transition-fast);
 }
 
 .deck-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-3px);
   border-color: var(--gold-primary);
 }
 
@@ -188,30 +200,33 @@
 }
 
 .tier-dots {
-  font-size: clamp(16px, 1.4vw, 22px);
-  letter-spacing: 3px;
+  font-size: clamp(10px, 1.8vh, 18px);
+  font-size: clamp(10px, 13cqh, 18px);
+  letter-spacing: 2px;
   color: var(--gold-bright);
 }
 
 .deck-count {
   font-family: var(--font-serif-royal);
-  font-size: clamp(16px, 1.4vw, 22px);
+  font-size: clamp(11px, 2vh, 18px);
+  font-size: clamp(11px, 16cqh, 20px);
   font-weight: 700;
   color: var(--text-parchment);
-  margin-top: 4px;
+  margin-top: 2px;
 }
 
 /* Ô Quý Tộc (Noble Tiles) */
 .noble-tile {
   width: var(--noble-size);
   height: var(--noble-size);
+  aspect-ratio: 1 / 1;
   border: 2px solid var(--gold-primary);
   border-radius: var(--radius-sm);
-  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.85), inset 0 1px 2px rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.85), inset 0 1px 2px rgba(255, 255, 255, 0.2);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 6px;
+  padding: 4px;
   position: relative;
   transition: all var(--transition-fast);
   overflow: hidden;
@@ -228,8 +243,8 @@
 }
 
 .noble-tile:hover {
-  transform: scale(1.08);
-  box-shadow: 0 10px 22px rgba(0,0,0,0.95), var(--shadow-gold-glow);
+  transform: scale(1.06);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.95), var(--shadow-gold-glow);
   z-index: 10;
 }
 
@@ -243,16 +258,27 @@
 
 .noble-points {
   font-family: var(--font-serif-royal);
-  font-size: clamp(18px, 1.6vw, 24px);
+  font-size: clamp(13px, 2.2vh, 20px);
   font-weight: 900;
   color: #fff;
   text-shadow: 0 1px 3px rgba(0,0,0,0.9), 0 0 8px rgba(255,215,0,0.9);
 }
 
+.noble-name {
+  font-size: clamp(9px, 1.4vh, 11px);
+  font-weight: 700;
+  color: var(--gold-light);
+  text-shadow: 0 1px 3px #000;
+  max-width: 50px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .noble-requirements-col {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
   position: relative;
   z-index: 2;
   align-self: flex-start;
@@ -261,14 +287,14 @@
 .noble-req-badge {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
   background: rgba(0, 0, 0, 0.65);
   border-radius: var(--radius-full);
-  padding: 1px 5px 1px 1px;
+  padding: 1px 4px 1px 1px;
 }
 
 .noble-req-badge .cost-token-disc {
-  width: clamp(15px, 1.3vw, 20px);
-  height: clamp(15px, 1.3vw, 20px);
-  font-size: clamp(9px, 0.75vw, 11px);
+  width: clamp(11px, 1.8vh, 15px);
+  height: clamp(11px, 1.8vh, 15px);
+  font-size: clamp(7.5px, 1.2vh, 9.5px);
 }

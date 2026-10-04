@@ -40,7 +40,7 @@ class PlayerPanel {
         box.className = 'bonus-box';
         box.title = `Giảm giá vĩnh viễn: ${count} ${info.name}`;
         box.innerHTML = `
-          <span style="font-size: 13px;">${info.icon}</span>
+          <span>${info.icon}</span>
           <span class="bonus-count">${count}</span>
         `;
         bonusesRow.appendChild(box);
