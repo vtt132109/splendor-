@@ -254,8 +254,11 @@ class AuthManager {
     if (btnText) btnText.textContent = 'Đang chuyển hướng sang Google...';
     if (googleBtn) googleBtn.disabled = true;
 
-    // Tạo Redirect URL chính xác
-    const redirectUri = window.location.origin + window.location.pathname;
+    // Tạo Redirect URL chuẩn xác (khớp với Authorized redirect URIs không có dấu gạch chéo cuối)
+    let redirectUri = window.location.origin;
+    if (window.location.pathname && window.location.pathname !== '/') {
+      redirectUri += window.location.pathname;
+    }
     const nonce = Math.random().toString(36).substring(2) + Date.now().toString(36);
     try { sessionStorage.setItem('google_oauth_nonce', nonce); } catch (e) {}
 
