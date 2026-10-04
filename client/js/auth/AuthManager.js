@@ -246,6 +246,28 @@ class AuthManager {
       return;
     }
 
+    // Cách 1: Ưu tiên Google Identity Services Popup (không lo lỗi redirect_uri_mismatch!)
+    if (window.google?.accounts?.oauth2) {
+      try {
+        const tokenClient = window.google.accounts.oauth2.initTokenClient({
+          client_id: this.googleClientId,
+          scope: 'openid email profile',
+          callback: async (resp) => {
+            if (resp && resp.access_token) {
+              SplendorHelpers.showToast('✦ Đang xác thực tài khoản Google...', 'info');
+              await this.verifyTokenWithServer({ accessToken: resp.access_token });
+            } else if (resp && resp.error) {
+              console.warn('[GIS] Lỗi đăng nhập popup:', resp.error);
+            }
+          }
+        });
+        tokenClient.requestAccessToken({ prompt: 'select_account' });
+        return;
+      } catch (gisErr) {
+        console.warn('[GIS] Chuyển hướng fallback do không mở được popup:', gisErr.message);
+      }
+    }
+
     const spinner = document.getElementById('google-auth-spinner');
     const btnText = document.getElementById('google-btn-text');
     const googleBtn = document.getElementById('btn-google-login-action');
@@ -254,7 +276,7 @@ class AuthManager {
     if (btnText) btnText.textContent = 'Đang chuyển hướng sang Google...';
     if (googleBtn) googleBtn.disabled = true;
 
-    // Tạo Redirect URL chuẩn xác (khớp với Authorized redirect URIs không có dấu gạch chéo cuối)
+    // Cách 2: Chuyển hướng trực tiếp (Redirect)
     let redirectUri = window.location.origin;
     if (window.location.pathname && window.location.pathname !== '/') {
       redirectUri += window.location.pathname;
