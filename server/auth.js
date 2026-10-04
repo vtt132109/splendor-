@@ -3,8 +3,12 @@
  * Cung cấp xác minh ID Token với máy chủ Google và quản lý cấu hình OAuth
  */
 
-require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
-require('dotenv').config(); // Fallback nếu có file .env trong server/
+try {
+  require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
+  require('dotenv').config(); // Fallback nếu có file .env trong server/
+} catch (e) {
+  // Môi trường cloud (Render/Railway) tự động cung cấp biến môi trường qua process.env
+}
 
 class ServerAuth {
   constructor() {

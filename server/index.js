@@ -538,7 +538,7 @@ function handleLeaveRoom(socket, isExplicitLeave = false) {
   }
 }
 
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`
   ======================================================
   🎲 Board Game Splendor Server đang chạy!
