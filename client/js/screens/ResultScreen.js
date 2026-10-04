@@ -42,8 +42,22 @@ class ResultScreen {
       winnerDescEl.textContent = gameState.winnerReason || `Đạt ${winner.prestigePoints} điểm uy tín!`;
     }
 
-    // Sắp xếp thứ hạng tất cả người chơi
+    // Sắp xếp thứ hạng tất cả người chơi:
+    // 1. Người chiến thắng luôn đứng đầu (#1)
+    // 2. Những người sạch nợ bài (đủ điều kiện thắng) xếp trên người còn nợ bài
+    // 3. Trong cùng nhóm sắp xếp theo điểm uy tín giảm dần, hòa điểm thì ít thẻ bài hơn xếp trên
+    const isDebtFree = (p) => !p.reservedCards || p.reservedCards.length === 0;
+
     const ranked = [...gameState.players].sort((a, b) => {
+      if (a.id === winner.id) return -1;
+      if (b.id === winner.id) return 1;
+
+      const aClean = isDebtFree(a);
+      const bClean = isDebtFree(b);
+      if (aClean !== bClean) {
+        return aClean ? -1 : 1;
+      }
+
       if (b.prestigePoints !== a.prestigePoints) return b.prestigePoints - a.prestigePoints;
       return a.cards.length - b.cards.length;
     });
@@ -56,12 +70,16 @@ class ResultScreen {
       scoreboardEl.style.margin = '16px 0';
 
       ranked.forEach((p, idx) => {
+        const isWin = p.id === winner.id;
+        const debtCount = p.reservedCards ? p.reservedCards.length : 0;
+        const hasDebt = debtCount > 0;
+
         const row = document.createElement('div');
         row.style.display = 'flex';
         row.style.alignItems = 'center';
         row.style.justifyContent = 'space-between';
-        row.style.background = idx === 0 ? 'rgba(212, 175, 55, 0.2)' : 'rgba(0,0,0,0.3)';
-        row.style.border = idx === 0 ? '1px solid var(--gold-bright)' : '1px solid var(--wood-border)';
+        row.style.background = isWin ? 'rgba(212, 175, 55, 0.2)' : (hasDebt ? 'rgba(239, 68, 68, 0.08)' : 'rgba(0,0,0,0.3)');
+        row.style.border = isWin ? '1px solid var(--gold-bright)' : (hasDebt ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid var(--wood-border)');
         row.style.borderRadius = 'var(--radius-sm)';
         row.style.padding = '8px 12px';
 
@@ -70,12 +88,16 @@ class ResultScreen {
 
         row.innerHTML = `
           <div style="display:flex;align-items:center;gap:10px;">
-            <span style="font-family:var(--font-serif-royal);font-weight:900;color:var(--gold-bright);font-size:16px;">#${idx + 1}</span>
-            <img style="width:30px;height:30px;border-radius:50%;border:1px solid var(--gold-primary);" src="${p.avatar || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%236b4423'/%3E%3Ctext x='50' y='60' font-size='40' text-anchor='middle' fill='%23e6c387'%3E👤%3C/text%3E%3C/svg%3E"}">
-            <span style="font-weight:700;color:var(--text-parchment);">${p.name} ${idx === 0 ? '🏆' : ''}</span>
+            <span style="font-family:var(--font-serif-royal);font-weight:900;color:${isWin ? 'var(--gold-bright)' : 'var(--text-parchment-muted)'};font-size:16px;">#${idx + 1}</span>
+            <img style="width:30px;height:30px;border-radius:50%;border:1px solid ${isWin ? 'var(--gold-primary)' : 'var(--wood-border)'};" src="${p.avatar || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%236b4423'/%3E%3Ctext x='50' y='60' font-size='40' text-anchor='middle' fill='%23e6c387'%3E👤%3C/text%3E%3C/svg%3E"}">
+            <div>
+              <span style="font-weight:700;color:var(--text-parchment);">${p.name} ${isWin ? '🏆' : ''}</span>
+              ${hasDebt ? `<span style="display:inline-block;background:rgba(239,68,68,0.25);border:1px solid #ef4444;color:#fca5a5;font-size:10px;padding:1px 6px;border-radius:4px;margin-left:6px;font-weight:600;">⚠️ Nợ ${debtCount} thẻ</span>` : ''}
+              ${hasDebt && p.prestigePoints >= 15 && !isWin ? `<div style="font-size:10px;color:#f87171;margin-top:2px;">(Không thể thắng do còn nợ bài)</div>` : ''}
+            </div>
           </div>
           <div style="text-align:right;">
-            <div style="font-family:var(--font-serif-royal);font-size:18px;font-weight:900;color:var(--gold-bright);">${p.prestigePoints} Điểm</div>
+            <div style="font-family:var(--font-serif-royal);font-size:18px;font-weight:900;color:${isWin ? 'var(--gold-bright)' : 'var(--text-parchment)'};">${p.prestigePoints} Điểm</div>
             <div style="font-size:10px;color:var(--text-parchment-muted);">Thẻ: ${cardPts}đ | Quý tộc: ${noblePts}đ | Tổng ${p.cards.length} thẻ</div>
           </div>
         `;

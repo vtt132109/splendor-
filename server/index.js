@@ -407,9 +407,11 @@ io.on('connection', (socket) => {
     try {
       switch (actionType) {
         case 'TAKE_THREE_GEMS':
+          room.preTakeGemsState = room.gameState.toJSON();
           result = room.gameEngine.takeThreeGems(playerIndex, actionData.gems);
           break;
         case 'TAKE_TWO_SAME_GEMS':
+          room.preTakeGemsState = room.gameState.toJSON();
           result = room.gameEngine.takeTwoSameGems(playerIndex, actionData.gem);
           break;
         case 'RESERVE_CARD':
@@ -420,6 +422,16 @@ io.on('connection', (socket) => {
           break;
         case 'DISCARD_TOKENS':
           result = room.gameEngine.discardTokens(playerIndex, actionData.tokens);
+          break;
+        case 'CANCEL_DISCARD':
+          if (room.gameState.phase === 'DISCARDING' && room.gameState.discardingPlayerIndex === playerIndex && room.preTakeGemsState) {
+            room.gameState = SplendorGameState.fromJSON(room.preTakeGemsState);
+            room.gameEngine = new SplendorGameEngine(room.gameState);
+            room.preTakeGemsState = null;
+            result = { success: true };
+          } else {
+            result = { valid: false, error: 'Không thể quay lại lúc này.' };
+          }
           break;
         case 'SELECT_NOBLE':
           result = room.gameEngine.selectNoble(playerIndex, actionData.nobleId);

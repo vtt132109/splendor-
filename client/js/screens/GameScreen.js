@@ -46,6 +46,10 @@ class GameScreen {
 
         // Chế độ Local / AI
         if (!this.gameEngine) return;
+
+        // Lưu bản chụp trước khi lấy đá để hỗ trợ quyền "Quay lại mua thẻ"
+        this.preTakeGemsSnapshot = JSON.parse(JSON.stringify(this.gameState.toJSON()));
+
         let result = null;
         if (selected.length === 2 && selected[0] === selected[1]) {
           result = this.gameEngine.takeTwoSameGems(this.gameState.currentPlayerIndex, selected[0]);
@@ -150,6 +154,29 @@ class GameScreen {
       this.onAfterAction(result);
     };
 
+    // 4b. Hook quay lại để mua thẻ bài (hủy bỏ lấy đá vừa rồi)
+    window.onCancelDiscardAndBuyAction = () => {
+      // Nếu đang trong trận đấu Online
+      if (this.gameState && this.gameState.mode === 'ONLINE') {
+        SplendorSocket.sendGameAction('CANCEL_DISCARD', {}).then(res => {
+          if (res && res.success === false) {
+            SplendorHelpers.showToast(res.error || 'Không thể quay lại lúc này!', 'error');
+          } else {
+            SplendorHelpers.showToast('↩️ Đã hoàn lại đá quý. Bạn có thể chọn mua thẻ bài ngay!', 'info');
+          }
+        });
+        return;
+      }
+
+      // Chế độ Local / AI
+      if (this.preTakeGemsSnapshot) {
+        this.gameState = SplendorGameState.fromJSON(this.preTakeGemsSnapshot);
+        this.gameEngine = new SplendorGameEngine(this.gameState);
+        this.render();
+        SplendorHelpers.showToast('↩️ Đã hoàn lại đá quý vừa lấy. Bạn có thể chọn mua thẻ bài ngay!', 'success');
+      }
+    };
+
     // 5. Hook chọn quý tộc khi có nhiều vị đủ điều kiện
     window.onSelectNobleAction = (nobleId) => {
       // Nếu đang trong trận đấu Online
@@ -229,10 +256,15 @@ class GameScreen {
 
     const lastAction = data.lastAction;
     if (lastAction) {
+      const isForMe = lastAction.playerIndex === this.myPlayerIndex;
       if (lastAction.actionType === 'PURCHASE_CARD') {
         SplendorSound.playCardBuy();
+        const cId = lastAction.result?.card?.id || lastAction.actionData?.cardId;
+        window.SplendorFx?.flyCard(cId, isForMe, lastAction.result?.card);
       } else if (lastAction.actionType === 'TAKE_THREE_GEMS' || lastAction.actionType === 'TAKE_TWO_SAME_GEMS') {
         SplendorSound.playTakeChip();
+        const gems = lastAction.actionData?.gems || (lastAction.actionData?.gem ? [lastAction.actionData.gem, lastAction.actionData.gem] : []);
+        window.SplendorFx?.flyGems(gems, isForMe);
       } else if (lastAction.result?.nobleVisit) {
         SplendorSound.playNobleVisit();
         SplendorHelpers.showToast(`Quý tộc ${lastAction.result.nobleVisit.name} đã ghé thăm!`, 'success');
@@ -276,11 +308,16 @@ class GameScreen {
     }
     const actingPlayer = this.gameState.players[actingPlayerIndex];
 
-    // Phát âm thanh và hiển thị thông báo hành động
+    // Phát âm thanh và kích hoạt hoạt họa bay (Fly Animation)
+    const isForMe = actingPlayerIndex === this.myPlayerIndex;
     if (result.actionType === 'TAKE_THREE_GEMS' || result.actionType === 'TAKE_TWO_SAME_GEMS') {
       SplendorSound.playTakeChip();
+      const gems = result.actionData?.gems || (result.actionData?.gem ? [result.actionData.gem, result.actionData.gem] : []);
+      window.SplendorFx?.flyGems(gems, isForMe);
     } else if (result.actionType === 'PURCHASE_CARD') {
       SplendorSound.playCardBuy();
+      const cId = result.card?.id || result.actionData?.cardId || result.actionData?.card?.id;
+      window.SplendorFx?.flyCard(cId, isForMe, result.card || result.actionData?.card);
     }
 
     // Nếu người vừa đi là Máy (AI), thông báo rõ ràng cho người chơi biết máy vừa làm gì

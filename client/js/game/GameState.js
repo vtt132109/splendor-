@@ -192,25 +192,49 @@
 
     /**
      * Kết thúc game và tính toán người chiến thắng
+     * LUẬT ĐẶC BIỆT: Còn nợ bài (reservedCards.length > 0) thì KHÔNG ĐƯỢC PHÉP THẮNG dù điểm vượt hay đủ!
      */
     endGame() {
       this.phase = GAME_PHASES.FINISHED;
 
-      // Sắp xếp người chơi theo điểm uy tín (cao xuống thấp), hòa thì ít thẻ hơn thắng
-      const ranked = [...this.players].sort((a, b) => {
+      // Phân nhóm: Người sạch nợ bài (đủ điều kiện thắng) và Người còn nợ bài
+      const debtFree = this.players.filter(p => !p.reservedCards || p.reservedCards.length === 0);
+      const withDebt = this.players.filter(p => p.reservedCards && p.reservedCards.length > 0);
+
+      const sortByScore = (a, b) => {
         if (b.prestigePoints !== a.prestigePoints) {
           return b.prestigePoints - a.prestigePoints;
         }
         return a.cards.length - b.cards.length;
-      });
+      };
 
-      this.winner = ranked[0];
-      const isTiebreak = ranked.length > 1 && ranked[0].prestigePoints === ranked[1].prestigePoints;
+      debtFree.sort(sortByScore);
+      withDebt.sort(sortByScore);
 
-      if (isTiebreak) {
-        this.winnerReason = `Cùng đạt ${this.winner.prestigePoints} điểm uy tín, chiến thắng nhờ sở hữu ít thẻ hơn (${this.winner.cards.length} thẻ)!`;
+      // Nếu có người sạch nợ bài, người điểm cao nhất trong nhóm sạch nợ sẽ giành chiến thắng
+      if (debtFree.length > 0) {
+        this.winner = debtFree[0];
+        const isTiebreak = debtFree.length > 1 && debtFree[0].prestigePoints === debtFree[1].prestigePoints;
+        const equalOrHigherWithDebt = withDebt.find(p => p.prestigePoints >= this.winner.prestigePoints);
+
+        if (equalOrHigherWithDebt) {
+          const typeStr = equalOrHigherWithDebt.prestigePoints > this.winner.prestigePoints ? 'điểm vượt' : 'đủ điểm';
+          this.winnerReason = `Chiến thắng với ${this.winner.prestigePoints} điểm và sạch nợ bài! (${equalOrHigherWithDebt.name} ${typeStr} (${equalOrHigherWithDebt.prestigePoints}đ) nhưng không được thắng vì còn nợ ${equalOrHigherWithDebt.reservedCards.length} thẻ chưa mua!)`;
+        } else if (isTiebreak) {
+          this.winnerReason = `Cùng đạt ${this.winner.prestigePoints} điểm và sạch nợ bài, chiến thắng nhờ sở hữu ít thẻ hơn (${this.winner.cards.length} thẻ)!`;
+        } else {
+          this.winnerReason = `Đạt ${this.winner.prestigePoints} điểm uy tín và hoàn thành xuất sắc sạch mọi thẻ nợ!`;
+        }
       } else {
-        this.winnerReason = `Đạt số điểm uy tín cao nhất: ${this.winner.prestigePoints} điểm!`;
+        // Trường hợp tất cả người chơi đều còn nợ bài: Ưu tiên người nợ ít thẻ nhất rồi đến điểm
+        withDebt.sort((a, b) => {
+          if (a.reservedCards.length !== b.reservedCards.length) {
+            return a.reservedCards.length - b.reservedCards.length;
+          }
+          return sortByScore(a, b);
+        });
+        this.winner = withDebt[0];
+        this.winnerReason = `Tất cả thương gia đều còn nợ bài. ${this.winner.name} chiến thắng nhờ nợ ít thẻ nhất (${this.winner.reservedCards.length} thẻ) và đạt ${this.winner.prestigePoints} điểm!`;
       }
     }
 

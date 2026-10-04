@@ -28,15 +28,46 @@
 .noble-row-container {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding-top: 2px;
+  gap: 3px;
+  background: rgba(30, 18, 11, 0.75);
+  border: 1px solid var(--wood-border);
+  border-radius: var(--radius-sm);
+  padding: 3px 8px;
+  margin-bottom: 3px;
+  flex-shrink: 0;
+}
+
+.noble-row-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.noble-crown-icon {
+  font-size: 11px;
+}
+
+.noble-title-text {
+  font-size: 8.5px;
+  font-weight: 700;
+  color: var(--gold-light);
+  letter-spacing: 0.5px;
+}
+
+.noble-hint-badge {
+  font-size: 8px;
+  color: var(--text-parchment-muted);
+  margin-left: auto;
 }
 
 .noble-tiles-list {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  flex-direction: row;
+  gap: 8px;
   align-items: center;
+  justify-content: center;
+  overflow-x: auto;
+  padding: 2px 0;
 }
 
 .other-players-container {
@@ -346,6 +377,35 @@
   color: var(--gold-bright);
 }
 
+.tokens-hand-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mat-mobile-token-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(22, 13, 7, 0.9);
+  border: 1px solid var(--gold-primary);
+  border-radius: 12px;
+  padding: 1px 7px;
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--gold-bright);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.mat-mobile-token-pill.warning {
+  border-color: #ef4444;
+  color: #ef4444;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+  animation: pulsePill 1.2s infinite alternate;
+}
+
 .bonus-counters-row, .tokens-hand-row {
   display: flex;
   gap: 4px;
@@ -388,4 +448,218 @@
   justify-content: center;
   color: rgba(212, 175, 55, 0.3);
   font-size: 11px;
+}
+
+/* Modal Trả Đá / Quyền Quay Lại Mua Thẻ */
+.discard-modal-box {
+  max-width: 460px;
+  width: 95%;
+  border: 2px solid var(--gold-primary);
+}
+
+.discard-modal-footer {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Modal Chi Tiết Quý Tộc / Thương Gia */
+.noble-detail-box {
+  max-width: 440px;
+  width: 95%;
+  background: linear-gradient(145deg, #2b1810 0%, #170d08 100%);
+  border: 2px solid var(--gold-primary);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.9), 0 0 20px rgba(212, 175, 55, 0.4);
+}
+
+.noble-detail-title-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.noble-detail-crown {
+  font-size: 20px;
+}
+
+.noble-detail-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 10px 0;
+}
+
+.noble-detail-preview-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.noble-detail-portrait {
+  width: 72px;
+  height: 72px;
+  min-width: 72px;
+  border-radius: 8px;
+  border: 2px solid var(--gold-bright);
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.8);
+}
+
+.noble-detail-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.noble-detail-pts {
+  font-family: var(--font-serif-royal);
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--gold-bright);
+}
+
+.noble-rule-notice {
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--text-parchment);
+  background: rgba(0, 0, 0, 0.35);
+  padding: 6px 8px;
+  border-radius: 6px;
+  border-left: 3px solid var(--gold-primary);
+}
+
+.noble-detail-reqs-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.reqs-title {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--gold-light);
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+.noble-detail-reqs-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+}
+
+.noble-req-status-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--wood-border);
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+
+.noble-req-status-card.met {
+  border-color: #22c55e;
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.noble-req-card-icon {
+  font-size: 16px;
+}
+
+.noble-req-card-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.noble-req-card-name {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-parchment);
+}
+
+.noble-req-card-progress {
+  font-size: 11px;
+  font-weight: 800;
+}
+
+/* Modal Hướng Dẫn iOS Fullscreen */
+.ios-fs-modal-box {
+  max-width: 430px;
+  width: 95%;
+  background: linear-gradient(145deg, #24140b 0%, #150a06 100%);
+  border: 2px solid var(--gold-primary);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+}
+
+.ios-fs-title-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ios-icon {
+  font-size: 20px;
+}
+
+.ios-fs-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 10px 0;
+}
+
+.ios-fs-desc {
+  font-size: 12px;
+  color: var(--text-parchment);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.ios-fs-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ios-step-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--wood-border);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.step-num {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  border-radius: 50%;
+  background: var(--gold-primary);
+  color: #170d08;
+  font-size: 12px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step-content {
+  font-size: 11.5px;
+  color: var(--text-parchment);
+  line-height: 1.35;
+}
+
+.ios-fs-tip {
+  font-size: 11px;
+  color: var(--gold-light);
+  background: rgba(212, 175, 55, 0.12);
+  border-left: 3px solid var(--gold-primary);
+  padding: 6px 10px;
+  border-radius: 4px;
 }

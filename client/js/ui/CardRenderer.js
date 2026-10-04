@@ -69,7 +69,7 @@ class CardRenderer {
   /**
    * Tạo element HTML cho một thẻ phát triển chuẩn bản gốc Splendor
    */
-  createCardElement(card, player, isCurrentTurn) {
+  createCardElement(card, player, isCurrentTurn, fromReserved = false) {
     const { GEM_INFO_VI } = SplendorConstants;
     const cardEl = document.createElement('div');
     cardEl.className = 'dev-card';
@@ -112,6 +112,9 @@ class CardRenderer {
         </div>
       </div>
 
+      <!-- Nút Mua Nhanh 1 Chạm khi đủ tài nguyên -->
+      ${canAfford ? `<button class="btn-quick-buy" type="button" title="Mua nhanh 1 chạm">⚡ Mua</button>` : ''}
+
       <!-- Khay đáy: Danh sách chi phí đá quý -->
       <div class="card-bottom-tray">
         <div class="card-costs-grid">
@@ -120,8 +123,51 @@ class CardRenderer {
       </div>
     `;
 
-    cardEl.addEventListener('click', () => {
-      this.openInspectModal(card, player, isCurrentTurn, false);
+    // 1. Thao tác 1 chạm nút Mua Nhanh
+    const quickBuyBtn = cardEl.querySelector('.btn-quick-buy');
+    if (quickBuyBtn) {
+      quickBuyBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (typeof this.onPurchaseCard === 'function') {
+          try { if (navigator.vibrate) navigator.vibrate([20, 30, 20]); } catch (err) {}
+          this.onPurchaseCard(card.id, fromReserved);
+        }
+      });
+    }
+
+    // 2. Thao tác Chạm đôi (Double-Tap) hoặc Chạm đơn mở Inspect Modal
+    let lastTap = 0;
+    let tapTimeout = null;
+
+    cardEl.addEventListener('click', (e) => {
+      if (e.target.closest('.btn-quick-buy')) return;
+
+      const now = Date.now();
+      const diff = now - lastTap;
+
+      if (canAfford && diff > 0 && diff < 380) {
+        // Double-tap mua ngay!
+        if (tapTimeout) {
+          clearTimeout(tapTimeout);
+          tapTimeout = null;
+        }
+        lastTap = 0;
+        try { if (navigator.vibrate) navigator.vibrate([20, 30, 20]); } catch (err) {}
+        if (typeof this.onPurchaseCard === 'function') {
+          this.onPurchaseCard(card.id, fromReserved);
+        }
+      } else {
+        lastTap = now;
+        if (canAfford) {
+          if (tapTimeout) clearTimeout(tapTimeout);
+          tapTimeout = setTimeout(() => {
+            this.openInspectModal(card, player, isCurrentTurn, fromReserved);
+            tapTimeout = null;
+          }, 240);
+        } else {
+          this.openInspectModal(card, player, isCurrentTurn, fromReserved);
+        }
+      }
     });
 
     return cardEl;
@@ -255,7 +301,7 @@ class CardRenderer {
     for (let i = 0; i < 3; i++) {
       const card = reservedCards[i];
       if (card) {
-        const miniCard = this.createCardElement(card, player, isCurrentTurn);
+        const miniCard = this.createCardElement(card, player, isCurrentTurn, true);
         miniCard.classList.add('mini-card');
         miniCard.style.width = 'clamp(46px, 3.8vw, 60px)';
         miniCard.style.height = 'clamp(62px, 5.2vw, 82px)';
@@ -274,11 +320,6 @@ class CardRenderer {
 
         const tray = miniCard.querySelector('.card-bottom-tray');
         if (tray) tray.style.display = 'none';
-
-        miniCard.addEventListener('click', (e) => {
-          e.stopPropagation();
-          this.openInspectModal(card, player, isCurrentTurn, true);
-        });
 
         container.appendChild(miniCard);
       } else {

@@ -437,32 +437,47 @@
     padding: 0 4px !important;
   }
 
-  /* Quý tộc dạng lưới 2 cột siêu gọn, không bị cắt trên đỉnh */
+  /* Quý tộc đặt ngang cùng bàn cờ chính siêu gọn */
   .noble-row-container {
-    padding-top: 1px !important;
+    padding: 1px 4px !important;
     gap: 2px !important;
+    margin-bottom: 2px !important;
+  }
+  .noble-row-header {
+    display: none !important;
   }
   .noble-tiles-list {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 3px !important;
-    justify-items: center !important;
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 4px !important;
+    justify-content: center !important;
+    overflow-x: auto !important;
   }
   .noble-tile {
-    width: 44px !important;
-    height: 44px !important;
-    padding: 2px 3px !important;
+    width: 38px !important;
+    height: 38px !important;
+    padding: 1px 2px !important;
+    flex-shrink: 0 !important;
   }
   .noble-points {
-    font-size: 11.5px !important;
+    font-size: 10px !important;
+  }
+  .noble-name {
+    display: none !important;
   }
   .noble-req-badge {
-    padding: 0 2px !important;
+    padding: 0 1px !important;
+    gap: 1px !important;
   }
   .noble-req-badge .cost-token-disc {
-    width: 10px !important;
-    height: 10px !important;
-    font-size: 7px !important;
+    width: 9px !important;
+    height: 9px !important;
+    font-size: 6.5px !important;
+  }
+
+  .btn-quick-buy {
+    font-size: 7.5px !important;
+    padding: 1px 5px !important;
   }
 
   /* Đối thủ siêu gọn */
@@ -563,6 +578,17 @@
   }
   .col-title {
     display: none !important;
+  }
+  .tokens-hand-wrapper {
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+  }
+  .mat-mobile-token-pill {
+    display: inline-flex !important;
+    padding: 1px 4px !important;
+    font-size: 8.5px !important;
+    gap: 2px !important;
   }
   .bonus-counters-row, .tokens-hand-row {
     gap: 2px !important;

@@ -59,7 +59,63 @@ class NobleRenderer {
       </div>
     `;
 
+    // Bấm vào để xem luật nhận Quý tộc & tiến độ thẻ bài của người chơi
+    tile.addEventListener('click', () => {
+      if (tile.closest('#noble-select-modal')) return;
+      this.showNobleInfoModal(noble, player);
+    });
+
     return tile;
+  }
+
+  /**
+   * Hiển thị Modal chi tiết Quý Tộc / Thương Gia giải thích luật chơi tự động ghé thăm
+   */
+  showNobleInfoModal(noble, player) {
+    if (window.SplendorSound) SplendorSound.playClick();
+    const modal = document.getElementById('noble-detail-modal');
+    if (!modal) return;
+
+    const nameEl = document.getElementById('noble-detail-name');
+    const portraitEl = document.getElementById('noble-detail-portrait');
+    const reqsContainer = document.getElementById('noble-detail-reqs-list');
+    const closeBtn = document.getElementById('btn-close-noble-detail');
+    const understandBtn = document.getElementById('btn-understand-noble');
+
+    if (nameEl) nameEl.textContent = `${noble.name} - ${noble.title}`;
+    if (portraitEl) {
+      portraitEl.style.backgroundImage = `url('${this.getNoblePortraitUrl(noble)}')`;
+    }
+
+    if (reqsContainer) {
+      reqsContainer.innerHTML = '';
+      const { GEM_INFO_VI } = SplendorConstants;
+
+      for (const [gem, needed] of Object.entries(noble.requirements)) {
+        const current = player?.bonuses ? (player.bonuses[gem] || 0) : 0;
+        const isMet = current >= needed;
+        const info = GEM_INFO_VI[gem] || { name: gem, icon: '💎' };
+
+        const card = document.createElement('div');
+        card.className = `noble-req-status-card ${isMet ? 'met' : ''}`;
+        card.innerHTML = `
+          <span class="noble-req-card-icon">${info.icon}</span>
+          <div class="noble-req-card-info">
+            <span class="noble-req-card-name">${info.name}</span>
+            <span class="noble-req-card-progress" style="color: ${isMet ? '#4ade80' : '#f59e0b'}">
+              ${isMet ? '✓ Đã đạt ' : 'Tiến độ: '}${current}/${needed} Thẻ Bài
+            </span>
+          </div>
+        `;
+        reqsContainer.appendChild(card);
+      }
+    }
+
+    const closeModal = () => modal.classList.add('hidden');
+    if (closeBtn) closeBtn.onclick = closeModal;
+    if (understandBtn) understandBtn.onclick = closeModal;
+
+    modal.classList.remove('hidden');
   }
 
   /**

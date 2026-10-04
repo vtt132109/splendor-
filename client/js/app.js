@@ -85,9 +85,19 @@ class SplendorApp {
     const boardFsBtn = document.getElementById('btn-board-fullscreen');
     const fsIcon = document.getElementById('header-fs-icon');
     const fsText = document.getElementById('header-fs-text');
+    const iosFsModal = document.getElementById('ios-fullscreen-modal');
+    const closeIosFsBtn = document.getElementById('btn-close-ios-fs');
+    const closeIosFsOkBtn = document.getElementById('btn-close-ios-fs-ok');
+
+    if (closeIosFsBtn) closeIosFsBtn.onclick = () => iosFsModal?.classList.add('hidden');
+    if (closeIosFsOkBtn) closeIosFsOkBtn.onclick = () => iosFsModal?.classList.add('hidden');
+
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
 
     const updateFsIcons = () => {
-      const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+      const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement || isStandalone);
       if (fsIcon) fsIcon.textContent = isFs ? '🗗' : '⛶';
       if (fsText) fsText.textContent = isFs ? 'Thu Nhỏ' : 'Toàn Màn Hình';
       if (boardFsBtn) boardFsBtn.textContent = isFs ? '🗗' : '⛶';
@@ -96,6 +106,25 @@ class SplendorApp {
 
     const toggleFs = () => {
       if (window.SplendorSound) SplendorSound.playClick();
+
+      // Xử lý riêng cho iPhone / iOS do Apple chặn Fullscreen API trên Safari/Chrome
+      if (isIOS) {
+        if (isStandalone) {
+          SplendorHelpers.showToast('Bạn đang chơi ở chế độ ứng dụng toàn màn hình!', 'success');
+          return;
+        }
+
+        // Tự động cuộn để thu gọn thanh địa chỉ nếu có thể
+        try { window.scrollTo(0, 1); } catch (e) {}
+
+        if (iosFsModal) {
+          iosFsModal.classList.remove('hidden');
+        } else {
+          SplendorHelpers.showToast('Trên iPhone: Bấm nút Chia sẻ ⬆️ rồi chọn "Thêm vào MH chính" để chơi toàn màn hình!', 'info', 5000);
+        }
+        return;
+      }
+
       if (!document.fullscreenElement && !document.webkitFullscreenElement) {
         const docEl = document.documentElement;
         if (docEl.requestFullscreen) {
@@ -121,6 +150,8 @@ class SplendorApp {
     document.addEventListener('fullscreenchange', updateFsIcons);
     document.addEventListener('webkitfullscreenchange', updateFsIcons);
     updateFsIcons();
+
+    this.toggleFullscreenAction = toggleFs;
   }
 
   initOrientationControls() {
@@ -140,11 +171,8 @@ class SplendorApp {
     if (rotateFsBtn) {
       rotateFsBtn.addEventListener('click', () => {
         hideOverlay();
-        const docEl = document.documentElement;
-        if (docEl.requestFullscreen) {
-          docEl.requestFullscreen().catch(() => {});
-        } else if (docEl.webkitRequestFullscreen) {
-          docEl.webkitRequestFullscreen();
+        if (typeof this.toggleFullscreenAction === 'function') {
+          this.toggleFullscreenAction();
         }
       });
     }

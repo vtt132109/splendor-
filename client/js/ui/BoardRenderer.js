@@ -53,8 +53,14 @@ class BoardRenderer {
         turnTextEl.textContent = `🔥 VÒNG CUỐI: Lượt của ${currentPlayer.name} ${isMyTurn ? '(✦ LƯỢT CỦA BẠN! ✦)' : ''}`;
         turnTextEl.style.color = '#ef4444';
       } else {
-        turnTextEl.textContent = `Lượt của: ${currentPlayer.name} ${isMyTurn ? '(✦ LƯỢT CỦA BẠN ✦)' : ''}`;
-        turnTextEl.style.color = isMyTurn ? 'var(--gold-bright)' : 'var(--gold-light)';
+        const debtCount = currentPlayer.reservedCards ? currentPlayer.reservedCards.length : 0;
+        if (currentPlayer.prestigePoints >= 15 && debtCount > 0) {
+          turnTextEl.textContent = `⚠️ Lượt của ${currentPlayer.name} (Đã có ${currentPlayer.prestigePoints}đ nhưng còn nợ ${debtCount} thẻ - Phải trả hết nợ mới được thắng!)`;
+          turnTextEl.style.color = '#fbbf24';
+        } else {
+          turnTextEl.textContent = `Lượt của: ${currentPlayer.name} ${isMyTurn ? '(✦ LƯỢT CỦA BẠN ✦)' : ''}`;
+          turnTextEl.style.color = isMyTurn ? 'var(--gold-bright)' : 'var(--gold-light)';
+        }
       }
     }
 
@@ -62,8 +68,9 @@ class BoardRenderer {
       roundBadgeEl.textContent = `Vòng ${gameState.round}`;
     }
 
-    // 2. Vẽ các ô Quý tộc
-    SplendorNobleRenderer.renderNobles(gameState.nobles, currentPlayer);
+    // 2. Vẽ các ô Quý tộc (hiển thị tiến độ thẻ bài của người chơi)
+    const myPlayer = gameState.players[myPlayerIndex] || currentPlayer;
+    SplendorNobleRenderer.renderNobles(gameState.nobles, myPlayer);
 
     // 3. Vẽ ma trận thẻ bài 3 tầng
     SplendorCardRenderer.renderBoard(
@@ -182,6 +189,16 @@ class BoardRenderer {
     };
 
     updateDiscardUI();
+
+    const cancelBuyBtn = document.getElementById('btn-cancel-discard-buy');
+    if (cancelBuyBtn) {
+      cancelBuyBtn.onclick = () => {
+        modal.classList.add('hidden');
+        if (typeof window.onCancelDiscardAndBuyAction === 'function') {
+          window.onCancelDiscardAndBuyAction();
+        }
+      };
+    }
 
     confirmBtn.onclick = () => {
       modal.classList.add('hidden');

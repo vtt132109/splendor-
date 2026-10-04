@@ -292,11 +292,15 @@
     checkWinAndAdvanceTurn(playerIndex, extra = {}) {
       const player = this.state.players[playerIndex];
 
-      // Nếu người chơi đạt 15 điểm uy tín và chưa kích hoạt vòng cuối
-      if (player.prestigePoints >= GAME_RULES.WINNING_PRESTIGE_POINTS && !this.state.isFinalRound) {
+      // LUẬT: Còn nợ bài (reservedCards > 0) thì KHÔNG được phép thắng dù điểm vượt hay đủ!
+      // Chỉ người chơi đạt >= 15 điểm VÀ sạch nợ bài (0 thẻ nợ) mới đủ tư cách kích hoạt Vòng Cuối Cùng!
+      const isDebtFree = !player.reservedCards || player.reservedCards.length === 0;
+      if (player.prestigePoints >= GAME_RULES.WINNING_PRESTIGE_POINTS && isDebtFree && !this.state.isFinalRound) {
         this.state.isFinalRound = true;
         this.state.finalRoundTriggerPlayerIndex = playerIndex;
-        this.logTurn(player, `đã đạt ${player.prestigePoints} điểm! VÒNG CUỐI CÙNG ĐƯỢC KÍCH HOẠT!`);
+        this.logTurn(player, `đã đạt ${player.prestigePoints} điểm và sạch nợ bài! VÒNG CUỐI CÙNG ĐƯỢC KÍCH HOẠT!`);
+      } else if (player.prestigePoints >= GAME_RULES.WINNING_PRESTIGE_POINTS && !isDebtFree && !this.state.isFinalRound) {
+        this.logTurn(player, `đã đạt ${player.prestigePoints} điểm nhưng chưa thể kích hoạt chiến thắng vì còn nợ ${player.reservedCards.length} thẻ đặt cọc!`);
       }
 
       // Chuyển lượt

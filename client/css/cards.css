@@ -47,6 +47,47 @@
   to { opacity: 1; }
 }
 
+/* Nút Mua Nhanh 1 Chạm Trên Thẻ Đủ Tiền */
+.btn-quick-buy {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border: 1.5px solid #6ee7b7;
+  border-radius: 12px;
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: clamp(8.5px, 1.2vh, 10px);
+  font-weight: 900;
+  padding: 2px 8px;
+  cursor: pointer;
+  z-index: 15;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.9), 0 0 10px rgba(16, 185, 129, 0.7);
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  letter-spacing: 0.5px;
+  animation: pulseQuickBuy 1.5s infinite alternate;
+  white-space: nowrap;
+  pointer-events: auto;
+}
+
+.btn-quick-buy:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+  background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.95), 0 0 16px rgba(52, 211, 153, 0.9);
+}
+
+.btn-quick-buy:active {
+  transform: translate(-50%, -50%) scale(0.95);
+}
+
+@keyframes pulseQuickBuy {
+  0% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 2px 6px rgba(16, 185, 129, 0.5); }
+  100% { transform: translate(-50%, -50%) scale(1.08); box-shadow: 0 4px 14px rgba(52, 211, 153, 0.9); }
+}
+
 /* Tranh Minh Họa Nền Bán Phần Trên (62% Chiều Cao Thẻ) */
 .card-artwork-bg {
   position: absolute;
@@ -304,17 +345,25 @@
   align-self: flex-start;
 }
 
+.noble-tile {
+  cursor: pointer;
+}
+
 .noble-req-badge {
   display: flex;
   align-items: center;
   gap: 2px;
-  background: rgba(0, 0, 0, 0.65);
-  border-radius: var(--radius-full);
-  padding: 1px 4px 1px 1px;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  padding: 1px 4px 1px 2px;
 }
 
 .noble-req-badge .cost-token-disc {
   width: clamp(11px, 1.8vh, 15px);
   height: clamp(11px, 1.8vh, 15px);
+  border-radius: 2px;
   font-size: clamp(7.5px, 1.2vh, 9.5px);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.6);
 }
+

@@ -24,7 +24,27 @@ class PlayerPanel {
 
     const totalTokens = ALL_TOKENS.reduce((s, g) => s + (player.tokens[g] || 0), 0);
     if (tokenTagEl) tokenTagEl.textContent = `${totalTokens}/10`;
-    if (reservedTagEl) reservedTagEl.textContent = `${player.reservedCards.length}/3`;
+    
+    const reservedCount = player.reservedCards ? player.reservedCards.length : 0;
+    if (reservedTagEl) {
+      if (reservedCount > 0) {
+        reservedTagEl.textContent = `${reservedCount}/3 ${player.prestigePoints >= 15 ? '(NỢ)' : ''}`;
+        reservedTagEl.title = `Đang nợ ${reservedCount} thẻ bài. Luật: Phải mua hết thẻ nợ mới được phép thắng!`;
+        reservedTagEl.style.color = player.prestigePoints >= 15 ? '#ef4444' : '';
+      } else {
+        reservedTagEl.textContent = `0/3`;
+        reservedTagEl.title = `Sạch nợ bài! Đủ điều kiện thắng khi đạt >= 15 điểm.`;
+        reservedTagEl.style.color = '';
+      }
+    }
+
+    const mobileTokenCountEl = document.getElementById('mat-token-count-mobile');
+    const mobileTokenPill = document.getElementById('mat-mobile-token-pill');
+    if (mobileTokenCountEl) mobileTokenCountEl.textContent = `${totalTokens}/10`;
+    if (mobileTokenPill) {
+      mobileTokenPill.classList.toggle('warning', totalTokens >= 9);
+      mobileTokenPill.title = `Tổng số đá quý: ${totalTokens}/10 viên (Tối đa 10 viên)`;
+    }
 
     // Vẽ dãy Bonus giảm giá vĩnh viễn (5 màu)
     const bonusesRow = document.getElementById('mat-bonuses-row');
@@ -97,7 +117,7 @@ class PlayerPanel {
         <div class="opp-assets-row">
           <span>🪙 ${totalTokens}/10 viên</span>
           <span>🃏 ${totalCards} thẻ</span>
-          <span>📌 ${opp.reservedCards.length} giữ</span>
+          <span style="${opp.reservedCards.length > 0 && opp.prestigePoints >= 15 ? 'color:#ef4444;font-weight:bold;' : ''}" title="${opp.reservedCards.length > 0 ? `Đang nợ ${opp.reservedCards.length} thẻ bài (Phải mua hết mới được phép thắng)` : 'Sạch nợ bài'}">📌 ${opp.reservedCards.length} nợ ${opp.reservedCards.length > 0 && opp.prestigePoints >= 15 ? '⚠️' : ''}</span>
         </div>
         ${bonusSummaryHtml ? `<div style="display:flex;gap:4px;font-size:9px;margin-top:2px;">${bonusSummaryHtml}</div>` : ''}
       `;

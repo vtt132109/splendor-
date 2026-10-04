@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#1a110c">
+  <!-- Apple Web App & PWA Settings for Fullscreen on iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Splendor">
+  <link rel="apple-touch-icon" href="assets/nobles/king.jpg">
   <meta name="description" content="Board Game Splendor trực tuyến - Chơi cùng bạn bè qua mã phòng, chuyền tay hoặc đấu với máy AI thông minh. Giao diện tiếng Việt chuẩn bàn cờ cổ điển.">
   <title>Splendor - Kiệt Tác Đá Quý Phục Hưng</title>
 
@@ -223,15 +228,8 @@
       <!-- Màn hình Bàn Chơi Game Chính (Game Board) -->
       <section id="screen-game" class="screen">
         <div class="game-layout" id="game-layout">
-          <!-- Cột bên trái: Danh sách thẻ quý tộc & Người chơi khác -->
+          <!-- Cột bên trái: Danh sách Người chơi khác (Đối Thủ) -->
           <aside class="game-sidebar-left">
-            <div class="noble-row-container">
-              <div class="section-title-mini">CÁC VỊ QUÝ TỘC (3 ĐIỂM)</div>
-              <div class="noble-tiles-list" id="noble-tiles-container">
-                <!-- 3 - 5 quý tộc được render ở đây -->
-              </div>
-            </div>
-
             <div class="other-players-container">
               <div class="section-title-mini">ĐỐI THỦ</div>
               <div class="other-players-list" id="other-players-container">
@@ -240,13 +238,25 @@
             </div>
           </aside>
 
-          <!-- Khu vực trung tâm: Bàn cờ thẻ bài 3 tầng (Tier 3, 2, 1) -->
+          <!-- Khu vực trung tâm: Hàng Quý tộc & Bàn cờ thẻ bài 3 tầng (Tier 3, 2, 1) -->
           <div class="game-center-board">
             <div class="turn-announcer wood-banner" id="turn-announcer">
               <span class="turn-indicator-dot"></span>
               <span id="turn-text" class="turn-text">Lượt của: Đang chuẩn bị...</span>
               <span id="round-status-badge" class="round-badge">Vòng 1</span>
               <button id="btn-board-fullscreen" class="btn-board-fs" title="Toàn màn hình (Fullscreen)">⛶</button>
+            </div>
+
+            <!-- Hàng Thẻ Quý Tộc / Thương Gia Hoàng Gia (Nằm cùng bàn với thẻ bài chính) -->
+            <div class="noble-row-container" id="noble-board-row">
+              <div class="noble-row-header">
+                <span class="noble-crown-icon">👑</span>
+                <span class="section-title-mini noble-title-text">QUÝ TỘC & THƯƠNG GIA (+3Đ)</span>
+                <span class="noble-hint-badge">Tự động ghé thăm khi đủ thẻ bài</span>
+              </div>
+              <div class="noble-tiles-list" id="noble-tiles-container">
+                <!-- 3 - 5 quý tộc được render ở đây -->
+              </div>
             </div>
 
             <!-- Lưới thẻ phát triển 3 tầng -->
@@ -346,8 +356,14 @@
                 <span>ĐÁ QUÝ TRONG TAY</span>
                 <span id="mat-token-count-tag" class="token-limit-tag">0/10</span>
               </div>
-              <div class="tokens-hand-row" id="mat-tokens-row">
-                <!-- 6 loại token đá quý đang sở hữu -->
+              <div class="tokens-hand-wrapper">
+                <div class="mat-mobile-token-pill" id="mat-mobile-token-pill" title="Tổng số đá quý trong tay (Tối đa 10 viên)">
+                  <span class="pill-gem-icon">🪙</span>
+                  <span id="mat-token-count-mobile" class="pill-token-count">0/10</span>
+                </div>
+                <div class="tokens-hand-row" id="mat-tokens-row">
+                  <!-- 6 loại token đá quý đang sở hữu -->
+                </div>
               </div>
             </div>
 
@@ -399,20 +415,23 @@
       </div>
     </div>
 
-    <!-- Modal Trả Đá Quý Khi Vượt Quá 10 Viên -->
+    <!-- Modal Trả Đá Quý Khi Vượt Quá 10 Viên / Quyền Quay Lại Mua Thẻ -->
     <div id="discard-modal" class="modal-overlay hidden">
       <div class="modal-content wood-panel discard-modal-box">
         <div class="modal-header">
-          <h2 class="modal-title warning-title">⚠️ QUÁ GIỚI HẠN 10 ĐÁ QUÝ!</h2>
+          <h2 class="modal-title warning-title">⚠️ ĐÃ ĐỦ SỐ VIÊN ĐÁ QUÝ (QUÁ 10 VIÊN)!</h2>
         </div>
         <div class="modal-body">
-          <p id="discard-instruction">Bạn hiện có <strong id="discard-total-now">12</strong> viên đá quý. Vui lòng chọn <strong id="discard-needed-count">2</strong> viên để trả lại kho cung ứng.</p>
+          <p id="discard-instruction">
+            Bạn hiện có <strong id="discard-total-now">12</strong> viên đá quý trong tay. Bạn có quyền <strong>quay lại để mua thẻ bài</strong> hoặc <strong>chọn đổi (trả) lại <span id="discard-needed-count">2</span> viên</strong> cho kho cung ứng:
+          </p>
           <div class="discard-selection-row" id="discard-selection-container">
             <!-- Chọn loại ngọc cần trả -->
           </div>
         </div>
-        <div class="modal-footer">
-          <button id="btn-confirm-discard" class="btn-gold-primary" disabled>Xác Nhận Trả Đá Quý</button>
+        <div class="modal-footer discard-modal-footer">
+          <button id="btn-cancel-discard-buy" class="btn-wood-primary">↩️ Quay Lại Mua Thẻ</button>
+          <button id="btn-confirm-discard" class="btn-gold-primary" disabled>Xác Nhận Đổi (Trả) Đá</button>
         </div>
       </div>
     </div>
@@ -426,6 +445,82 @@
         <div class="modal-body">
           <p>Danh tiếng của bạn thu hút nhiều quý tộc cùng lúc! Hãy chọn 1 vị quý tộc bạn muốn diện kiến:</p>
           <div class="noble-candidates-list" id="noble-candidates-container"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Xem Chi Tiết Thẻ Quý Tộc / Thương Gia (Giải thích luật tự động ghé thăm) -->
+    <div id="noble-detail-modal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+      <div class="modal-content wood-panel noble-detail-box anim-modal-pop">
+        <div class="modal-header">
+          <div class="noble-detail-title-box">
+            <span class="noble-detail-crown">👑</span>
+            <h2 id="noble-detail-name" class="modal-title">Quý Tộc Phục Hưng</h2>
+          </div>
+          <button id="btn-close-noble-detail" class="btn-close-modal" aria-label="Đóng">✕</button>
+        </div>
+        <div class="modal-body noble-detail-body">
+          <div class="noble-detail-preview-row">
+            <div id="noble-detail-portrait" class="noble-detail-portrait"></div>
+            <div class="noble-detail-meta">
+              <div class="noble-detail-pts">🏆 +3 ĐIỂM UY TÍN</div>
+              <div class="noble-rule-notice">
+                <span class="notice-icon">ℹ️</span>
+                <span><strong>Quý tộc KHÔNG THỂ mua bằng đá quý!</strong> Quý tộc sẽ <em>tự động ghé thăm</em> và tặng +3 điểm vào cuối lượt khi bạn mua đủ số thẻ bài tương ứng.</span>
+              </div>
+            </div>
+          </div>
+          <div class="noble-detail-reqs-section">
+            <h4 class="reqs-title">TIẾN ĐỘ THẺ BÀI (BONUS) CỦA BẠN:</h4>
+            <div id="noble-detail-reqs-list" class="noble-detail-reqs-list">
+              <!-- Render danh sách yêu cầu và tiến độ -->
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="btn-understand-noble" class="btn-gold-primary w-full">ĐÃ HIỂU LUẬT CHƠI</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Hướng Dẫn Bật Toàn Màn Hình Trên iPhone (iOS) -->
+    <div id="ios-fullscreen-modal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+      <div class="modal-content wood-panel ios-fs-modal-box anim-modal-pop">
+        <div class="modal-header">
+          <div class="ios-fs-title-box">
+            <span class="ios-icon">📱</span>
+            <h2 class="modal-title">CHƠI TOÀN MÀN HÌNH TRÊN IPHONE</h2>
+          </div>
+          <button id="btn-close-ios-fs" class="btn-close-modal" aria-label="Đóng">✕</button>
+        </div>
+        <div class="modal-body ios-fs-body">
+          <p class="ios-fs-desc">Apple iOS giới hạn tính năng toàn màn hình trong trình duyệt. Để chơi <strong>tràn viền 100%</strong> không vướng thanh địa chỉ:</p>
+          <div class="ios-fs-steps">
+            <div class="ios-step-item">
+              <span class="step-num">1</span>
+              <div class="step-content">
+                <strong>Mở bằng Safari</strong> (hoặc Chrome) trên iPhone.
+              </div>
+            </div>
+            <div class="ios-step-item">
+              <span class="step-num">2</span>
+              <div class="step-content">
+                Bấm nút <strong>Chia Sẻ</strong> (biểu tượng ô vuông mũi tên <strong>⬆️</strong> ở thanh công cụ dưới cùng Safari).
+              </div>
+            </div>
+            <div class="ios-step-item">
+              <span class="step-num">3</span>
+              <div class="step-content">
+                Chọn <strong>"Thêm vào MH chính"</strong> (<em>Add to Home Screen</em>) rồi bấm <strong>Thêm</strong>.
+              </div>
+            </div>
+          </div>
+          <div class="ios-fs-tip">
+            ✨ Mở game từ biểu tượng trên Màn hình chính để trải nghiệm toàn màn hình như một App thật sự!
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="btn-close-ios-fs-ok" class="btn-gold-primary w-full">ĐÃ HIỂU, TIẾP TỤC CHƠI</button>
         </div>
       </div>
     </div>
@@ -652,6 +747,7 @@
   <script src="js/ui/CardRenderer.js"></script>
   <script src="js/ui/NobleRenderer.js"></script>
   <script src="js/ui/PlayerPanel.js"></script>
+  <script src="js/ui/FxManager.js"></script>
   <script src="js/ui/BoardRenderer.js"></script>
   <script src="js/screens/HomeScreen.js"></script>
   <script src="js/screens/LobbyScreen.js"></script>

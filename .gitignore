@@ -6,7 +6,4 @@ server/node_modules/
 Thumbs.db
 .agents/
 skills-lock.json
-scratch/chrome-user-data/
-scratch/chrome-user-data-ls/
-scratch/*.png
-
+scratch/
