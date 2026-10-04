@@ -58,6 +58,7 @@ class GameScreen {
           return;
         }
 
+        SplendorSound.playTakeChip();
         SplendorTokenRenderer.clearSelection();
         this.onAfterAction(result);
       });
@@ -263,12 +264,56 @@ class GameScreen {
    * Xử lý sau mỗi hành động thành công (Local / AI)
    */
   onAfterAction(result) {
+    if (!result) return;
+
+    // Xác định người chơi vừa thực hiện hành động
+    let actingPlayerIndex = -1;
+    if (result.playerIndex !== undefined) {
+      actingPlayerIndex = result.playerIndex;
+    } else {
+      // Sau khi kết thúc lượt, currentPlayerIndex đã chuyển sang người tiếp theo
+      actingPlayerIndex = (this.gameState.currentPlayerIndex - 1 + this.gameState.players.length) % this.gameState.players.length;
+    }
+    const actingPlayer = this.gameState.players[actingPlayerIndex];
+
+    // Phát âm thanh và hiển thị thông báo hành động
+    if (result.actionType === 'TAKE_THREE_GEMS' || result.actionType === 'TAKE_TWO_SAME_GEMS') {
+      SplendorSound.playTakeChip();
+    } else if (result.actionType === 'PURCHASE_CARD') {
+      SplendorSound.playCardBuy();
+    }
+
+    // Nếu người vừa đi là Máy (AI), thông báo rõ ràng cho người chơi biết máy vừa làm gì
+    if (actingPlayer && actingPlayer.isAI) {
+      const { GEM_INFO_VI } = SplendorConstants;
+      let aiDesc = '';
+
+      if (result.actionType === 'TAKE_THREE_GEMS' && result.actionData?.gems) {
+        const names = result.actionData.gems.map(g => GEM_INFO_VI[g]?.name || g).join(', ');
+        aiDesc = `🤖 ${actingPlayer.name} đã lấy 3 đá quý: ${names}`;
+      } else if (result.actionType === 'TAKE_TWO_SAME_GEMS' && result.actionData?.gem) {
+        aiDesc = `🤖 ${actingPlayer.name} đã lấy 2 viên ${GEM_INFO_VI[result.actionData.gem]?.name || result.actionData.gem}`;
+      } else if (result.actionType === 'PURCHASE_CARD') {
+        const pts = result.card?.points || result.actionData?.card?.points || 0;
+        aiDesc = `🤖 ${actingPlayer.name} đã mua 1 thẻ phát triển${pts > 0 ? ` (+${pts} điểm)` : ''}!`;
+      } else if (result.actionType === 'RESERVE_CARD') {
+        aiDesc = `🤖 ${actingPlayer.name} đã giữ chỗ 1 thẻ bài vào tay!`;
+      } else if (result.mustDiscard) {
+        aiDesc = `🤖 ${actingPlayer.name} đang trả lại ${result.excessCount} đá quý thừa...`;
+      }
+
+      if (aiDesc) {
+        SplendorHelpers.showToast(aiDesc, 'info', 2800);
+      }
+    }
+
     // Nếu có Quý tộc ghé thăm
     if (result?.nobleVisit) {
       SplendorSound.playNobleVisit();
-      SplendorHelpers.showToast(`Quý tộc ${result.nobleVisit.name} đã ghé thăm (+3 điểm uy tín)!`, 'success');
+      SplendorHelpers.showToast(`Quý tộc ${result.nobleVisit.name} đã ghé thăm ${actingPlayer?.name || ''} (+3 điểm uy tín)!`, 'success', 3000);
     }
 
+    // Cập nhật giao diện bàn chơi
     this.render();
 
     // Kiểm tra kết thúc game
@@ -278,11 +323,16 @@ class GameScreen {
       return;
     }
 
-    // Nếu ở chế độ Chuyền tay (Local) giữa nhiều người chơi người thật
+    // Nếu ở chế độ Chuyền tay (Local)
     if (this.gameState.mode === 'LOCAL') {
       this.myPlayerIndex = this.gameState.currentPlayerIndex;
       this.render();
       SplendorSound.playTurnBell();
+    }
+    // Nếu ở chế độ Đấu với Máy (AI) và lượt vừa quay trở lại Người chơi thật
+    else if (this.gameState.mode === 'AI' && this.gameState.currentPlayerIndex === this.myPlayerIndex) {
+      SplendorSound.playTurnBell();
+      SplendorHelpers.showToast('✨ Đến lượt của bạn!', 'info', 2000);
     }
 
     // Kiểm tra nếu đến lượt của AI
@@ -297,6 +347,19 @@ class GameScreen {
 
     const currentPlayer = this.gameState.getCurrentPlayer();
     if (currentPlayer && currentPlayer.isAI) {
+      // Hiển thị trạng thái máy đang suy nghĩ trên banner thông báo
+      const turnTextEl = document.getElementById('turn-text');
+      if (turnTextEl) {
+        turnTextEl.textContent = `🤖 ${currentPlayer.name} đang suy nghĩ chiến thuật...`;
+        turnTextEl.style.color = '#f59e0b';
+      }
+
+      // Làm nổi bật thẻ của bot đang đi
+      const allOppCards = document.querySelectorAll('#opponents-container .opponent-card');
+      allOppCards.forEach(card => card.classList.remove('ai-thinking'));
+      const activeBotCard = document.querySelector(`#opponents-container .opponent-card.active-turn`);
+      if (activeBotCard) activeBotCard.classList.add('ai-thinking');
+
       SplendorAIPlayer.executeTurn(this.gameState, this.gameState.currentPlayerIndex, this.gameEngine, (res) => {
         this.onAfterAction(res);
       });

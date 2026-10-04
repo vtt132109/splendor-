@@ -390,7 +390,7 @@ class SplendorApp {
           configs.push({
             id: 'ai_' + (i + 1),
             name: `${name}`,
-            avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=ai_${i + 1}_${diff}`,
+            avatar: (i % 2 === 1) ? 'assets/nobles/king.jpg' : 'assets/nobles/queen.jpg',
             isAI: true,
             aiDifficulty: diff
           });

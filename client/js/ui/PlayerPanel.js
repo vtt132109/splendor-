@@ -87,9 +87,10 @@ class PlayerPanel {
 
       oppCard.innerHTML = `
         <div class="opp-header">
-          <div class="opp-name-box ${isTurn ? 'active-turn-glow' : ''}">
-            <img class="opp-avatar" src="${opp.avatar || "assets/nobles/king.jpg"}" alt="">
+          <div class="opp-name-box">
+            <img class="opp-avatar" src="${opp.avatar || 'assets/nobles/king.jpg'}" onerror="this.onerror=null;this.src='assets/nobles/king.jpg';" alt="">
             <span class="opp-name" title="${opp.name}">${opp.name}</span>
+            ${isTurn ? `<span class="opp-turn-pill ${opp.isAI ? 'ai' : ''}">${opp.isAI ? '🤖 Đang tính' : '✦ Đi'}</span>` : ''}
           </div>
           <div class="opp-pts-badge">${opp.prestigePoints}đ</div>
         </div>

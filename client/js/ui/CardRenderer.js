@@ -101,8 +101,8 @@ class CardRenderer {
     }
 
     cardEl.innerHTML = `
-      <!-- Tranh minh họa nền 64% thẻ -->
-      <div class="card-artwork-bg" style="background-image: url('${artworkUrl}');"></div>
+      <!-- Tranh minh họa nền 64% thẻ kèm fallback gradient đá quý -->
+      <div class="card-artwork-bg gem-bg-${card.gem}" style="background-image: url('${artworkUrl}');"></div>
 
       <!-- Header: Điểm uy tín & Bonus đá quý -->
       <div class="card-top-overlay">

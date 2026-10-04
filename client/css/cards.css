@@ -56,7 +56,27 @@
   height: 62%;
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
+  background-color: #2a1a10;
   border-bottom: 1.5px solid var(--wood-border);
+  transition: opacity 0.2s ease-in;
+}
+
+/* Fallback gradient theo từng loại đá quý giúp thẻ đẹp mắt ngay tức thì khi chưa tải xong tranh */
+.card-artwork-bg.gem-bg-diamond {
+  background: radial-gradient(circle at 50% 40%, #38bdf8 0%, #0f172a 80%);
+}
+.card-artwork-bg.gem-bg-sapphire {
+  background: radial-gradient(circle at 50% 40%, #3b82f6 0%, #172554 80%);
+}
+.card-artwork-bg.gem-bg-emerald {
+  background: radial-gradient(circle at 50% 40%, #10b981 0%, #064e3b 80%);
+}
+.card-artwork-bg.gem-bg-ruby {
+  background: radial-gradient(circle at 50% 40%, #ef4444 0%, #450a0a 80%);
+}
+.card-artwork-bg.gem-bg-onyx {
+  background: radial-gradient(circle at 50% 40%, #6b7280 0%, #111827 80%);
 }
 
 .card-artwork-bg::before {
