@@ -60,5 +60,13 @@
   - [x] Task 34: Tinh Chỉnh Bố Cục Cảm Ứng Di Động & Vùng Chạm Bàn Cờ (Expand gem hitboxes & touch targets in `responsive.css` & `tokens.css`)
   - [x] Task 35: Tự Động Hóa Kiểm Thử E2E Toàn Quy Trình Đa Thiết Bị (Create and run `scratch/test-e2e-resilience.js`)
 
+- [ ] **Giai Đoạn 10: Tái Thiết Kế Bố Cục Bàn Cờ "Vừa Khít 100% — Không Che Lấp" (Phase 10: Responsive Auto-Fit & Anti-Clipping Redesign)**
+  - [ ] Task 36: Tái cấu trúc Khung Bàn Chơi Tổng Thể & Ngân Sách Chiều Cao (Viewport Budgeting: Flex layout, compact header & player mat in `board.css`, `responsive.css`)
+  - [ ] Task 37: Co Giãn Ma Trận Thẻ Bài 3 Tầng Tự Động (Auto-Fit 3-Tier Card Matrix: Aspect-ratio 5:7, dynamic card sizing, full visibility of Tier 1 costs in `cards.css`, `board.css`)
+  - [ ] Task 38: Tinh Chỉnh Cột Quý Tộc & Bảng Đối Thủ (Left Sidebar Adaptation: Aspect-ratio 1:1, compact opponent cards in `board.css`, `cards.css`)
+  - [ ] Task 39: Tinh Chỉnh Kho Đá Quý & Nút "Lấy Đá Quý" Luôn Trong Tầm Nhìn (Right Sidebar Bank: 3x2 grid on mobile, pinned take-gems action in `tokens.css`, `responsive.css`)
+  - [ ] Task 40: Kiểm Thử Xác Thực Trực Quan Bằng Ảnh Chụp Đa Màn Hình (Visual Snapshot Verification: `scratch/verify-viewport-fit.js` with CDP screenshots on PC & Mobile)
+
+
 
 

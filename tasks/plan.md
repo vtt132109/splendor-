@@ -1060,12 +1060,106 @@ splendor/
 ### Task 35: Tự Động Hóa Kiểm Thử E2E Toàn Quy Trình Đa Thiết Bị
 - **Mô tả:** Viết script kiểm thử tự động toàn diện kiểm tra chu trình hoàn chỉnh: Tạo phòng trên PC → Vào phòng trên điện thoại → Sẵn sàng & Bắt đầu → Đồng bộ đếm ngược → Đi nước cờ lấy đá quý → Rớt mạng và kết nối lại thành công.
 - **Tiêu chí hoàn thành:**
-  - [ ] Script kiểm thử tự động chạy không có lỗi ngoại lệ.
-  - [ ] Xác nhận toàn bộ chu trình xanh 100%.
+  - [x] Script kiểm thử tự động chạy không có lỗi ngoại lệ.
+  - [x] Xác nhận toàn bộ chu trình xanh 100%.
 - **Kiểm tra:**
-  - [ ] `node scratch/test-e2e-resilience.js` chạy thành công.
+  - [x] `node scratch/test-e2e-resilience.js` chạy thành công.
 - **Phụ thuộc:** Task 32, 33, 34
 - **File liên quan:** `scratch/test-e2e-resilience.js`
 - **Quy mô:** S (1 file)
+
+---
+
+# Giai Đoạn 10: Tái Thiết Kế Bố Cục Bàn Cờ "Vừa Khít 100% — Không Che Lấp" (Phase 10: Responsive Auto-Fit & Anti-Clipping Redesign)
+
+## 1. Phân Tích Hiện Trạng Qua 2 Ảnh Người Dùng Cung Cấp
+
+### 🔴 Hiện Trạng Trên Web PC (Ảnh 1)
+- **Hàng thẻ Tầng 1 (Tier 1 - Cơ bản) bị che khuất hơn 50%:** Bảng điều khiển người chơi ở đáy (`.current-player-mat`) cao quá mức (125px-135px), đè lên vùng bàn cờ. Các chấm tròn chi phí đá quý dưới đáy thẻ Tầng 1 bị chìm xuống dưới, người chơi không thể nhìn thấy giá mua của các thẻ này.
+- **Nguyên nhân cốt lõi:** Kích thước thẻ bài đang dùng chiều cao cố định theo chiều ngang (`clamp(140px, 11.5vw, 196px)` hoặc 174px-198px). Khi chiều cao trình duyệt PC ở mức phổ biến (720px - 820px sau khi trừ thanh tab và taskbar Windows), tổng chiều cao: Header (48px) + Banner lượt (32px) + 3 hàng thẻ ($3 \times 174\text{px} = 522\text{px}$) + Bảng đáy (125px) + Khoảng đệm (30px) = **757px**, vượt quá chiều cao khả dụng của vùng cờ (`overflow: hidden`), dẫn đến đáy bàn cờ bị xén mất.
+
+### 🔴 Hiện Trạng Trên Web Điện Thoại Xoay Ngang (Ảnh 2)
+- **Hàng thẻ Tầng 1 gần như biến mất hoàn toàn:** Thẻ xanh lá Tầng 1 bị Bảng đáy đè lên tới 90%, chỉ còn thò ra đúng viền trên.
+- **Kho Đá Quý bên phải bị mất nút thao tác:** 2 viên đá quý cuối (Mã não và Vàng) bị cắt nửa, còn thanh xem trước và **nút "Lấy Đá Quý" bị biến mất 100% ra khỏi màn hình**. Người chơi trên điện thoại hoàn toàn không thể bấm lấy ngọc!
+- **Cột Quý tộc bên trái:** Quý tộc trên cùng (`Anne o...`) bị cắt mất nửa trên.
+- **Bảng người chơi đáy:** Chiếm tới 25% tổng chiều cao màn hình (80px trên tổng số ~360px của điện thoại ngang), gây lãng phí không gian nghiêm trọng.
+- **Nguyên nhân cốt lõi:** Chiều cao điện thoại ngang chỉ từ $340\text{px} - 390\text{px}$. Các thành phần đang dùng chiều cao pixel tĩnh độc lập với nhau thay vì tuân theo nguyên tắc Ngân sách Chiều cao (Vertical Space Budgeting).
+
+---
+
+## 2. Kế Hoạch Nhiệm Vụ Chi Tiết (Phase 10 Task Breakdown)
+
+### Task 36: Tái cấu trúc Khung Bàn Chơi Tổng Thể & Ngân Sách Chiều Cao (Viewport Budgeting)
+- **Mô tả:** 
+  1. Đặt `#screen-game` theo cấu trúc Flexbox đứng chuẩn: `height: 100dvh; display: flex; flex-direction: column; overflow: hidden;`.
+  2. Thu gọn Header: Desktop còn $40\text{px}$, Mobile Landscape còn $34\text{px}$.
+  3. Tinh giản `.current-player-mat` thành dạng 1 hàng ngang siêu gọn:
+     - Trên Desktop PC: Giảm chiều cao từ $125\text{px}$ xuống `clamp(64px, 8.5vh, 76px)`.
+     - Trên Mobile Landscape: Giảm từ $80\text{px}$ xuống `clamp(46px, 12vh, 52px)`, avatar $30\text{px}$, thu gọn padding để giải phóng tối đa diện tích cho bàn cờ.
+  4. Phân bổ toàn bộ không gian còn lại cho `.game-layout` với `flex: 1; min-height: 0; overflow: hidden;`.
+- **Tiêu chí hoàn thành:**
+  - [ ] `.game-layout` luôn tự động chiếm đúng phần chiều cao khả dụng giữa Header và Player Mat.
+  - [ ] Không có thanh cuộn trang thừa ngoài ý muốn trên toàn màn hình.
+- **Kiểm tra:** Đo đạc `offsetHeight` của `#screen-game` đúng bằng `window.innerHeight`.
+- **Phụ thuộc:** Không có
+- **File liên quan:** `client/css/board.css`, `client/css/responsive.css`, `client/css/index.css`
+- **Quy mô:** M (3 files)
+
+### Task 37: Co Giãn Ma Trận Thẻ Bài 3 Tầng Tự Động (Auto-Fit 3-Tier Card Matrix)
+- **Mô tả:** 
+  1. `.card-matrix-board` chiếm `flex: 1; min-height: 0;` với 3 hàng `.card-tier-row` chia đều không gian khả dụng (`flex: 1; min-height: 0; max-height: calc(33.33% - 4px);`).
+  2. Loại bỏ chiều cao pixel cố định (`--card-height`). Thẻ bài `.dev-card` và ô bài ẩn `.deck-slot` định dạng theo `height: 100%; aspect-ratio: 5 / 7; width: auto;`.
+  3. Toàn bộ nội dung bên trong thẻ bài (Header điểm uy tín, tranh nền, khay chi phí đá quý `.card-bottom-tray`, chấm tròn chi phí `.cost-token-disc`) tự động co giãn tỷ lệ thuận theo chiều cao thẻ.
+  4. Đảm bảo toàn bộ 4 thẻ của Tầng 3, Tầng 2 và đặc biệt là Tầng 1 cùng các chấm chi phí hiển thị trọn vẹn 100% trong tầm nhìn.
+- **Tiêu chí hoàn thành:**
+  - [ ] Cả 3 hàng thẻ bài đều nằm trọn vẹn trong màn hình trên cả PC lẫn điện thoại ngang.
+  - [ ] Chấm chi phí đá quý dưới đáy thẻ Tầng 1 không bị bảng người chơi đè lên dù chỉ 1 pixel.
+- **Kiểm tra:** Kiểm tra hiển thị tại chiều cao màn hình 720px (PC) và 360px (Điện thoại ngang).
+- **Phụ thuộc:** Task 36
+- **File liên quan:** `client/css/cards.css`, `client/css/board.css`, `client/css/responsive.css`
+- **Quy mô:** M (3 files)
+
+### Task 38: Tinh Chỉnh Cột Quý Tộc & Bảng Đối Thủ (Left Sidebar Adaptation)
+- **Mô tả:** 
+  1. Thẻ Quý tộc `.noble-card` chuyển sang sử dụng `aspect-ratio: 1 / 1` với `max-height: clamp(48px, 9vh, 90px)`.
+  2. Trên Mobile Landscape: Sắp xếp các ô Quý tộc thành dạng lưới 2 cột mini hoặc thanh cuộn dọc mượt mà có padding hợp lý, không bao giờ bị cắt mất phần trên của Quý tộc đầu tiên.
+  3. Thẻ Đối thủ (`.opponent-card`): Thiết kế siêu gọn gàng (Avatar 20px, điểm vàng, tổng token/thẻ/giữ) để không lấn át diện tích Quý tộc.
+- **Tiêu chí hoàn thành:**
+  - [ ] Thẻ Quý tộc đầu tiên và các Quý tộc tiếp theo hiển thị đầy đủ, không bị khuất tên hay điều kiện.
+  - [ ] Cột trái hiển thị cân đối và hòa quyện với bàn cờ.
+- **Kiểm tra:** Chơi thử bàn 2 người, 3 người và 4 người (số Quý tộc từ 3 đến 5).
+- **Phụ thuộc:** Task 36
+- **File liên quan:** `client/css/board.css`, `client/css/cards.css`, `client/css/responsive.css`
+- **Quy mô:** S (2 files)
+
+### Task 39: Tinh Chỉnh Kho Đá Quý & Nút "Lấy Đá Quý" Luôn Trong Tầm Nhìn (Right Sidebar Bank)
+- **Mô tả:** 
+  1. Tái cấu trúc `.bank-container`: Đảm bảo 6 loại đá quý và khu vực hành động (xem trước + nút "Lấy Đá Quý") luôn nằm trọn vẹn 100% trong khung nhìn thẳng, không bao giờ bị trôi ra khỏi màn hình.
+  2. Trên Mobile Landscape:
+     - Chuyển `.gem-bank-grid` thành dạng 3 cột $\times$ 2 hàng nhỏ gọn (Hàng 1: Kim cương, Sapphire, Ngọc lục bảo; Hàng 2: Ruby, Mã não, Vàng) với chip size `clamp(32px, 6.5vh, 42px)`.
+     - Tích hợp thanh xác nhận lấy ngọc gọn gàng ngay dưới khay ngọc. Nút "Lấy Đá Quý" luôn sáng rõ và dễ bấm.
+- **Tiêu chí hoàn thành:**
+  - [ ] Cả 6 viên đá quý đều nhìn thấy rõ số lượng trong kho.
+  - [ ] Nút "Lấy Đá Quý" luôn hiển thị trên màn hình điện thoại, không cần cuộn trang.
+- **Kiểm tra:** Kiểm tra trên màn hình điện thoại xoay ngang 375x667 và 390x844.
+- **Phụ thuộc:** Task 36
+- **File liên quan:** `client/css/tokens.css`, `client/css/board.css`, `client/css/responsive.css`
+- **Quy mô:** S (2 files)
+
+### Task 40: Kiểm Thử Xác Thực Trực Quan Bằng Ảnh Chụp Đa Màn Hình (Visual Snapshot Verification)
+- **Mô tả:** Viết script kiểm thử tự động sử dụng Chrome CDP chụp ảnh màn hình bàn cờ ở 3 cấu hình:
+  1. Desktop Full HD (1920x1080).
+  2. Laptop / Desktop chiều cao trung bình (1280x720).
+  3. Mobile Landscape (iPhone / Android: 844x390 & 667x375).
+  - Phân tích tọa độ phần tử (boundingClientRect): Đảm bảo cạnh đáy của thẻ Tầng 1 luôn nhỏ hơn cạnh trên của Player Mat (`tier1.bottom <= playerMat.top`).
+  - Đảm bảo cạnh đáy của nút "Lấy Đá Quý" luôn nhỏ hơn cạnh trên của Player Mat hoặc đáy viewport.
+- **Tiêu chí hoàn thành:**
+  - [ ] Script kiểm thử tự động xác nhận không có bất kỳ phần tử nào bị che lấp hoặc tràn màn hình.
+  - [ ] Lưu ảnh chụp kiểm chứng vào `scratch/` để đối chiếu với ảnh lỗi ban đầu của người dùng.
+- **Kiểm tra:** `node scratch/verify-viewport-fit.js` chạy đạt 100%.
+- **Phụ thuộc:** Task 36, 37, 38, 39
+- **File liên quan:** `scratch/verify-viewport-fit.js`
+- **Quy mô:** S (1 file)
+
 
 
