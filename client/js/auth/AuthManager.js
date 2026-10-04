@@ -9,8 +9,10 @@ class AuthManager {
     this.currentUser = null;
     this.listeners = [];
     this.storageKey = 'splendor_auth_user';
+    this.clientIdStorageKey = 'splendor_google_client_id';
     this.selectedAvatar = null;
-    this.googleClientId = '';
+    this.defaultClientId = '155772546476-qltibeqdccc5i079nboaksb74ic2mi4d.apps.googleusercontent.com';
+    this.googleClientId = localStorage.getItem(this.clientIdStorageKey) || this.defaultClientId;
 
     // Bộ 6 Avatar Hoàng Gia phong cách Phục Hưng
     this.defaultAvatars = [
@@ -83,6 +85,7 @@ class AuthManager {
         const data = await res.json();
         if (data.googleClientId) {
           this.googleClientId = data.googleClientId.trim();
+          try { localStorage.setItem(this.clientIdStorageKey, this.googleClientId); } catch (e) {}
           this.initGisClient();
         }
       }
@@ -321,12 +324,14 @@ class AuthManager {
       const data = await res.json();
       if (data.success && data.googleClientId) {
         this.googleClientId = data.googleClientId;
+        try { localStorage.setItem(this.clientIdStorageKey, this.googleClientId); } catch (e) {}
         SplendorHelpers.showToast('Đã lưu Google Client ID thành công! Đang chuyển hướng...', 'success');
         this.handleGoogleButtonClick();
       }
     } catch (e) {
       console.error('[Auth] Lỗi lưu client ID:', e);
       this.googleClientId = val;
+      try { localStorage.setItem(this.clientIdStorageKey, this.googleClientId); } catch (e) {}
       this.handleGoogleButtonClick();
     }
   }

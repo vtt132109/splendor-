@@ -8,6 +8,7 @@
   aspect-ratio: 5 / 7;
   width: auto;
   max-width: 145px;
+  flex-shrink: 0;
   background: #1c1109;
   border: 2px solid var(--wood-border);
   border-radius: var(--radius-sm);
@@ -16,7 +17,6 @@
   cursor: pointer;
   transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
   overflow: hidden;
-  container-type: size;
 }
 
 .dev-card:hover {
@@ -143,7 +143,6 @@
 .card-prestige-points {
   font-family: var(--font-serif-royal);
   font-size: clamp(11px, 2.5vh, 22px);
-  font-size: clamp(11px, 18cqh, 24px);
   font-weight: 900;
   color: #ffffff;
   text-shadow: 0 1px 3px #000, 0 2px 6px rgba(0, 0, 0, 0.95);
@@ -153,14 +152,11 @@
 .card-gem-facet-badge {
   width: clamp(16px, 3.2vh, 28px);
   height: clamp(16px, 3.2vh, 28px);
-  width: clamp(16px, 24cqh, 30px);
-  height: clamp(16px, 24cqh, 30px);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: clamp(10px, 2vh, 16px);
-  font-size: clamp(10px, 15cqh, 17px);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.85), inset 0 1px 2px rgba(255, 255, 255, 0.65);
   border: 1.5px solid rgba(255, 255, 255, 0.8);
 }
@@ -197,15 +193,12 @@
 .cost-token-disc {
   width: clamp(12px, 2.2vh, 19px);
   height: clamp(12px, 2.2vh, 19px);
-  width: clamp(12px, 16cqh, 20px);
-  height: clamp(12px, 16cqh, 20px);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-sans-vietnamese);
   font-size: clamp(8px, 1.4vh, 11px);
-  font-size: clamp(8px, 10cqh, 12px);
   font-weight: 900;
   color: #fff;
   border: 1.5px solid rgba(255, 255, 255, 0.45);
@@ -226,6 +219,7 @@
   max-width: 145px;
   perspective: 600px;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .deck-card {
@@ -262,7 +256,6 @@
 
 .tier-dots {
   font-size: clamp(10px, 1.8vh, 18px);
-  font-size: clamp(10px, 13cqh, 18px);
   letter-spacing: 2px;
   color: var(--gold-bright);
 }
@@ -270,7 +263,6 @@
 .deck-count {
   font-family: var(--font-serif-royal);
   font-size: clamp(11px, 2vh, 18px);
-  font-size: clamp(11px, 16cqh, 20px);
   font-weight: 700;
   color: var(--text-parchment);
   margin-top: 2px;
