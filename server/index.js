@@ -6,6 +6,7 @@ const cors = require('cors');
 
 const GameState = require('./GameState');
 const GameEngine = require('./GameEngine');
+const serverAuth = require('./auth');
 
 const app = express();
 const server = http.createServer(app);
@@ -37,6 +38,36 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Endpoint cấu hình Google OAuth Client ID cho client
+app.get('/api/auth/config', (req, res) => {
+  res.json({
+    success: true,
+    googleClientId: serverAuth.getGoogleClientId()
+  });
+});
+
+app.post('/api/auth/config', (req, res) => {
+  const { googleClientId } = req.body;
+  if (googleClientId) {
+    serverAuth.setGoogleClientId(googleClientId);
+  }
+  res.json({
+    success: true,
+    googleClientId: serverAuth.getGoogleClientId()
+  });
+});
+
+// Endpoint xác minh Google OAuth Token (ID Token hoặc Access Token)
+app.post('/api/auth/google/verify', async (req, res) => {
+  try {
+    const { idToken, accessToken } = req.body;
+    const result = await serverAuth.verifyGoogleToken({ idToken, accessToken });
+    res.json(result);
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message });
+  }
+});
+
 // Lưu trữ các phòng chơi (Game Rooms)
 const rooms = new Map();
 
@@ -54,6 +85,7 @@ function getPublicRoomData(room) {
     players: (room.players || []).map(p => ({
       id: p.id,
       uid: p.uid,
+      email: p.email || null,
       name: p.name,
       avatar: p.avatar,
       isHost: p.isHost,
@@ -85,6 +117,31 @@ io.on('connection', (socket) => {
   // Tạo phòng mới
   socket.on('room:create', ({ player, maxPlayers = 4 }, callback) => {
     try {
+      // Chặn tạo phòng nếu tài khoản Google đang hoạt động trên thiết bị khác
+      if (player && (player.email || player.uid)) {
+        const normEmail = (player.email || '').toLowerCase().trim();
+        const normUid = (player.uid || '').trim();
+
+        for (const [existingCode, r] of rooms) {
+          const duplicateActive = r.players.find(p => 
+            p.connected && 
+            p.id !== socket.id &&
+            ((normEmail && p.email && p.email.toLowerCase().trim() === normEmail) ||
+             (normUid && p.uid && p.uid.trim() === normUid))
+          );
+          if (duplicateActive) {
+            console.log(`[Bảo Mật] Từ chối tạo phòng mới: Tài khoản ${normEmail || normUid} đang hoạt động trong phòng ${existingCode}`);
+            if (typeof callback === 'function') {
+              callback({
+                success: false,
+                message: `⚠️ Tài khoản Google (${player.email || player.name}) hiện đang ở trong phòng ${existingCode} trên một thiết bị khác! Vui lòng thoát phòng cũ trước.`
+              });
+            }
+            return;
+          }
+        }
+      }
+
       let code;
       let attempts = 0;
       do {
@@ -100,6 +157,7 @@ io.on('connection', (socket) => {
           {
             id: socket.id,
             uid: player?.uid || socket.id,
+            email: player?.email || null,
             name: player?.name || 'Người chơi 1',
             avatar: player?.avatar || null,
             isHost: true,
@@ -116,7 +174,7 @@ io.on('connection', (socket) => {
       socket.join(code);
       socket.currentRoom = code;
 
-      console.log(`[Phòng] Phòng mới được tạo: ${code} bởi ${player?.name || socket.id}`);
+      console.log(`[Phòng] Phòng mới được tạo: ${code} bởi ${player?.name || socket.id} (${player?.email || 'Khách'})`);
 
       if (typeof callback === 'function') {
         callback({ success: true, room: getPublicRoomData(roomData) });
@@ -142,6 +200,51 @@ io.on('connection', (socket) => {
           callback({ success: false, message: 'Mã phòng không tồn tại!' });
         }
         return;
+      }
+
+      // 1. Kiểm tra chặn 2 thiết bị khác nhau dùng CÙNG 1 tài khoản Google vào cùng phòng
+      if (player && (player.email || player.uid)) {
+        const normEmail = (player.email || '').toLowerCase().trim();
+        const normUid = (player.uid || '').trim();
+
+        const activeDuplicate = room.players.find(p => 
+          p.connected && 
+          p.id !== socket.id &&
+          ((normEmail && p.email && p.email.toLowerCase().trim() === normEmail) ||
+           (normUid && p.uid && p.uid.trim() === normUid))
+        );
+
+        if (activeDuplicate) {
+          console.log(`[Bảo Mật] Chặn thiết bị thứ 2 cố tình vào phòng ${cleanCode} bằng cùng tài khoản Google: ${normEmail || normUid}`);
+          if (typeof callback === 'function') {
+            callback({
+              success: false,
+              message: `⚠️ Tài khoản Google (${player.email || player.name}) hiện đang hoạt động trên một thiết bị khác trong phòng này! Mỗi người chơi phải đăng nhập một tài khoản Google riêng biệt để thi đấu.`
+            });
+          }
+          return;
+        }
+
+        // Kiểm tra xem tài khoản này có đang hoạt động ở phòng nào khác không
+        for (const [otherCode, otherRoom] of rooms) {
+          if (otherCode === cleanCode) continue;
+          const duplicateOther = otherRoom.players.find(p =>
+            p.connected &&
+            p.id !== socket.id &&
+            ((normEmail && p.email && p.email.toLowerCase().trim() === normEmail) ||
+             (normUid && p.uid && p.uid.trim() === normUid))
+          );
+          if (duplicateOther) {
+            console.log(`[Bảo Mật] Chặn vào phòng ${cleanCode}: Tài khoản ${normEmail || normUid} đang hoạt động ở phòng ${otherCode}`);
+            if (typeof callback === 'function') {
+              callback({
+                success: false,
+                message: `⚠️ Tài khoản Google (${player.email || player.name}) hiện đang tham gia phòng ${otherCode} trên một thiết bị khác! Vui lòng thoát phòng cũ trước.`
+              });
+            }
+            return;
+          }
+        }
       }
 
       if (room.status !== 'LOBBY') {
@@ -198,8 +301,8 @@ io.on('connection', (socket) => {
         return;
       }
 
-      // Kiểm tra xem người chơi đã có trong phòng chưa
-      const existingIdx = room.players.findIndex(p => p.id === socket.id || (player?.uid && p.uid === player.uid));
+      // Kiểm tra xem người chơi đã có trong phòng chưa (dành cho socket reconnect cùng thiết bị)
+      const existingIdx = room.players.findIndex(p => p.id === socket.id);
       if (existingIdx !== -1) {
         room.players[existingIdx].id = socket.id;
         room.players[existingIdx].connected = true;
@@ -207,6 +310,7 @@ io.on('connection', (socket) => {
         room.players.push({
           id: socket.id,
           uid: player?.uid || socket.id,
+          email: player?.email || null,
           name: player?.name || `Người chơi ${room.players.length + 1}`,
           avatar: player?.avatar || null,
           isHost: false,

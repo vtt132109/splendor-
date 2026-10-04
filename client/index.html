@@ -483,6 +483,19 @@
               <div class="google-spinner hidden" id="google-auth-spinner"></div>
             </button>
 
+            <!-- Khối cấu hình Client ID nếu máy chủ chưa có file .env -->
+            <div id="google-config-notice" class="google-config-notice hidden">
+              <div class="config-notice-header">
+                <span>⚙️ Cấu hình Google Client ID:</span>
+                <span class="config-help-tag">OAuth 2.0</span>
+              </div>
+              <div class="config-input-row">
+                <input type="text" id="input-google-client-id" placeholder="xxxx.apps.googleusercontent.com" class="config-id-input">
+                <button type="button" id="btn-save-client-id" class="btn-wood-small">Lưu & Đăng Nhập</button>
+              </div>
+              <p class="config-notice-hint">Nhập Client ID từ Google Cloud Console để mở xác thực tài khoản thật</p>
+            </div>
+
             <!-- Khối hiển thị thông tin khi đã đăng nhập Google -->
             <div id="google-logged-info" class="google-logged-info hidden">
               <div class="user-badge-online">

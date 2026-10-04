@@ -117,9 +117,12 @@ class LobbyScreen {
           slotEl.innerHTML = `
             <div class="lobby-player-info">
               <img class="lobby-avatar" src="${player.avatar || "assets/nobles/king.jpg"}" alt="">
-              <div>
-                <span class="lobby-player-name">${player.name}</span>
-                ${player.isHost ? '<span class="lobby-host-tag">CHỦ PHÒNG</span>' : ''}
+              <div class="lobby-player-text">
+                <div class="lobby-name-row">
+                  <span class="lobby-player-name">${player.name}</span>
+                  ${player.isHost ? '<span class="lobby-host-tag">CHỦ PHÒNG</span>' : ''}
+                </div>
+                ${player.email ? `<span class="lobby-player-email" title="${player.email}">✉ ${player.email}</span>` : ''}
               </div>
             </div>
             <div class="lobby-ready-badge ${player.isReady ? 'ready' : 'waiting'}">
