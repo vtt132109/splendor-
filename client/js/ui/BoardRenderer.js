@@ -29,8 +29,28 @@ class BoardRenderer {
     }
 
     if (turnTextEl) {
-      if (gameState.isFinalRound) {
-        turnTextEl.textContent = `🔥 VÒNG CUỐI: Lượt của ${currentPlayer.name} ${isMyTurn ? '(LƯỢT CỦA BẠN!)' : ''}`;
+      if (gameState.phase === SplendorConstants.GAME_PHASES.DISCARDING) {
+        const discPlayer = gameState.players[gameState.discardingPlayerIndex];
+        const isMeDiscard = gameState.discardingPlayerIndex === myPlayerIndex;
+        if (isMeDiscard) {
+          turnTextEl.textContent = `⚠️ BẠN CẦN TRẢ ${gameState.discardExcessCount} VIÊN ĐÁ QUÝ THỪA VỀ KHO!`;
+          turnTextEl.style.color = '#f59e0b';
+        } else {
+          turnTextEl.textContent = `⏳ Đang đợi ${discPlayer ? discPlayer.name : 'đối thủ'} trả ${gameState.discardExcessCount} đá quý thừa...`;
+          turnTextEl.style.color = '#f59e0b';
+        }
+      } else if (gameState.phase === SplendorConstants.GAME_PHASES.SELECTING_NOBLE) {
+        const selPlayer = gameState.getCurrentPlayer();
+        const isMeSelect = gameState.currentPlayerIndex === myPlayerIndex;
+        if (isMeSelect) {
+          turnTextEl.textContent = `👑 BẠN HÃY CHỌN 1 QUÝ TỘC ĐỂ DIỆN KIẾN (+3 ĐIỂM)!`;
+          turnTextEl.style.color = 'var(--gold-bright)';
+        } else {
+          turnTextEl.textContent = `👑 Đang đợi ${selPlayer ? selPlayer.name : 'đối thủ'} chọn Quý tộc diện kiến...`;
+          turnTextEl.style.color = 'var(--gold-light)';
+        }
+      } else if (gameState.isFinalRound) {
+        turnTextEl.textContent = `🔥 VÒNG CUỐI: Lượt của ${currentPlayer.name} ${isMyTurn ? '(✦ LƯỢT CỦA BẠN! ✦)' : ''}`;
         turnTextEl.style.color = '#ef4444';
       } else {
         turnTextEl.textContent = `Lượt của: ${currentPlayer.name} ${isMyTurn ? '(✦ LƯỢT CỦA BẠN ✦)' : ''}`;

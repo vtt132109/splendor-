@@ -54,10 +54,11 @@
   - [x] Task 30: Đồng bộ hành động người chơi trong trận đấu Online (`GameScreen.js` → `SocketClient.js` → Server → broadcast `game:state_updated`)
   - [x] Task 31: Kiểm thử đa thiết bị (PC host + Phone client qua kịch bản kiểm thử tự động 2 socket và Chrome E2E)
 
-- [ ] **Giai Đoạn 9: Củng Cố Kết Nối Di Động & Trạng Thái Biên (Phase 9: Mobile Reconnection & Edge Case Hardening)**
-  - [ ] Task 32: Cơ chế Ân Hạn Kết Nối Lại Khi Mất Mạng Đột Ngột (In-Game Disconnect Grace Period & Socket Rebind in `server/index.js`)
-  - [ ] Task 33: Tối ưu Nhận Diện Người Chơi & Trạng Thái Chờ Toàn Bàn Cờ (Fix `myPlayerIndex` matching in `app.js`, show waiting banners for Discarding & Noble phases in `BoardRenderer.js`)
-  - [ ] Task 34: Tinh Chỉnh Bố Cục Cảm Ứng Di Động & Vùng Chạm Bàn Cờ (Expand gem hitboxes & touch targets in `responsive.css` & `tokens.css`)
-  - [ ] Task 35: Tự Động Hóa Kiểm Thử E2E Toàn Quy Trình Đa Thiết Bị (Create and run `scratch/test-e2e-resilience.js`)
+- [x] **Giai Đoạn 9: Củng Cố Kết Nối Di Động & Trạng Thái Biên (Phase 9: Mobile Reconnection & Edge Case Hardening)**
+  - [x] Task 32: Cơ chế Ân Hạn Kết Nối Lại Khi Mất Mạng Đột Ngột (In-Game Disconnect Grace Period & Socket Rebind in `server/index.js`)
+  - [x] Task 33: Tối ưu Nhận Diện Người Chơi & Trạng Thái Chờ Toàn Bàn Cờ (Fix `myPlayerIndex` matching in `app.js`, show waiting banners for Discarding & Noble phases in `BoardRenderer.js`)
+  - [x] Task 34: Tinh Chỉnh Bố Cục Cảm Ứng Di Động & Vùng Chạm Bàn Cờ (Expand gem hitboxes & touch targets in `responsive.css` & `tokens.css`)
+  - [x] Task 35: Tự Động Hóa Kiểm Thử E2E Toàn Quy Trình Đa Thiết Bị (Create and run `scratch/test-e2e-resilience.js`)
+
 
 

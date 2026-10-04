@@ -249,7 +249,12 @@ class SplendorApp {
         SplendorSocket.joinRoom(code, user).then(res => {
           if (res.success) {
             modal.classList.add('hidden');
-            this.showLobbyScreen(res.room);
+            if (res.reconnected && res.gameState) {
+              SplendorHelpers.showToast('✨ Đã kết nối lại ván đấu đang diễn ra!', 'success');
+              this.startOnlineGameWithState(res.gameState);
+            } else {
+              this.showLobbyScreen(res.room);
+            }
           } else {
             if (errorMsg) {
               errorMsg.textContent = res.message || 'Mã phòng không hợp lệ.';
@@ -398,7 +403,13 @@ class SplendorApp {
     if (!serverGameState) return;
 
     const mySocketId = SplendorSocket.socket?.id;
-    let myIdx = (serverGameState.players || []).findIndex(p => p.id === mySocketId);
+    const authUser = window.SplendorAuth?.getUser();
+
+    let myIdx = (serverGameState.players || []).findIndex(p => 
+      (mySocketId && p.id === mySocketId) ||
+      (authUser?.uid && p.uid === authUser.uid) ||
+      (authUser?.name && p.name === authUser.name)
+    );
     if (myIdx === -1) myIdx = 0;
 
     window.lastGameConfig = { players: serverGameState.players, mode: 'ONLINE' };

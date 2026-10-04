@@ -46,6 +46,16 @@ class SocketClient {
         this.emitLocal('room:player_left', data);
       });
 
+      this.socket.on('room:player_disconnected', (data) => {
+        SplendorHelpers.showToast(`⚠️ ${data.playerName} mất kết nối! Đang đợi 60s để kết nối lại...`, 'warning');
+        this.emitLocal('room:player_disconnected', data);
+      });
+
+      this.socket.on('room:player_reconnected', (data) => {
+        SplendorHelpers.showToast(`✨ ${data.playerName} đã kết nối lại ván đấu!`, 'success');
+        this.emitLocal('room:player_reconnected', data);
+      });
+
       this.socket.on('game:started', (data) => {
         console.log('[Socket] Nhận thông báo trận đấu bắt đầu từ máy chủ:', data);
         this.emitLocal('game:started', data);
@@ -82,7 +92,13 @@ class SocketClient {
         resolve({ success: false, message: 'Chưa kết nối máy chủ.' });
         return;
       }
-      this.socket.emit('room:create', { player, maxPlayers }, resolve);
+      this.socket.emit('room:create', { player, maxPlayers }, (res) => {
+        if (res && res.success && res.room) {
+          this.currentRoomCode = res.room.code;
+          try { sessionStorage.setItem('splendor_room_code', res.room.code); } catch (e) {}
+        }
+        resolve(res);
+      });
     });
   }
 
@@ -92,7 +108,13 @@ class SocketClient {
         resolve({ success: false, message: 'Chưa kết nối máy chủ.' });
         return;
       }
-      this.socket.emit('room:join', { code, player }, resolve);
+      this.socket.emit('room:join', { code, player }, (res) => {
+        if (res && res.success && res.room) {
+          this.currentRoomCode = res.room.code;
+          try { sessionStorage.setItem('splendor_room_code', res.room.code); } catch (e) {}
+        }
+        resolve(res);
+      });
     });
   }
 
@@ -117,6 +139,8 @@ class SocketClient {
   leaveRoom() {
     if (this.socket) {
       this.socket.emit('room:leave');
+      this.currentRoomCode = null;
+      try { sessionStorage.removeItem('splendor_room_code'); } catch (e) {}
     }
   }
 

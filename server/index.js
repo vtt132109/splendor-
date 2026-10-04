@@ -40,6 +40,29 @@ app.get('/api/health', (req, res) => {
 // Lưu trữ các phòng chơi (Game Rooms)
 const rooms = new Map();
 
+// Lưu trữ các bộ đếm thời gian ân hạn ngắt kết nối (tránh circular reference trên player object)
+const disconnectTimers = new Map();
+
+function getPublicRoomData(room) {
+  if (!room) return null;
+  return {
+    code: room.code,
+    hostId: room.hostId,
+    maxPlayers: room.maxPlayers,
+    status: room.status,
+    createdAt: room.createdAt,
+    players: (room.players || []).map(p => ({
+      id: p.id,
+      uid: p.uid,
+      name: p.name,
+      avatar: p.avatar,
+      isHost: p.isHost,
+      isReady: p.isReady,
+      connected: p.connected
+    }))
+  };
+}
+
 // Helper: sinh mã phòng 6 ký tự ngẫu nhiên
 function generateRoomCode() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Bỏ các ký tự dễ nhầm: O, 0, I, 1
@@ -96,10 +119,10 @@ io.on('connection', (socket) => {
       console.log(`[Phòng] Phòng mới được tạo: ${code} bởi ${player?.name || socket.id}`);
 
       if (typeof callback === 'function') {
-        callback({ success: true, room: roomData });
+        callback({ success: true, room: getPublicRoomData(roomData) });
       }
 
-      socket.emit('room:updated', roomData);
+      socket.emit('room:updated', getPublicRoomData(roomData));
     } catch (err) {
       console.error('[Phòng] Lỗi tạo phòng:', err);
       if (typeof callback === 'function') {
@@ -125,9 +148,15 @@ io.on('connection', (socket) => {
         // Kiểm tra xem người này có phải là người chơi cũ đang kết nối lại vào ván đấu không
         const existingPlayer = room.players.find(p => (player?.uid && p.uid === player.uid) || p.name === player?.name);
         if (existingPlayer) {
+          const timerKey = `${cleanCode}:${existingPlayer.uid || existingPlayer.name}`;
+          if (disconnectTimers.has(timerKey)) {
+            clearTimeout(disconnectTimers.get(timerKey));
+            disconnectTimers.delete(timerKey);
+          }
           const oldSocketId = existingPlayer.id;
           existingPlayer.id = socket.id;
           existingPlayer.connected = true;
+          existingPlayer.disconnectedAt = null;
 
           // Cập nhật socket id trong gameState nếu có
           if (room.gameState && room.gameState.players) {
@@ -141,11 +170,16 @@ io.on('connection', (socket) => {
           console.log(`[Phòng] Người chơi ${existingPlayer.name} đã kết nối lại ván đấu đang diễn ra trong phòng ${cleanCode}`);
 
           if (typeof callback === 'function') {
-            callback({ success: true, room, reconnected: true, gameState: room.gameState ? room.gameState.toJSON() : null });
+            callback({ success: true, room: getPublicRoomData(room), reconnected: true, gameState: room.gameState ? room.gameState.toJSON() : null });
           }
 
-          io.to(cleanCode).emit('room:updated', room);
+          io.to(cleanCode).emit('room:updated', getPublicRoomData(room));
+          io.to(cleanCode).emit('room:player_reconnected', { playerName: existingPlayer.name, playerId: socket.id });
           if (room.gameState) {
+            io.to(cleanCode).emit('game:state_updated', {
+              gameState: room.gameState.toJSON(),
+              lastAction: { actionType: 'RECONNECT', playerName: existingPlayer.name }
+            });
             socket.emit('game:started', { gameState: room.gameState.toJSON() });
           }
           return;
@@ -187,10 +221,10 @@ io.on('connection', (socket) => {
       console.log(`[Phòng] ${player?.name || socket.id} đã vào phòng ${cleanCode}`);
 
       if (typeof callback === 'function') {
-        callback({ success: true, room });
+        callback({ success: true, room: getPublicRoomData(room) });
       }
 
-      io.to(cleanCode).emit('room:updated', room);
+      io.to(cleanCode).emit('room:updated', getPublicRoomData(room));
     } catch (err) {
       console.error('[Phòng] Lỗi vào phòng:', err);
       if (typeof callback === 'function') {
@@ -208,7 +242,7 @@ io.on('connection', (socket) => {
     const player = room.players.find(p => p.id === socket.id);
     if (player && !player.isHost) {
       player.isReady = !player.isReady;
-      io.to(code).emit('room:updated', room);
+      io.to(code).emit('room:updated', getPublicRoomData(room));
     }
   });
 
@@ -246,7 +280,7 @@ io.on('connection', (socket) => {
 
       console.log(`[Game] Trận đấu phòng ${code} chính thức bắt đầu với ${room.players.length} người chơi!`);
 
-      io.to(code).emit('room:updated', room);
+      io.to(code).emit('room:updated', getPublicRoomData(room));
       io.to(code).emit('game:started', { gameState: room.gameState.toJSON() });
       if (typeof callback === 'function') callback({ success: true });
     } catch (err) {
@@ -308,27 +342,76 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Rời phòng
+  // Rời phòng chủ động
   socket.on('room:leave', () => {
-    handleLeaveRoom(socket);
+    handleLeaveRoom(socket, true);
   });
 
-  // Ngắt kết nối
+  // Ngắt kết nối socket (mất mạng, đóng tab, reload)
   socket.on('disconnect', () => {
     console.log(`[Socket] Ngắt kết nối: ${socket.id}`);
-    handleLeaveRoom(socket);
+    handleLeaveRoom(socket, false);
   });
 });
 
-function handleLeaveRoom(socket) {
+function handleLeaveRoom(socket, isExplicitLeave = false) {
   const code = socket.currentRoom;
   if (!code || !rooms.has(code)) return;
 
   const room = rooms.get(code);
-  const playerIdx = room.players.findIndex(p => p.id === socket.id);
+  const player = room.players.find(p => p.id === socket.id);
+  if (!player) return;
 
+  // Nếu đang trong trận đấu VÀ KHÔNG PHẢI người chơi tự bấm nút Rời phòng (tức là chỉ rớt mạng/reload)
+  if (room.status === 'PLAYING' && !isExplicitLeave) {
+    player.connected = false;
+    player.disconnectedAt = Date.now();
+    socket.leave(code);
+    socket.currentRoom = null;
+
+    console.log(`[Phòng] Người chơi ${player.name} bị ngắt kết nối trong trận đấu ${code}. Bắt đầu ân hạn 60s.`);
+
+    io.to(code).emit('room:updated', getPublicRoomData(room));
+    io.to(code).emit('room:player_disconnected', {
+      playerId: player.id,
+      playerName: player.name,
+      reconnectTimeout: 60000
+    });
+
+    const timerKey = `${code}:${player.uid || player.name}`;
+    if (disconnectTimers.has(timerKey)) {
+      clearTimeout(disconnectTimers.get(timerKey));
+      disconnectTimers.delete(timerKey);
+    }
+
+    const timer = setTimeout(() => {
+      disconnectTimers.delete(timerKey);
+      if (!player.connected) {
+        console.log(`[Phòng] Hết hạn chờ kết nối lại: ${player.name} trong phòng ${code}`);
+        io.to(code).emit('room:player_left', { playerName: player.name, timedOut: true });
+
+        // Nếu tất cả người chơi đều ngắt kết nối, xóa phòng
+        const activePlayers = room.players.filter(p => p.connected);
+        if (activePlayers.length === 0) {
+          rooms.delete(code);
+          console.log(`[Phòng] Đã xóa phòng không còn người chơi: ${code}`);
+        }
+      }
+    }, 60000);
+    disconnectTimers.set(timerKey, timer);
+
+    return;
+  }
+
+  // Ở Lobby hoặc người chơi chủ động bấm nút Rời phòng
+  const playerIdx = room.players.findIndex(p => p.id === socket.id);
   if (playerIdx !== -1) {
     const [leavingPlayer] = room.players.splice(playerIdx, 1);
+    const timerKey = `${code}:${leavingPlayer.uid || leavingPlayer.name}`;
+    if (disconnectTimers.has(timerKey)) {
+      clearTimeout(disconnectTimers.get(timerKey));
+      disconnectTimers.delete(timerKey);
+    }
     socket.leave(code);
     socket.currentRoom = null;
 
@@ -345,7 +428,7 @@ function handleLeaveRoom(socket) {
         room.players[0].isReady = true;
         room.hostId = room.players[0].id;
       }
-      io.to(code).emit('room:updated', room);
+      io.to(code).emit('room:updated', getPublicRoomData(room));
       io.to(code).emit('room:player_left', { playerName: leavingPlayer.name });
     }
   }
